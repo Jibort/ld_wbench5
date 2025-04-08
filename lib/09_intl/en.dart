@@ -1,0 +1,13 @@
+// en.dart
+// Traduccions de les etiquetes de l'aplicació a l'anglès.
+// CreatedAt: 2025/04/08 dt. JIQ
+
+import 'package:ld_wbench5/09_intl/L.dart';
+import 'package:ld_wbench5/10_tools/ld_map.dart';
+
+// Traduccions de les etiquetes de l'aplicació al `anglès`.
+final Dict enMap = Dict(pMap: {
+  L.sSabina:    "Sabina",
+  L.sAppSabina: "Aplicación Sabina",
+  L.sWelcome:   "Welcome",
+});
