@@ -4,13 +4,14 @@
 
 import 'package:ld_wbench5/01_pages/test/ld_test_01_ctrl.dart';
 import 'package:ld_wbench5/01_pages/test/ld_test_01_model.dart';
-import 'package:ld_wbench5/02_core/views/ld_view.dart';
+import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
+import 'package:ld_wbench5/03_core/views/ld_view.dart';
 
 export 'package:ld_wbench5/01_pages/test/ld_test_01_ctrl.dart';
 export 'package:ld_wbench5/01_pages/test/ld_test_01_model.dart';
 
 class LdTest01
-extends LdView<LdTest01Model, LdTest01Ctrl> {
+extends LdView<LdTest01Ctrl, LdTest01, LdTest01Model> {
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   LdTest01({ 
     super.key,
@@ -23,9 +24,9 @@ extends LdView<LdTest01Model, LdTest01Ctrl> {
     { model.view = this;
       ctrl = LdTest01Ctrl(
         pView: this,
+        pTag: LdTagBuilder.newCtrlTag("LdTest01Ctrl"),
       );
     }
-
 
   // 📍 IMPLEMENTACIÓ ABSTRACTA -------
   /// 'LdTagMixin': Retorna la base del tag de la pàgina 'LdTest01'.

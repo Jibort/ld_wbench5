@@ -15,6 +15,7 @@ analyzer:
     avoid_renaming_method_parameters: ignore
     no_logic_in_create_state: ignore
     unnecessary_getters_setters: ignore
+    must_be_immutable: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

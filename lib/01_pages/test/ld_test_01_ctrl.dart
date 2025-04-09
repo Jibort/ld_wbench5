@@ -4,20 +4,33 @@
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/01_pages/test/ld_test_01.dart';
-import 'package:ld_wbench5/02_core/views/ld_view_ctrl.dart';
+import 'package:ld_wbench5/02_widgets/ld_app_bar.dart';
+import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
+import 'package:ld_wbench5/03_core/views/ld_view_ctrl.dart';
 import 'package:ld_wbench5/10_tools/debug.dart';
 
 /// Controlador específic de la vista de proves 'LdTest01'.
 class   LdTest01Ctrl
-extends LdViewCtrl<LdTest01> {
+extends LdViewCtrl<LdTest01Ctrl, LdTest01, LdTest01Model> {
+  // 🧩 MEMBRES ------------------------
+  late final String _tagAppBar;
+
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   /// Constructor bàsic del controlador de la vista 'LdTest01'.
-  LdTest01Ctrl({ required super.pView });
+  LdTest01Ctrl({ 
+    required super.pView, super.pTag });
 
   /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
   @override String baseTag() => "LdTest01Ctrl";
 
   // ♻️ CLICLE DE VIDA ----------------
+  /// 📍 'LdCtrlLifecycleIntf': Called when this object is inserted into the tree.
+  @override
+  void onInit() {
+    _tagAppBar = LdTagBuilder.newWidgetTag(baseTag());
+    Debug.info("[$tag.onInit()]: Instància insertada a l'arbre.");
+  }
+  
   /// 📍 'LdCtrlLifecycleIntf': Called when this object is removed from the tree.
   @override
   void onDeactivate() {
@@ -38,12 +51,6 @@ extends LdViewCtrl<LdTest01> {
     super.onDispose();
   }
   
-  /// 📍 'LdCtrlLifecycleIntf': Called when this object is inserted into the tree.
-  @override
-  void onInit() {
-    Debug.info("[$tag.onInit()]: Instància insertada a l'arbre.");
-  }
-  
   /// 📍 'LdCtrlLifecycleIntf': Opcional, notifica quan la vista ha estat construïda.
   @override
   void onRendered(BuildContext pBCtx) {
@@ -52,30 +59,24 @@ extends LdViewCtrl<LdTest01> {
   
   /// 📍 'LdCtrlLifecycleIntf': Equivalent a didUpdateWidget
   @override
-  void onWidgetUpdated(LdTest01 pNewView) {
-    view = pNewView;
+  void onWidgetUpdated(LdTest01 pOldView) {
+    view = pOldView;
   }
   
   /// 📍 'LdViewCtrl': Descripció explícita de l'arbre de widgets de la pàina 'LdTest01'.
   @override
   Widget buildView(BuildContext pBCtx)
     => Scaffold(
-      appBar: AppBar(
-        title: (model.subTitle == null)
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(model.title)
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(model.title),
-                Text(model.subTitle!),
-              ],
-            ),
-        actions: [],),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: LdAppBar(
+          key: null,
+          pTag: _tagAppBar,
+          pView: view,
+          pTitle: model.title,
+          pSubTitle: model.subTitle,
+        ),
+      ),
     );
     
 }

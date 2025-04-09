@@ -2,8 +2,8 @@
 // Abstracció del model de dades per a una pàgina de l'aplicació.
 // CreatedAt: 2025/04/07 dl. JIQ
 
-import 'package:ld_wbench5/02_core/ld_model.dart';
-import 'package:ld_wbench5/02_core/views/ld_view.dart';
+import 'package:ld_wbench5/03_core/ld_model.dart';
+import 'package:ld_wbench5/03_core/views/ld_view.dart';
 import 'package:ld_wbench5/10_tools/only_once.dart';
 
 /// Abstracció del controlador per a una pàgina de l'aplicació.

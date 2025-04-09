@@ -12,24 +12,32 @@ class LdTagBuilder {
   static const String cntViews   = "cntViews";
   static const String cntWidgets = "cntWidgets";
   static const String cntModels  = "cntModels";
-  static const String cntCtrls = "cntCtrls";
+  static const String cntCtrls   = "cntCtrls";
 
   // 📐 FUNCIONALITAT ESTÀTICA ---------
   /// Retorna el següent identificador únic per a vistes.
   static int get newViewId => newId(cntViews);
+  /// Retorna el següent tag únic per a vistes.
+  static String newViewTag(String pTag) => "${pTag}_$newViewId";
 
   /// Retorna el següent identificador únic per a widgets.
   static int get newWidgetId => newId(cntWidgets);
+  /// Retorna el següent tag únic per a widgets.
+  static String newWidgetTag(String pTag) => "${pTag}_$newWidgetId";
 
   /// Retorna el següent identificador únic per a models.
   static int get newModelId => newId(cntModels);
+  /// Retorna el següent tag únic per a models.
+  static String newModelTag(String pTag) => "${pTag}_$newModelId";
 
   /// Retorna el següent identificador únic per a controladors.
   static int get newCtrlId => newId(cntCtrls);
+  /// Retorna el següent tag únic per a models.
+  static String newCtrlTag(String pTag) => "${pTag}_$newCtrlId";
 
   /// Retorna el següent identificador únic per a una categoria customitzada.
   static int newId(String pCategory) {
-    int cnt = _cnts[pCategory]?? -1;
+    int cnt = _cnts[pCategory]?? 0;
     _cnts[pCategory] = ++cnt;
     return cnt;
   }

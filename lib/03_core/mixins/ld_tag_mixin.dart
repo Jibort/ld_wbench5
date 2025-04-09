@@ -2,7 +2,7 @@
 // Mixin per a afegir capacitats d'identificació única i cerca de dependències.
 // CreatedAt: 2025/04/07 dl. JIQ
 
-import 'package:ld_wbench5/02_core/interfaces/ld_disposable_intf.dart';
+import 'package:ld_wbench5/03_core/interfaces/ld_disposable_intf.dart';
 import 'package:ld_wbench5/10_tools/only_once.dart';
 
 /// Mixin per a afegir capacitats d'identificació i cerca de dependències.

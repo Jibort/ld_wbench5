@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/02_core/app/ld_app.dart';
+import 'package:ld_wbench5/03_core/app/ld_app.dart';
 import 'package:ld_wbench5/09_intl/L.dart';
 
 void main() {

@@ -4,7 +4,7 @@
 // CreatedAt: 2025/02/08 dt. JIQ
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/02_core/interfaces/ld_disposable_intf.dart';
+import 'package:ld_wbench5/03_core/interfaces/ld_disposable_intf.dart';
 
 /// Interfície que declara les funcions que ha d'implementar un widget o una vista
 /// per tal de poder controlar el seu cicle de vida.

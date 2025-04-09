@@ -2,7 +2,7 @@
 // Model de dades per a la pàgina de proves 'LdTest01'.
 // CreatedAt: 2025/02/08 dt. JIQ
 
-import 'package:ld_wbench5/02_core/views/ld_view_model.dart';
+import 'package:ld_wbench5/03_core/views/ld_view_model.dart';
 import 'package:ld_wbench5/09_intl/L.dart';
 
 /// Model de dades per a la pàgina de proves 'LdTest01'.
