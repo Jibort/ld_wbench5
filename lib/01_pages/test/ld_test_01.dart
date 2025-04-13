@@ -4,8 +4,11 @@
 
 import 'package:ld_wbench5/01_pages/test/ld_test_01_ctrl.dart';
 import 'package:ld_wbench5/01_pages/test/ld_test_01_model.dart';
+import 'package:ld_wbench5/03_core/ld_model.dart';
 import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
+import 'package:ld_wbench5/03_core/streams/stream_envelope.dart';
 import 'package:ld_wbench5/03_core/views/ld_view.dart';
+import 'package:ld_wbench5/10_tools/debug.dart';
 
 export 'package:ld_wbench5/01_pages/test/ld_test_01_ctrl.dart';
 export 'package:ld_wbench5/01_pages/test/ld_test_01_model.dart';
@@ -15,6 +18,7 @@ extends LdView<LdTest01Ctrl, LdTest01, LdTest01Model> {
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   LdTest01({ 
     super.key,
+    required super.pApp,
     super.pTag,
     String? pTitle, 
     String? pSubTitle })
@@ -32,7 +36,27 @@ extends LdView<LdTest01Ctrl, LdTest01, LdTest01Model> {
   /// 'LdTagMixin': Retorna la base del tag de la pàgina 'LdTest01'.
   @override String baseTag() => "LdTest01";
 
-  /// 'StatefulWidget': Creates the mutable state for this widget at a given location in the tree.
+  /// 'StatefulWidget': Retorna el controlador 'State' de la vista.
   @override
   LdTest01Ctrl createState() => ctrl;
+
+  @override
+  void listened(StreamEnvelope<LdModel> pEnv) {
+    if (pEnv.tgtTags.isEmpty || pEnv.tgtTags.contains(tag)) {
+      Debug.info("${tag}listened(pEnv): iniciat ...");
+
+      Debug.info("${tag}listened(pEnv): ... acabat");
+    }
+  }
+
+  @override
+  void onDone() {
+    Debug.info("${tag}_onDone(): executat!");
+  }
+
+  @override
+  void onError(Object error, StackTrace stackTrace) {
+    String msg = "${tag}_onError(...): ${error.toString()} en: \b ${stackTrace.toString()}";
+    Debug.error(msg, Exception(msg));    
+  }
 }
