@@ -25,6 +25,11 @@ implements Map<String, T> {
     => _map[key] = value;
   @override void addAll(Map<String, T> other) 
     => _map.addAll(other);
+  LdMap<T> addAllAndBack(Map<String, T> other) {
+    addAll(other);
+    return this;
+  }
+  
   @override void addEntries(Iterable<MapEntry<String, T>> newEntries)
     => _map.addEntries(newEntries);
   @override Map<RK, RV> cast<RK, RV>() 

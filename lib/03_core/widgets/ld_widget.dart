@@ -8,24 +8,33 @@ import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
 import 'package:ld_wbench5/03_core/mixins/ld_tag_mixin.dart';
 import 'package:ld_wbench5/03_core/views/ld_view.dart';
 import 'package:ld_wbench5/03_core/widgets/ld_widget_ctrl.dart';
+import 'package:ld_wbench5/03_core/widgets/ld_widget_model.dart';
 import 'package:ld_wbench5/10_tools/only_once.dart';
 
 export 'package:ld_wbench5/03_core/widgets/ld_widget_ctrl.dart';
 
 /// Abstracció de tots els widgets fets servir per l'aplicació.
-abstract class LdWidget<C extends LdWidgetCtrl<C, LdWidget<C, W>>, W extends LdWidget<C, W>>
-extends  StatefulWidget 
-with LdTagMixin {
+abstract class LdWidget<
+  C extends LdWidgetCtrl<C, LdWidget<C, W, M>>, 
+  W extends LdWidget<C, W, M>, 
+  M extends LdWidgetModel>
+extends StatefulWidget 
+with    LdTagMixin {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdWidget";
+  
   // 🧩 MEMBRES ------------------------
   /// Vista on pertany el wdiget.
   final LdView _view;
+  final M      _model;
 
   /// Instància del controlador del widget.
   final OnlyOnce<C> _ctrl = OnlyOnce<C>();
 
   // 🛠️ CONSTRUCTORS/CLEANERS --------- 
-  LdWidget({ super.key, required LdView pView, String? pTag })
-  : _view = pView {
+  LdWidget({ super.key, required LdView pView, String? pTag, required M pModel })
+  : _view  = pView,
+    _model = pModel {
     (pTag != null) 
         ? set(pTag) 
         : set("${baseTag()}_${LdTagBuilder.newWidgetId}}");

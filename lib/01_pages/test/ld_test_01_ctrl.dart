@@ -12,6 +12,9 @@ import 'package:ld_wbench5/10_tools/debug.dart';
 /// Controlador específic de la vista de proves 'LdTest01'.
 class   LdTest01Ctrl
 extends LdViewCtrl<LdTest01Ctrl, LdTest01, LdTest01Model> {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdTest01Ctrl";
+
   // 🧩 MEMBRES ------------------------
   late final String _tagAppBar;
 
@@ -21,7 +24,7 @@ extends LdViewCtrl<LdTest01Ctrl, LdTest01, LdTest01Model> {
     required super.pView, super.pTag });
 
   /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
-  @override String baseTag() => "LdTest01Ctrl";
+  @override String baseTag() => LdTest01Ctrl.className;
 
   // ♻️ CLICLE DE VIDA ----------------
   /// 📍 'LdCtrlLifecycleIntf': Called when this object is inserted into the tree.

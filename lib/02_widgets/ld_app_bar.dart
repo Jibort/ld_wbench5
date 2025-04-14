@@ -5,16 +5,16 @@
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
 import 'package:ld_wbench5/03_core/widgets/ld_widget.dart';
+import 'package:ld_wbench5/03_core/widgets/ld_widget_model.dart';
 import 'package:ld_wbench5/10_tools/debug.dart';
 
 /// Widget adaptat per a la barra de títol.
 class   LdAppBar
-extends LdWidget<LdAppbarCtrl, LdAppBar> {
-  // 🧩 MEMBRES ------------------------
-  static final String _appBarTag = LdTagBuilder.newWidgetTag("LdAppBar");
-  String  _title;
-  String? _subTitle;
-
+extends LdWidget<LdAppBarCtrl, LdAppBar, LdAppBarModel> {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdAppBar";
+  static final String _appBarTag = LdTagBuilder.newWidgetTag(LdAppBar.className);
+  
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   LdAppBar({ 
     required super.key, 
@@ -22,51 +22,86 @@ extends LdWidget<LdAppbarCtrl, LdAppBar> {
     String? pTag,
     required String pTitle,
     String? pSubTitle })
-  : _title = pTitle,
-    _subTitle = pSubTitle,
-    super(pTag: pTag?? _appBarTag) {
-    super.wCtrl = LdAppbarCtrl(
+  : super(
+      pTag: pTag?? _appBarTag,
+      pModel: LdAppBarModel(
+        pTitle: pTitle, 
+        pSubTitle: pSubTitle
+      ),
+    ) {
+    super.wCtrl = LdAppBarCtrl(
       pView: super.view, 
       pWidget: this,
-      pTag: LdTagBuilder.newWidgetTag("LdAppbarCtrl"),
+      pTag: LdTagBuilder.newWidgetTag(LdAppBar.className),
     );
   }
 
   /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
-  @override String baseTag() => "LdAppbar";
+  @override String baseTag() => LdAppBar.className;
 
   /// 📍 'StatefulWidget': Retorna el controlador del Widget.
-  @override
-  LdWidgetCtrl<LdAppbarCtrl, LdAppBar> createState()  => super.wCtrl;
+  @override LdWidgetCtrl<LdAppBarCtrl, LdAppBar, LdAppBarModel> createState() => wCtrl;
+}
+
+/// Model de dades del widget LdAppBar.
+class LdAppBarModel
+extends LdWidgetModel {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdAppBar";
+
+  // 🧩 MEMBRES ------------------------
+  String  _title;
+  String? _subTitle;
+
+  // 🛠️ CONSTRUCTORS/CLEANERS ---------
+  LdAppBarModel({
+    super.isEnabled   = true,
+    super.isVisible   = true,
+    super.isFocusable = false,
+    required String pTitle,
+    String? pSubTitle, })
+  : _title    = pTitle,
+    _subTitle = pSubTitle;
 
   // 🪟 GETTERS I SETTERS --------------
+  /// Retorna el títol de la barra de capçalera de la vista.
   String get title => _title;
-  set title(String pTitle) => super.wCtrl.setState(() =>  _title = pTitle);
+  /// Actualitza el títol de la barra de capçalera de la vista.
+  set title(String pTitle) => wCtrl.setState(() =>  _title = pTitle);
+
+  /// Retorna el subtítol de la barra de capçalera de la vista.
   String? get subTitle => _subTitle;
-  set subTitle(String? pSubTitle) => super.wCtrl.setState(() =>  _subTitle = pSubTitle);
+  /// Actualitza el subtítol de la barra de capçalera de la vista.
+  set subTitle(String? pSubTitle) => wCtrl.setState(() =>  _subTitle = pSubTitle);
+
+  /// Actualitza els títol i subtítol de la barra de capçalera de la vista.
   void setTitles({ required String pTitle, String? pSubTitle }) {
-    super.wCtrl.setState(() {
+    wCtrl.setState(() {
       _title    = pTitle;
       _subTitle = pSubTitle;
     });
   }
+
+  // 📍 IMPLEMENTACIÓ ABSTRACTA -------
+  /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
+  @override String baseTag() => LdAppBarModel.className;
 }
 
-class   LdAppbarCtrl 
-extends LdWidgetCtrl<LdAppbarCtrl, LdAppBar> {
+class   LdAppBarCtrl 
+extends LdWidgetCtrl<LdAppBarCtrl, LdAppBar, LdAppBarModel> {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdAppBarCtrl";
+  
   // 🧩 MEMBRES ------------------------
   
   // 🛠️ CONSTRUCTORS/CLEANERS ---------  
-  LdAppbarCtrl({ 
+  /// Constructor base del controlador.
+  LdAppBarCtrl({ 
     required super.pView, 
     required super.pWidget,
     String? pTag,
-  }): super(pTag: pTag?? LdTagBuilder.newCtrlTag("LdAppBarCtrl"));
+  }): super(pTag: pTag?? LdTagBuilder.newCtrlTag(LdAppBarCtrl.className));
 
-  /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
-  @override String baseTag() => "LdAppbarCtrl";
-
-  // ♻️ CLICLE DE VIDA ----------------
   /// 📍 'LdOnDisposableIntf': Called when this object is removed from the tree permanently.
   @override
   void onDispose() {
@@ -74,6 +109,11 @@ extends LdWidgetCtrl<LdAppbarCtrl, LdAppBar> {
     super.onDispose();
   }
   
+  // 📍 IMPLEMENTACIÓ ABSTRACTA -------
+  /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
+  @override String baseTag() => LdAppBarCtrl.className;
+
+  // ♻️ CLICLE DE VIDA ----------------
   /// 📍 'LdCtrlLifecycleIntf': Equivalent a deactivate
   @override
   void onDeactivate() {
@@ -112,18 +152,18 @@ extends LdWidgetCtrl<LdAppbarCtrl, LdAppBar> {
   @override
   Widget buildWidget(BuildContext pBCtx) 
     => AppBar(
-        title: (widget.subTitle == null)
+        title: (view.model.subTitle == null)
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.title)
+                Text(model.title)
               ],
             )
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.title),
-                Text(widget.subTitle!),
+                Text(model.title),
+                Text(model.subTitle!),
               ],
             ),
       actions: [],

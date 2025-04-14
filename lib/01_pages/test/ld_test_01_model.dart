@@ -10,8 +10,8 @@ import 'package:ld_wbench5/09_intl/L.dart';
 class   LdTest01Model
 extends LdViewModel {
   // 📦 MEMBRES ESTÀTICS ---------------
-  static const M = LdModel;
-
+  static final String className = "LdTest01Model";
+  
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   LdTest01Model({
     super.pTag,
@@ -23,20 +23,20 @@ extends LdViewModel {
     );
 
   // 📍 IMPLEMENTACIÓ ABSTRACTA -------
-  /// 'LdTagMixin': Retorna la base del model de la pàgina 'LdTest01'.
-  @override String baseTag() => "LdTest01Model";
+  /// 📍 'LdTagMixin': Retorna la base del model de la pàgina 'LdTest01'.
+  @override String baseTag() => LdTest01Model.className;
   
-  /// 'LdModel': Retorna la representació de la instància com a estructura en String.
+  /// 📍 'LdModel': Retorna la representació de la instància com a estructura en String.
   @override
   String toStr({int pLevel = 0}) {
-    String root = ' ' * pLevel * 2;
-    String body = ' ' * (pLevel + 1) * 2;
-    
-    return """
-$root[
-$body'$mfTitle':    ${super.title},
-$body'$mfSubTitle': ${super.subTitle},
-$root]
-""";
-  }
+      String root = ' ' * pLevel * 2;
+      String body = ' ' * (pLevel + 1) * 2;
+      
+      return """
+  $root[
+  $body'$mfTitle':    ${super.title},
+  $body'$mfSubTitle': ${super.subTitle},
+  $root]
+  """;
+    }
 }

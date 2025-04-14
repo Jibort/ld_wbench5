@@ -7,6 +7,9 @@ import 'package:ld_wbench5/10_tools/date_times.dart';
 import 'package:ld_wbench5/10_tools/null_mang.dart';
 
 class StreamEnvelope<M extends LdModel> {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "StreamEnvelope";
+  
   // 🧩 MEMBRES ------------------------
   final DateTime     sentAt = DateTime.now();
   final String       _srcTag;

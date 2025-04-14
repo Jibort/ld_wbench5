@@ -14,6 +14,7 @@ class   SabinaApp
 extends StatelessWidget
 with    StreamEmitterMixin<StreamEnvelope<LdModel>, LdModel> {
   // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "SabinaApp";
   static SabinaApp? _inst;
 
   // 📐 FUNCIONALITAT ESTÀTICA ---------

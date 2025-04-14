@@ -27,6 +27,9 @@ extends  StatefulWidget
 with LdTagMixin, 
      StreamEmitterMixin<StreamEnvelope<LdModel>, LdModel>, 
      StreamListenerMixin<StreamEnvelope<LdModel>, LdModel> {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdView";
+  
   // 🧩 MEMBRES ------------------------
   final SabinaApp _app;
   StreamSubscription<StreamEnvelope<LdModel>>? _appSubs;

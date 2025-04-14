@@ -12,6 +12,9 @@ import 'package:ld_wbench5/03_core/mixins/ld_tag_mixin.dart';
 abstract class LdCtrl<W extends StatefulWidget>
 extends  State<W>
 with     LdTagMixin {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdCtrl";
+  
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   LdCtrl({ String? pTag })
   : super() {

@@ -8,7 +8,10 @@ import 'package:ld_wbench5/03_core/widgets/ld_widget.dart';
 import 'package:ld_wbench5/10_tools/debug.dart';
 
 class LdScaffold
-extends LdWidget<LdScaffoldCtrl, LdScaffold> {
+extends LdWidget<LdScaffoldCtrl, LdScaffold, LdScaffoldModel> {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdScaffold";
+  
   // 🧩 MEMBRES ------------------------
   
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
@@ -26,7 +29,7 @@ extends LdWidget<LdScaffoldCtrl, LdScaffold> {
   }
 
   /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
-  @override String baseTag() => "LdAppbar";
+  @override String baseTag() => LdScaffold.className;
 
   /// 📍 'StatefulWidget': Retorna el controlador del Widget.
   @override
@@ -37,6 +40,9 @@ extends LdWidget<LdScaffoldCtrl, LdScaffold> {
 
 class   LdScaffoldCtrl 
 extends LdWidgetCtrl<LdScaffoldCtrl, LdScaffold> {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdScaffoldCtrl";
+  
   // 🧩 MEMBRES ------------------------
   final LdAppBar _appBar;
   
@@ -55,7 +61,7 @@ extends LdWidgetCtrl<LdScaffoldCtrl, LdScaffold> {
       );
 
   /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
-  @override String baseTag() => "LdAppbarCtrl";
+  @override String baseTag() => LdScaffoldCtrl.className;
 
   // ♻️ CLICLE DE VIDA ----------------
   /// 📍 'LdOnDisposableIntf': Called when this object is removed from the tree permanently.

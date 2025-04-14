@@ -15,6 +15,9 @@ abstract class LdViewCtrl<
   M extends LdViewModel>  
 extends    LdCtrl<V> 
 implements LdCtrlLifecycleIntf<V> {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdViewCtrl";
+  
   // 🧩 MEMBRES ------------------------
   V _view;
 

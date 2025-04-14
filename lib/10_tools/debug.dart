@@ -29,6 +29,7 @@ enum DebugLevel {
 
 /// Classe per a la generació de log en desenvolupament i proves.
 class Debug {
+  // 📦 MEMBRES ESTÀTICS ---------------
   static Map<DebugLevel, bool> dLevels = {
     DebugLevel.info: true,
     DebugLevel.warn: true,

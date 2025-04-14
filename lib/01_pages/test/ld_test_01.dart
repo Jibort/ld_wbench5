@@ -15,6 +15,9 @@ export 'package:ld_wbench5/01_pages/test/ld_test_01_model.dart';
 
 class LdTest01
 extends LdView<LdTest01Ctrl, LdTest01, LdTest01Model> {
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdTest01";
+  
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   LdTest01({ 
     super.key,
@@ -28,13 +31,14 @@ extends LdView<LdTest01Ctrl, LdTest01, LdTest01Model> {
     { model.view = this;
       ctrl = LdTest01Ctrl(
         pView: this,
-        pTag: LdTagBuilder.newCtrlTag("LdTest01Ctrl"),
+        pTag: LdTagBuilder.newCtrlTag(LdTest01Ctrl.className),
       );
+      model.vCtrl = ctrl;
     }
 
   // 📍 IMPLEMENTACIÓ ABSTRACTA -------
   /// 'LdTagMixin': Retorna la base del tag de la pàgina 'LdTest01'.
-  @override String baseTag() => "LdTest01";
+  @override String baseTag() => LdTest01.className;
 
   /// 'StatefulWidget': Retorna el controlador 'State' de la vista.
   @override

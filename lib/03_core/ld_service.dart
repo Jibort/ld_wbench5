@@ -4,7 +4,8 @@
 
 /// Abstracció de tots els serveis fets servir per l'aplicació.
 abstract class LdService {
-  // 🏷️ ESTÀTICS ----------------------
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdService";
   
   // 🛠️ CONSTRUCTORS/CLEANERS --------- 
   const LdService();

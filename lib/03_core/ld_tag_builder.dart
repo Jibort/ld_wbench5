@@ -7,7 +7,8 @@ import 'package:ld_wbench5/10_tools/ld_map.dart';
 
 /// Classe encarregada de formar tags únic correctes per a les instàncies de les classes
 class LdTagBuilder {
-  // 🏷️ ESTÀTICS ----------------------
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdTagBuilder";
   static final LdMap<int> _cnts = LdMap<int>();
   static const String cntViews   = "cntViews";
   static const String cntWidgets = "cntWidgets";

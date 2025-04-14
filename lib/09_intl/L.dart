@@ -12,6 +12,7 @@ import 'package:ld_wbench5/10_tools/only_once.dart';
 /// Gestor per a l'ús de diferents llengües dins l'aplicació.
 class L {
   // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "L";
   static final OnlyOnce<Locale> _devLocale = OnlyOnce<Locale>();
   static Locale? _currLocale;
   static Dict?   _currDict;

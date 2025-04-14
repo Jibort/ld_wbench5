@@ -7,7 +7,8 @@ import 'package:ld_wbench5/10_tools/ld_map.dart';
 
 /// Repositori d'instàncies 'LdTagMixin' com a dependències disponibles.
 class LdBindings {
-  // 🏷️ ESTÀTICS ----------------------
+  // 📦 MEMBRES ESTÀTICS ---------------
+  static final String className = "LdBindings";
   static final LdBindings _v = LdBindings._();
 
   // 📐 FUNCIONALITAT ESTÀTICA ---------
