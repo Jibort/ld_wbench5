@@ -2,12 +2,12 @@
 // Abstracció del model de dades per a una pàgina de l'aplicació.
 // CreatedAt: 2025/04/07 dl. JIQ
 
-import 'package:ld_wbench5/03_core/ld_model.dart';
-import 'package:ld_wbench5/03_core/views/ld_view.dart';
-import 'package:ld_wbench5/03_core/views/ld_view_ctrl.dart';
-import 'package:ld_wbench5/10_tools/debug.dart';
-import 'package:ld_wbench5/10_tools/ld_map.dart';
-import 'package:ld_wbench5/10_tools/only_once.dart';
+import 'package:ld_wbench5/10_tools/once_set.dart';
+
+import '../ld_model.dart';
+import 'ld_view.dart';
+import '../../10_tools/debug.dart';
+import '../../10_tools/ld_map.dart';
 
 /// Abstracció del controlador per a una pàgina de l'aplicació.
 abstract class LdViewModel 
@@ -16,42 +16,52 @@ extends  LdModel {
   static final String className = "LdViewModel";
   
   // 🧩 MEMBRES ------------------------
-  final OnlyOnce<LdView>     _view  = OnlyOnce<LdView>();
-  final OnlyOnce<LdViewCtrl> _vCtrl = OnlyOnce<LdViewCtrl>();
+  final OnceSet<LdView> _view  = OnceSet<LdView>();
 
   late String  _title;
   late String? _subTitle;
 
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
+  /// Constructor base de la classe.
   LdViewModel({ 
-    // required LdView pView, 
+    required LdView pView, 
     super.pTag,
     required String pTitle, 
     String? pSubTitle })
-  : // _view = pView,
-    _title = pTitle,
-    _subTitle = pSubTitle;
+  : _title = pTitle,
+    _subTitle = pSubTitle
+  { _view.set(pView); }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
+  /// Constructor de la instància a partir d'un mapa de valors.
+  LdViewModel.fromMap(LdMap pMap)
+  : super(pTag: pMap[mfTag]);
+
+  @override void dispose() => super.dispose();
 
   // 🪟 GETTERS I SETTERS --------------
-  LdView  get view     => _view.get();
-  String  get title    => _title;
+  /// Retorna la vista on pertany el model.
+  LdView  get view => _view.get();
+  /// Retorna el controlador de la vista on pertany el model.
+  LdViewCtrl get vCtrl => view.vCtrl;
+
+  /// Retorna el títol principal de la vista.
+  String  get title => _title;
+  /// Retorna el subtítol de la vista.
   String? get subTitle => _subTitle;
-
-  set view(LdView pView) => _view.set(pView, pError: "Error en assignació 'LdViewModel'!");
-  set vCtrl(LdViewCtrl pVCtrl) => _vCtrl.set(pVCtrl);
-
-  set title(String pTitle) {
-    view.ctrl.setState(() => _title = pTitle);
-  }
   
-  set subTitle(String? pSubTitle) {
-    view.ctrl.setState(() => _subTitle = pSubTitle);
-  }
+  /// Estableix el títítol principal de la vista.
+  set title(String pTitle)
+  => vCtrl.setState(() => _title = pTitle);
+  
+  set subTitle(String? pSubTitle)
+  => view.vCtrl.setState(() => _subTitle = pSubTitle);
+
+  void setTitles(String pTitle, String? pSubTitle) 
+  => view.vCtrl.setState(() {
+    _title = pTitle;
+    _subTitle = pSubTitle;
+  });
+
 
   // 📍 IMPLEMENTACIÓ ABSTRACTA -------
   /// 📍 'LdModel': Retorna un mapa amb el contingut dels membres de la instància del model.

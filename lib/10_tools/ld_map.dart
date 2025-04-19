@@ -4,7 +4,6 @@
 
 // Tipus definits sobre LdMap.
 typedef Dict = LdMap<String>;
-// typedef 
 
 /// Generalització d'un mapa amb clau String i valor tipus 'T'.
 class LdMap<T> 
@@ -17,11 +16,9 @@ implements Map<String, T> {
     if (pMap != null) _map.addAll(pMap);
   }
 
-  // 🪟 GETTERS I SETTERS --------------
-
   // 🌥️ 'Map' -------------------------
   @override T? operator [](Object? key) => _map[key];
-  @override void operator []=(String key, T value) 
+  @override operator []=(String key, T value) 
     => _map[key] = value;
   @override void addAll(Map<String, T> other) 
     => _map.addAll(other);

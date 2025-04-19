@@ -2,7 +2,10 @@
 // Model de dades per a la pàgina de proves 'LdTest01'.
 // CreatedAt: 2025/02/08 dt. JIQ
 
-import 'package:ld_wbench5/03_core/ld_model.dart';
+import 'dart:convert';
+
+import 'package:ld_wbench5/10_tools/ld_map.dart';
+
 import 'package:ld_wbench5/03_core/views/ld_view_model.dart';
 import 'package:ld_wbench5/09_intl/L.dart';
 
@@ -14,6 +17,7 @@ extends LdViewModel {
   
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   LdTest01Model({
+    required super.pView,
     super.pTag,
     String? pTitle,
     String? pSubtitle})
@@ -26,17 +30,12 @@ extends LdViewModel {
   /// 📍 'LdTagMixin': Retorna la base del model de la pàgina 'LdTest01'.
   @override String baseTag() => LdTest01Model.className;
   
-  /// 📍 'LdModel': Retorna la representació de la instància com a estructura en String.
+    
+  /// 📍 '...': Informa els membres de la instància amb els valors del mapa proporcionat.
   @override
-  String toStr({int pLevel = 0}) {
-      String root = ' ' * pLevel * 2;
-      String body = ' ' * (pLevel + 1) * 2;
-      
-      return """
-  $root[
-  $body'$mfTitle':    ${super.title},
-  $body'$mfSubTitle': ${super.subTitle},
-  $root]
-  """;
-    }
+  void fromJson(String pJSon) => fromMap(LdMap(pMap: jsonDecode(pJSon)));
+
+  @override String modelName() => baseTag();
+
+  @override String toJson() => jsonEncode(toMap);
 }

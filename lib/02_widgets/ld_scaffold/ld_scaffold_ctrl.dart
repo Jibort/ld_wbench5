@@ -1,64 +1,44 @@
-// ld_scaffold.dart
-// Widget principal de cada pàgina.
-// CreatedAt: 2025/02/09 dc. JIQ
+// ld_scaffold_ctrl.dart
+// Controlador del widget 'LdScaffold'.
+// CreatedAt: 2025/04/18 dv. JIQ
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/02_widgets/ld_app_bar.dart';
+import 'package:ld_wbench5/02_widgets/ld_app_bar/ld_app_bar.dart';
+import 'package:ld_wbench5/02_widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/03_core/widgets/ld_widget.dart';
 import 'package:ld_wbench5/10_tools/debug.dart';
+import 'package:ld_wbench5/10_tools/full_set.dart';
+import 'package:ld_wbench5/10_tools/once_set.dart';
 
-class LdScaffold
-extends LdWidget<LdScaffoldCtrl, LdScaffold, LdScaffoldModel> {
-  // 📦 MEMBRES ESTÀTICS ---------------
-  static final String className = "LdScaffold";
-  
-  // 🧩 MEMBRES ------------------------
-  
-  // 🛠️ CONSTRUCTORS/CLEANERS ---------
-  LdScaffold({ 
-    required super.key, 
-    required super.pView,
-    required String pTitle,
-    String? pSubTitle }) {
-      super.wCtrl = LdScaffoldCtrl(
-        pView: super.view, 
-        pWidget: this,
-        pTitle: pTitle,
-        pSubTitle: pSubTitle,
-      );
-  }
-
-  /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
-  @override String baseTag() => LdScaffold.className;
-
-  /// 📍 'StatefulWidget': Retorna el controlador del Widget.
-  @override
-  LdWidgetCtrl<LdScaffoldCtrl, LdScaffold> createState()  => super.wCtrl;
-
-  // 🪟 GETTERS I SETTERS --------------
-}
-
+/// Controlador del widget 'LdScaffold'.
 class   LdScaffoldCtrl 
-extends LdWidgetCtrl<LdScaffoldCtrl, LdScaffold> {
+extends LdWidgetCtrl<LdScaffold> {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "LdScaffoldCtrl";
   
   // 🧩 MEMBRES ------------------------
-  final LdAppBar _appBar;
+  final OnceSet<LdAppBar> _appBar = OnceSet<LdAppBar>();
+  final FullSet<Widget>   _body   = FullSet<Widget>();
   
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   LdScaffoldCtrl({ 
     required super.pView, 
     required super.pWidget,
     String? pTag,
+    String? pAppBarTag,
     required String pTitle,
-    String? pSubTitle })
-    : _appBar = LdAppBar(
+    String? pSubTitle,
+    required Widget pBody }) {
+      _body.set(pBody);	
+      _appBar.set(LdAppBar(
         key:       null, 
-        pView:     pView, 
+        pTag:      pAppBarTag,
+        pView:     view, 
         pTitle:    pTitle, 
         pSubTitle: pSubTitle,
-      );
+      )
+    );
+  }
 
   /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
   @override String baseTag() => LdScaffoldCtrl.className;
@@ -68,7 +48,6 @@ extends LdWidgetCtrl<LdScaffoldCtrl, LdScaffold> {
   @override
   void onDispose() {
     Debug.info("[$tag.onDispose()]: Instància completament eliminada.");
-    super.onDispose();
   }
   
   /// 📍 'LdCtrlLifecycleIntf': Equivalent a deactivate
@@ -80,7 +59,7 @@ extends LdWidgetCtrl<LdScaffoldCtrl, LdScaffold> {
   /// 📍 'LdCtrlLifecycleIntf': Equivalent a initState
   @override
   void onInit() {
-    Debug.info("[$tag.onInit()]: Instància insertada a l'arbre.");
+    Debug.info("[$tag.onInit()]: Instància inserida a l'arbre.");
   }
 
   /// 📍 'LdCtrlLifecycleIntf': Equivalent a didChangeDependencies
@@ -92,7 +71,7 @@ extends LdWidgetCtrl<LdScaffoldCtrl, LdScaffold> {
   /// 📍 'LdCtrlLifecycleIntf': Opcional, notifica quan la vista ha estat construïda.
   @override
   void onRendered(BuildContext pBCtx) {
-    Debug.info("[$tag.onInit()]: Instància insertada a l'arbre.");
+    Debug.info("[$tag.onInit()]: Instància inserida a l'arbre.");
   }
 
 
@@ -100,7 +79,7 @@ extends LdWidgetCtrl<LdScaffoldCtrl, LdScaffold> {
   @override
   void onWidgetUpdated(covariant LdScaffold pOldWidget) {
     widget = pOldWidget;
-    Debug.info("[$tag.onInit()]: Instància insertada a l'arbre.");
+    Debug.info("[$tag.onInit()]: Instància inserida a l'arbre.");
   }
   
   // ⚙️📍 FUNCIONALITAT ----------------
@@ -108,10 +87,11 @@ extends LdWidgetCtrl<LdScaffoldCtrl, LdScaffold> {
   @override
   Widget buildWidget(BuildContext pBCtx) 
     => Scaffold(
-        key: null,      
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight + 20.0),
-          child: _appBar,
-        ),
+      key: null,      
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 20.0),
+        child: _appBar.get(),
+      ),
+      body: _body.get(),
     );
 }

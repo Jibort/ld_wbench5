@@ -4,8 +4,9 @@
 
 import 'dart:async';
 
-import 'package:ld_wbench5/03_core/ld_model.dart';
 import 'package:ld_wbench5/03_core/streams/stream_envelope.dart';
+
+import '../ld_model.dart';
 
 /// Administrador d'un stream pels seus oïdors.
 mixin StreamEmitterMixin<E extends StreamEnvelope<M>, M extends LdModel> {

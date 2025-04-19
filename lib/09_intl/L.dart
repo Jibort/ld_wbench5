@@ -3,17 +3,26 @@
 // CreatedAt: 2025/04/08 dt. JIQ
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/09_intl/ca.dart';
-import 'package:ld_wbench5/09_intl/en.dart';
-import 'package:ld_wbench5/09_intl/es.dart';
+import 'package:ld_wbench5/03_core/ld_model.dart';
+import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
+import 'package:ld_wbench5/03_core/mixins/stream_emitter_mixin.dart';
+import 'package:ld_wbench5/03_core/streams/stream_envelope.dart';
+import 'package:ld_wbench5/09_intl/events/lang_changed_event.dart';
+
+import 'ca.dart';
+import 'en.dart';
+import 'es.dart';
 import 'package:ld_wbench5/10_tools/ld_map.dart';
-import 'package:ld_wbench5/10_tools/only_once.dart';
+import 'package:ld_wbench5/10_tools/once_set.dart';
 
 /// Gestor per a l'ús de diferents llengües dins l'aplicació.
-class L {
+class L 
+with  StreamEmitterMixin<StreamEnvelope<LdModel>, LdModel> {
   // 📦 MEMBRES ESTÀTICS ---------------
+  static final L single = L();
   static final String className = "L";
-  static final OnlyOnce<Locale> _devLocale = OnlyOnce<Locale>();
+  static final String tag = LdTagBuilder.newServiceTag(className);
+  static final OnceSet<Locale> _devLocale = OnceSet<Locale>();
   static Locale? _currLocale;
   static Dict?   _currDict;
 
@@ -66,8 +75,14 @@ class L {
     if (!_dicts.containsKey(code)) {
       code = 'en';
     }
+    Locale? old = L._currLocale;
     _currLocale = Locale(code);
     _currDict = _dicts[code]!;
+
+    single.send(LangChangedEvent(
+      pSrc: tag, 
+      oldLocale: old,
+      newLocale: _currLocale!));
   }
 
   /// Retorna la traducció de l'etiqueta especificada en la llengua actual.

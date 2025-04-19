@@ -2,16 +2,16 @@
 // Encapçulament de tots els missatges enviats a través d'un stream.
 // CreatedAt: 2025/04/12 ds. JIQ
 
-import 'package:ld_wbench5/03_core/ld_model.dart';
-import 'package:ld_wbench5/10_tools/date_times.dart';
-import 'package:ld_wbench5/10_tools/null_mang.dart';
+import '../ld_model.dart';
+import '../../10_tools/date_times.dart';
+import '../../10_tools/null_mang.dart';
 
 class StreamEnvelope<M extends LdModel> {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "StreamEnvelope";
   
   // 🧩 MEMBRES ------------------------
-  final DateTime     sentAt = DateTime.now();
+  final DateTime     _sentAt = DateTime.now();
   final String       _srcTag;
   final List<String> _tgtTags;
   final M?           _model;
@@ -26,6 +26,7 @@ class StreamEnvelope<M extends LdModel> {
     _model = pModel;
 
   // 🪟 GETTERS I SETTERS --------------
+  DateTime         get sentAt   => _sentAt;
   String           get srcTag   => _srcTag;
   List<String>     get tgtTags  => _tgtTags;
   Iterator<String> get iterTgts => _tgtTags.iterator;
@@ -63,6 +64,6 @@ class StreamEnvelope<M extends LdModel> {
     source:  $_srcTag
     targets: ${(isEmpty(tgtTags))? "Tothom": tgtTags.toString()}
     model:   ${(isNull(_model))? "Desconegut": _model!.baseTag}
-    what:    ${(isNull(_model))? "[!?]": _model!.toStr()}
+    what:    ${(isNull(_model))? "[!?]": _model!.toJson()}
   """;
 }

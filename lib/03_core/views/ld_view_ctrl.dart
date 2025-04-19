@@ -3,48 +3,52 @@
 // CreatedAt: 2025/04/07 dl. JIQ
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/03_core/interfaces/ld_ctrl_lifecicle.dart';
-import 'package:ld_wbench5/03_core/ld_ctrl.dart';
-import 'package:ld_wbench5/03_core/views/ld_view.dart';
-import 'package:ld_wbench5/03_core/views/ld_view_model.dart';
+import 'package:ld_wbench5/03_core/interfaces/ld_ctrl_intf.dart';
+import 'package:ld_wbench5/03_core/interfaces/ld_view_intf.dart';
+import 'package:ld_wbench5/03_core/mixins/ld_tag_mixin.dart';
+import 'package:ld_wbench5/10_tools/full_set.dart';
+import 'ld_view.dart';
 
 /// Abstracció del controlador per a una pàgina de l'aplicació.
-abstract class LdViewCtrl<
-  C extends LdViewCtrl<C, V, M>, 
-  V extends LdView<C, V, M>,
-  M extends LdViewModel>  
-extends    LdCtrl<V> 
-implements LdCtrlLifecycleIntf<V> {
+abstract   class LdViewCtrl<W extends LdViewIntf>
+extends    State<W>
+with       LdTagMixin 
+implements LdCtrlIntf {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "LdViewCtrl";
   
   // 🧩 MEMBRES ------------------------
-  V _view;
+  final FullSet<LdView> _view = FullSet<LdView>();
 
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
-  LdViewCtrl({ required V pView, super.pTag })
-  : _view = pView;
+  /// Constructor base per a la classe.
+  LdViewCtrl({ required LdView pView, String? pTag }) {
+    _view.set(pView);
+    registerTag(pTag: pTag, pInst: this);
+  }
 
-  /// 📍 'LdCtrlLifecycleIntf': Called when this object is inserted into the tree.
+  /// 📍 'LdCtrlIntf': Es crida quan s'ha d'allibera l'objecte.
   @override 
   @mustCallSuper
   void onDispose() {
-    super.onDispose();
-    super.dispose();
+    
   }
 
   // 🪟 GETTERS I SETTERS --------------
-  V get view        => _view;
-  set view(V pView) => _view = pView;
-  LdViewModel get model  => _view.model;
-  LdViewCtrl  get ctrl   => _view.ctrl;
+  /// Retorna la vista on pertany el controlador.
+  LdView get view => _view.get()!;
+  /// Estableix la vista on pertany el controlador.
+  set view(LdView pView) => _view.set(pView);
 
+  /// Retorna el model de la vista on pertany el controlador.
+  LdViewModel get model => view.vModel;
+  
   // ♻️ CLICLE DE VIDA ----------------
   /// 📍 'State': Called when this object is inserted into the tree.
   @override
   void initState() {
-    super.initState();
     onInit();
+    super.initState();
   }
 
   /// 📍 'State': Called when a dependency of this [State] object changes.
@@ -56,10 +60,9 @@ implements LdCtrlLifecycleIntf<V> {
 
   /// 📍 'State': Called whenever the widget configuration change.
   @override
-  void didUpdateWidget(covariant V pOldWidget) {
+  void didUpdateWidget(W pOldWidget) {
     super.didUpdateWidget(pOldWidget);
     onWidgetUpdated(pOldWidget);
-    // Debug.fatal("$tag.didUpdateWidget() No està previst en l'aplicació!", null);
   }
 
   @override
@@ -81,5 +84,7 @@ implements LdCtrlLifecycleIntf<V> {
   // ⚙️📍 FUNCIONALITAT ----------------
   /// Creació de tot l'arbre de components de la pàgina.
   Widget buildView(BuildContext pBCtx);
+
+  @override void setState(void Function() pChanges)  => super.setState(pChanges);
 }
 

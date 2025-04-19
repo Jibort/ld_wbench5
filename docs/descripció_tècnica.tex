@@ -1,0 +1,157 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[catalan]{babel}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{ulem}
+\usepackage{etoolbox}
+\usepackage{listings}
+\usepackage[table]{xcolor}
+\definecolor{lightgray}{rgb}{0.9, 0.9, 0.9}
+\usepackage{float}
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  columns=flexible
+}
+
+\linespread{1.0}
+\setlength{\parskip}{0.5ex} 
+
+\setlength{\LTleft}{-30pt}  % Permet que la taula comenci 20pt a l'esquerra del marge
+\setlength{\LTright}{-30pt}  % Permet que la taula s'estengui 20pt a la dreta del marge
+
+% Reduir el tamany de la font o ajustar les columnes
+\AtBeginEnvironment{longtable}{\scriptsize}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% Establim la mida de font per a totes les taules
+\AtBeginEnvironment{longtable}{\footnotesize}
+
+\title{Descripció tècnica de classes}
+\author{Jordi Ibort Quintana}
+\date{2025/04/15 dt.}
+
+\begin{document}
+
+\maketitle
+
+\section{Descripció tècnica de classes}
+
+\subsection{Interfície `LdDisposableIntf'}
+\begin{itemize}
+    \item \underline{Localització}: lib/03\_core/interfaces/ld\_disposable\_intf.dart
+    \item \underline{Descripció}: Interfície per a les classes que requereixen de la implementació del mètode `dispose()'.
+\end{itemize}
+
+\rowcolors{2}{lightgray}{white}
+\begin{longtable}{@{}L{1.25cm}L{4.5cm}L{9.5cm}@{}}
+\toprule
+\textbf{Tipus} & \textbf{Element} & \textbf{Descripció} \\
+\midrule
+Abstracte & void \textbf{dispose}() & Allibera els recursos fets servir per la classe.\\
+\bottomrule
+\end{longtable}
+
+\subsection{Interface `LdTagIntf'}
+\begin{itemize}
+    \item \underline{Localització}: lib/03\_core/intf/ld\_tag\_intf.dart
+    \item \underline{Descripció}: Interfície funcional pels objectes amb identificador únic 'tag'.
+\end{itemize}
+
+\rowcolors{2}{lightgray}{white}
+\begin{longtable}{@{}L{1.25cm}L{4.5cm}L{8.75cm}@{}}
+\toprule
+\textbf{Tipus} & \textbf{Element} & \textbf{Descripció} \\
+\midrule
+Abstracte & String get \textbf{tag} & Retorna el tag únic de l'objecte. \\
+Abstracte & set \textbf{tag}(String pTag)  & Estableix el tag únic de l'objecte.  \\
+Abstracte  & void String \textbf{baseTag}() & Retorna la base del tag a fer servir en cas que no es proporcioni cap. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Mixin `LdTagMixin'}
+\begin{itemize}
+    \item \underline{Localització}: lib/03\_core/mixin/ld\_tag\_mixin.dart
+    \item \underline{Implementa}: LdDisposableIntf
+    \item \underline{Descripció}: Mixin per a la gestió dels tag únic de cada instància de classe.
+\end{itemize}
+
+\rowcolors{2}{lightgray}{white}
+\begin{longtable}{@{}L{1.25cm}L{4.5cm}L{8.75cm}@{}}
+\toprule
+\textbf{Tipus} & \textbf{Element} & \textbf{Descripció} \\
+\midrule
+Getter & String get \textbf{tag} & Retorna el \textit{tag} únic de l'objecte. \\
+Setter & set \textbf{tag} (String \textit{pTag}) & Estableix el tag únic de l'objecte. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Classe `LdTagBuilder'}
+\begin{itemize}
+    \item \underline{Localització}: lib/03\_core/ld\_tag\_builder.dart
+    \item \underline{Descripció}: Responsable de formar tags únics correctes per a les instàncies de les classes.
+\end{itemize}
+
+\rowcolors{2}{lightgray}{white}
+\begin{longtable}[H]
+\begin{tabular}{@{}L{1.25cm}L{4.5cm}L{8.75cm}@{}}
+\toprule
+\textbf{Tipus} & \textbf{Element} & \textbf{Descripció} \\
+\midrule
+Estàtic & String \textbf{newViewTag}(String pTag) & Retorna el següent tag únic per a vistes. \\
+Estàtic & String \textbf{newWidgetTag}(String pTag) & Retorna el següent tag únic per a widgets. \\
+Estàtic & String \textbf{newModelTag}(String pTag) & Retorna el següent tag únic per a models. \\
+Estàtic & String \textbf{newCtrlTag}(String pTag) & Retorna el següent tag únic per a controladors. \\
+\bottomrule
+\end{tabular}
+\end{longtable}
+
+\subsection{Classe `LdMap\texorpdfstring{$<$T$>$}{<T>}'}
+\begin{itemize}
+    \item \underline{Localització}: lib/10\_tools/ld\_map.dart
+    \item \underline{Descripció}: Generalització d'un mapa amb clau String i valor del tipus especificat `T'.
+\end{itemize}
+
+\rowcolors{2}{lightgray}{white}
+\begin{longtable}[H]{@{}L{1.25cm}L{4.5cm}L{8.75cm}@{}}
+\toprule
+\textbf{Tipus} & \textbf{Element} & \textbf{Descripció} \\
+\midrule
+@map & @ T? operator \textbf{[]}(Object? key) & Equivalent a l'operador `[]' de la classe \textit{map}. \\
+@map & @ operator \textbf{[]=}(String key, T value) & Equivalent a l'operador `[]=' de la classe \textit{map}. \\
+@map & @ \textbf{addAll}(Map$<$String, T$>$ other) & Equivalent al mètode \textit{addAll()} de la classe \textit{map}. \\
+Funció & LdMap$<$T$>$ \textbf{addAllAndBack} (Map$<$String, T$>$ other) & Equivalent a addAll() però retornant la instància de \textit{LdMap}. \\
+@map & @ \textbf{addEntries} (Iterable$<$MapEntry$<$String, T$>>$ newEntries) & Equivalent al mètode \textit{addEntries()} de la classe \textit{map}. \\
+@map & @ Map$<$RK, RV$>$ \textbf{cast}$<$RK, RV$>$ & Equivalent al mètode \textit{cast()} de la classe \textit{map}. \\
+@map & @ void \textbf{clear}() & Equivalent al mètode \textit{clear()} de la classe \textit{map}. \\
+... & \textbf{... resta de la classe \textit{map}} & \\
+\bottomrule
+\end{longtable}
+
+\subsection{Classe `LdBindings$<$T$>$'}
+\begin{itemize}
+    \item \underline{Localització}: lib/03\_core/ld\_bindings.dart
+    \item \underline{Descripció}: Repositori d'instàncies 'LdTagMixin' com a dependències disponibles.
+\end{itemize}
+
+\rowcolors{2}{lightgray}{white}
+\begin{table}[H]
+\footnotesizes
+\begin{tabular}{@{}L{1.25cm}L{4.5cm}L{8.75cm}@{}}
+\toprule
+\textbf{Tipus} & \textbf{Element} & \textbf{Descripció} \\
+\midrule
+Estàtic & String \textbf{newViewTag}(String pTag) & Retorna el següent tag únic per a vistes. \\
+Estàtic & String \textbf{newWidgetTag}(String pTag) & Retorna el següent tag únic per a widgets. \\
+Estàtic & String \textbf{newModelTag}(String pTag) & Retorna el següent tag únic per a models. \\
+Estàtic & String \textbf{newCtrlTag}(String pTag) & Retorna el següent tag únic per a controladors. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

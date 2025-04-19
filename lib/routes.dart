@@ -3,9 +3,9 @@
 // CreatedAt: 2025/04/08 dt. JIQ
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/01_pages/test/ld_test_01.dart';
-import 'package:ld_wbench5/03_core/app/sabina_app.dart';
-import 'package:ld_wbench5/10_tools/ld_map.dart';
+import '01_pages/test/ld_test_01.dart';
+import '03_core/app/sabina_app.dart';
+import '10_tools/ld_map.dart';
 
 const rootPage = "/";
 

@@ -5,11 +5,11 @@
 
 import 'dart:async';
 
-import 'package:ld_wbench5/03_core/ld_model.dart';
-import 'package:ld_wbench5/03_core/streams/stream_envelope.dart';
+import '../ld_model.dart';
+import '../streams/stream_envelope.dart';
 
 /// Oïdor de sobres d'un emissor d'stream.
-mixin StreamListenerMixin<E extends StreamEnvelope<M>, M extends LdModel> {
+mixin StreamReceiverMixin<E extends StreamEnvelope<M>, M extends LdModel> {
   // 🧩 MEMBRES ------------------------
   late final StreamSubscription<E>? sLstn;
 
