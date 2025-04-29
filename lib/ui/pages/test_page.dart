@@ -1,30 +1,34 @@
 // test_page.dart
 // Pàgina de prova que mostra la implementació simplificada
-// Created: 2025/04/29
+// Created: 2025/04/29 DT. CLA[JIQ]
 
+// lib/ui/pages/test_page.dart
 import 'package:flutter/material.dart';
 
-import 'package:ld_wbench5/core/base_page.dart';
+import 'test_page_model.dart';
+import 'package:ld_wbench5/core/ld_page.dart';
 import 'package:ld_wbench5/core/event_system.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/services/localization_service.dart';
+import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'test_page_model.dart';
+import 'package:ld_wbench5/ui/widgets/sabina_app_bar.dart';
+import 'package:ld_wbench5/ui/widgets/sabina_button.dart';
+import 'package:ld_wbench5/ui/widgets/sabina_scaffold.dart';
+
 
 /// Pàgina de prova que mostra la nova arquitectura simplificada
-class TestPage extends SabinaPage {
+class TestPage extends LdPage {
   /// Constructor
-  TestPage({Key? key}) 
+  TestPage({super.key}) 
     : super(
-        key: key,
-        tag: 'TestPage',
-        controller: TestPageController(),
+        pTag: 'TestPage',
+        ctrl: TestPageController(),
       );
 }
 
 /// Controlador per a la pàgina de prova
-class TestPageController extends SabinaPageController<TestPage> {
+class TestPageController extends LdPageCtrl<TestPage> {
   /// Model de dades de la pàgina
   late final TestPageModel model;
   
@@ -39,8 +43,7 @@ class TestPageController extends SabinaPageController<TestPage> {
   
   @override
   void update() {
-    // Aquest mètode es crida quan canvien les dependències
-    // No necessitem fer res aquí per ara
+    // No cal fer res de moment
   }
   
   @override
@@ -52,7 +55,7 @@ class TestPageController extends SabinaPageController<TestPage> {
   }
   
   @override
-  void onEvent(SabinaEvent event) {
+  void onEvent(LdEvent event) {
     Debug.info("$tag: Event rebut: ${event.type}");
     
     // Actualitzar model quan canvia l'idioma
@@ -67,47 +70,69 @@ class TestPageController extends SabinaPageController<TestPage> {
   void changeLanguage() {
     Debug.info("$tag: Canviant idioma");
     L.toggleLanguage();
+    
   }
   
   /// Canvia el tema entre clar i fosc
   void changeTheme() {
     Debug.info("$tag: Canviant tema");
-    ThemeService.instance.toggleTheme();
+    ThemeService.inst.toggleTheme();
   }
   
   @override
   Widget buildPage(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(model.title),
-            if (model.subtitle != null)
-              Text(
-                model.subtitle!,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white,
-                ),
-              ),
-          ],
+    return SabinaScaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: SabinaAppBar(
+          title: model.title,
         ),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: changeLanguage,
-              child: Text(L.sChangeLanguage.tx),
-            ),
+            // Subtítol
+            if (model.subtitle != null)
+              Text(
+                model.subtitle!,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            
             const SizedBox(height: 16),
-            ElevatedButton(
+            
+            // Mostrar comptador
+            Text(
+              'Comptador: ${model.counter}',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Botó per canviar idioma
+            SabinaButton(
+              text: L.sChangeLanguage.tx,
+              onPressed: changeLanguage,
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Botó per canviar tema
+            SabinaButton(
+              text: L.sChangeTheme.tx,
               onPressed: changeTheme,
-              child: Text(L.sChangeTheme.tx),
+              backgroundColor: Theme.of(context).colorScheme.secondary,
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Debug.info("$tag: Botó flotant premut");
+          // Incrementar el comptador
+          model.incrementCounter();
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

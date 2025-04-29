@@ -1,57 +1,64 @@
-// base_page.dart
+// ld_page.dart
 // Pàgina base simplificada per a l'aplicació
 // Created: 2025/04/29 dt. CLA[JIQ]
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import 'package:ld_wbench5/core/taggable_mixin.dart';
+import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/lifecycle_interface.dart';
 import 'package:ld_wbench5/core/event_system.dart';
-import 'package:ld_wbench5/core/base_model.dart';
+import 'package:ld_wbench5/core/ld_base_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
+import 'package:ld_wbench5/utils/once_set.dart';
 
 /// Pàgina base que proporciona funcionalitats comunes
-abstract class SabinaPage extends StatefulWidget with LdTaggable {
+abstract class LdPage
+extends  StatefulWidget
+with     LdTaggableMixin {
   /// Controlador de la pàgina
-  final SabinaPageController controller;
+  final LdPageCtrl ctrl;
   
   /// Crea una nova pàgina base
-  SabinaPage({
+  LdPage({
     super.key, 
-    String? tag,
-    required this.controller
-  }) {
-    if (tag != null) setTag(tag);
-    controller.page = this;
+    String? pTag,
+    required this.ctrl })
+  { if (pTag != null) tag = pTag;
+    ctrl.page = this;
   }
   
   @override
-  State<SabinaPage> createState() => controller;
+  State<LdPage> createState() => ctrl;
 }
 
 /// Controlador base per a les pàgines
-abstract class SabinaPageController<T extends SabinaPage> extends State<T> 
-    with LdTaggable implements LdLifecycle, ModelObserver {
-  
+abstract   class LdPageCtrl<T extends LdPage>
+extends    State<T> 
+with       LdTaggableMixin
+implements LdLifecycle, LdModelObserver {
   /// Referència a la pàgina
-  late T page;
-  
+  final OnceSet<T> _page = OnceSet<T>();
+  /// Retorna la referència a la pàgina del controlador.
+  T get page => _page.get();
+  /// Estableix la referència a la pàgina del controlador.
+  set page(T pPage) => _page.set(pPage);
+
   /// Subscripció als events de l'aplicació
-  StreamSubscription? _eventSubscription;
+  StreamSubscription? _subcEvent;
   
   /// Inicialitza el controlador
   @override
   void initState() {
     super.initState();
-    setTag('${page.tag}_Controller');
-    _eventSubscription = EventBus().events.listen(_handleEvent);
+    tag = '${page.tag}_Ctrl';
+    _subcEvent = EventBus().events.listen(_handleEvent);
     initialize();
     Debug.info("$tag: Controlador inicialitzat");
   }
   
   /// Processa un event rebut
-  void _handleEvent(SabinaEvent event) {
+  void _handleEvent(LdEvent event) {
     if (event.isTargetedAt(tag)) {
       Debug.info("$tag: Processant event ${event.type}");
       onEvent(event);
@@ -59,7 +66,7 @@ abstract class SabinaPageController<T extends SabinaPage> extends State<T>
   }
   
   /// Mètode a sobreescriure per gestionar events
-  void onEvent(SabinaEvent event);
+  void onEvent(LdEvent event);
   
   /// Actualitza el controlador quan canvien les dependències
   @override
@@ -73,7 +80,7 @@ abstract class SabinaPageController<T extends SabinaPage> extends State<T>
   @override
   void dispose() {
     Debug.info("$tag: Alliberant recursos");
-    _eventSubscription?.cancel();
+    _subcEvent?.cancel();
     super.dispose();
   }
   

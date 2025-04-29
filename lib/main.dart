@@ -16,5 +16,5 @@ void main() {
   Debug.activateAllLevels();
   
   // Iniciar l'aplicació
-  runApp(SabinaApp.instance);
+  runApp(SabinaApp.inst);
 }

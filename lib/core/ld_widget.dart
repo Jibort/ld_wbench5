@@ -1,39 +1,42 @@
-// base_widget.dart
+// ld_widget.dart
 // Widget base simplificat per a l'aplicació
 // Created: 2025/04/29 dt. CLA[JIQ]
 
 import 'dart:async';
 import 'package:flutter/material.dart';
 
-import 'package:ld_wbench5/core/taggable_mixin.dart';
+import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/lifecycle_interface.dart';
 import 'package:ld_wbench5/core/event_system.dart';
-import 'package:ld_wbench5/core/base_model.dart';
+import 'package:ld_wbench5/core/ld_base_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Widget base que proporciona funcionalitats comunes
-abstract class SabinaWidget extends StatefulWidget with LdTaggable {
+abstract class LdWidget
+extends  StatefulWidget 
+with     LdTaggableMixin {
   /// Controlador del widget
-  final SabinaWidgetController controller;
+  final LdWidgetCtrl<LdWidget> ctrl;
   
   /// Crea un nou widget base
-  SabinaWidget({
+  LdWidget({
     super.key, 
-    String? tag,
-    required this.controller
+    String? pTag,
+    required this.ctrl
   }) {
-    if (tag != null) setTag(tag);
-    controller.widget = this;
+    if (pTag != null) tag = pTag;
+    ctrl.widget = this;
   }
   
   @override
-  State<SabinaWidget> createState() => controller;
+  State<LdWidget> createState() => ctrl;
 }
 
 /// Controlador base per als widgets
-abstract class SabinaWidgetController<T extends SabinaWidget> extends State<T> 
-    with LdTaggable implements LdLifecycle, ModelObserver {
-  
+abstract   class LdWidgetCtrl<T extends LdWidget>
+extends    State<T> 
+with       LdTaggableMixin
+implements LdLifecycle, LdModelObserver {
   /// Referència al widget
   @override late T widget;
   
@@ -41,17 +44,16 @@ abstract class SabinaWidgetController<T extends SabinaWidget> extends State<T>
   StreamSubscription? _eventSubscription;
   
   /// Inicialitza el controlador
-  @override
-  void initState() {
+  @override initState() {
     super.initState();
-    setTag('${widget.tag}_Controller');
+    tag = '${widget.tag}_Ctrl';
     _eventSubscription = EventBus().events.listen(_handleEvent);
     initialize();
     Debug.info("$tag: Controlador inicialitzat");
   }
   
   /// Processa un event rebut
-  void _handleEvent(SabinaEvent event) {
+  void _handleEvent(LdEvent event) {
     if (event.isTargetedAt(tag)) {
       Debug.info("$tag: Processant event ${event.type}");
       onEvent(event);
@@ -59,7 +61,7 @@ abstract class SabinaWidgetController<T extends SabinaWidget> extends State<T>
   }
   
   /// Mètode a sobreescriure per gestionar events
-  void onEvent(SabinaEvent event);
+  void onEvent(LdEvent event);
   
   /// Actualitza el controlador quan canvien les dependències
   @override

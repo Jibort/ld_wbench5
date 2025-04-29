@@ -4,27 +4,24 @@
 
 import 'dart:async';
 import 'package:ld_wbench5/utils/debug.dart';
+import 'package:ld_wbench5/utils/full_set.dart';
 
 /// Tipus d'events de l'aplicació
 enum EventType {
   /// Canvi en el tema de l'aplicació
   themeChanged,
-  
   /// Canvi en l'idioma de l'aplicació
   languageChanged,
-  
   /// Canvi en l'estat de l'aplicació (primer pla, fons, etc.)
   applicationStateChanged,
-  
   /// Reconstrucció de la UI
   rebuildUI,
-  
   /// Events personalitzats
-  custom
+  custom,
 }
 
 /// Event bàsic de l'aplicació
-class SabinaEvent {
+class LdEvent {
   /// Tipus d'event
   final EventType type;
   
@@ -32,26 +29,33 @@ class SabinaEvent {
   final Map<String, dynamic> data;
   
   /// Tag de l'emissor de l'event
-  final String? sourceTag;
+  final String? srcTag;
   
   /// Tags dels objectius de l'event (si és buit, l'event és per a tothom)
-  final List<String>? targetTags;
+  final List<String>? tgtTags;
   
+  /// Cert només quan l'event es dóna per consumit.
+  final FullSet<bool> _consumed = FullSet<bool>(pInst: false);
+  /// Cert només quan l'event es dóna per consumit.
+  bool get isConsumed => _consumed.get()!;
+  /// Estableix si l'event està consumit o no ho està.
+  set isConsumed(bool pCons) => _consumed.set(pCons);
+
   /// Crea un nou event
-  SabinaEvent({
+  LdEvent({
     required this.type,
     this.data = const {},
-    this.sourceTag,
-    this.targetTags,
+    this.srcTag,
+    this.tgtTags,
   });
   
   /// Comprova si aquest event està dirigit a un tag específic
   bool isTargetedAt(String tag) => 
-    targetTags == null || targetTags!.isEmpty || targetTags!.contains(tag);
+    tgtTags == null || tgtTags!.isEmpty || tgtTags!.contains(tag);
     
   @override
   String toString() {
-    return 'SabinaEvent(type: $type, source: $sourceTag, targets: $targetTags, data: $data)';
+    return 'SabinaEvent(type: $type, source: $srcTag, targets: $tgtTags, data: $data)';
   }
 }
 
@@ -67,13 +71,13 @@ class EventBus {
   EventBus._();
   
   /// Stream controller per a emetre events
-  final _controller = StreamController<SabinaEvent>.broadcast();
+  final _controller = StreamController<LdEvent>.broadcast();
   
   /// Stream d'events
-  Stream<SabinaEvent> get events => _controller.stream;
+  Stream<LdEvent> get events => _controller.stream;
   
   /// Emet un event a tots els subscriptors
-  void emit(SabinaEvent event) {
+  void emit(LdEvent event) {
     if (!_controller.isClosed) {
       Debug.info("EventBus: Emetent event de tipus ${event.type}");
       _controller.add(event);

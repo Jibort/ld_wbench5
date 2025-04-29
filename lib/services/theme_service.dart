@@ -6,20 +6,26 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import 'package:ld_wbench5/core/taggable_mixin.dart';
+import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/event_system.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/utils/debug.dart';
+import 'package:ld_wbench5/utils/full_set.dart';
 
 /// Servei centralitzat per a la gestió de temes visuals
-class ThemeService with LdTaggable {
+class ThemeService 
+with  LdTaggableMixin {
   /// Instància singleton
-  static final ThemeService _instance = ThemeService._();
-  static ThemeService get instance => _instance;
+  static final ThemeService _inst = ThemeService._();
+  static ThemeService get inst => _inst;
   
   /// Mode del tema actual
-  ThemeMode _themeMode = ThemeMode.system;
-  
+  final FullSet<ThemeMode> _themeMode = FullSet<ThemeMode>(pInst: ThemeMode.system);
+  /// Retorna el mode de tema actual
+  ThemeMode get themeMode => _themeMode.get()!;
+  /// Retorna si el tema actual és fosc
+  set themeMode(ThemeMode pMode) => _themeMode.set(pMode);
+
   /// Flag que indica si el tema actual és fosc
   bool _isDarkMode = false;
   
@@ -28,7 +34,7 @@ class ThemeService with LdTaggable {
   
   /// Constructor privat
   ThemeService._() {
-    setTag('ThemeService');
+    tag = className;
     _initialize();
   }
   
@@ -41,7 +47,7 @@ class ThemeService with LdTaggable {
     _isDarkMode = platformBrightness == Brightness.dark;
     
     // Inicialitzar _themeMode basat en la configuració del sistema
-    _themeMode = _isDarkMode ? ThemeMode.dark : ThemeMode.light;
+    themeMode = _isDarkMode ? ThemeMode.dark : ThemeMode.light;
     
     // Assignar tema inicial
     _currentTheme = _isDarkMode ? darkTheme : lightTheme;
@@ -49,9 +55,6 @@ class ThemeService with LdTaggable {
     // Emetre event inicial
     _notifyThemeChanged(null, _currentTheme);
   }
-  
-  /// Retorna el mode de tema actual
-  ThemeMode get themeMode => _themeMode;
   
   /// Retorna si el tema actual és fosc
   bool get isDarkMode => _isDarkMode;
@@ -69,7 +72,7 @@ class ThemeService with LdTaggable {
   void changeThemeMode(ThemeMode mode) {
     Debug.info("$tag: Canviant mode de tema a ${mode.toString()}");
     
-    _themeMode = mode;
+    _themeMode.set(mode);
     _isDarkMode = (mode == ThemeMode.system)
         ? PlatformDispatcher.instance.platformBrightness == Brightness.dark
         : (mode == ThemeMode.dark);
@@ -85,12 +88,12 @@ class ThemeService with LdTaggable {
   void toggleTheme() {
     Debug.info("$tag: Alternant tema");
     
-    if (_themeMode == ThemeMode.system) {
+    if (themeMode == ThemeMode.system) {
       // Si estem en mode sistema, canviem a fosc o clar depenent de l'actual
       changeThemeMode(_isDarkMode ? ThemeMode.light : ThemeMode.dark);
     } else {
       // Si ja estem en mode manual, alternem entre fosc i clar
-      changeThemeMode(_themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark);
+      changeThemeMode(themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark);
     }
   }
   
@@ -98,9 +101,9 @@ class ThemeService with LdTaggable {
   void _notifyThemeChanged(ThemeData? oldTheme, ThemeData newTheme) {
     Debug.info("$tag: Notificant canvi de tema");
     
-    EventBus().emit(SabinaEvent(
+    EventBus().emit(LdEvent(
       type: EventType.themeChanged,
-      sourceTag: tag,
+      srcTag: tag,
       data: {
         mfIsDarkMode: _isDarkMode,
         mfThemeMode: _themeMode.toString(),

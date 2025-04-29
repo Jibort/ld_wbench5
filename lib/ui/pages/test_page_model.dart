@@ -2,21 +2,25 @@
 // Model de dades per a la pàgina de prova
 // Created: 2025/04/29 dt. CLA[JIQ]
 
-import 'package:ld_wbench5/core/base_model.dart';
+import 'package:ld_wbench5/core/ld_base_model.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Model de dades per a la pàgina de prova
-class TestPageModel extends SabinaModel {
+class   TestPageModel
+extends LdModel {
   /// Títol de la pàgina
   String _title = '';
   
   /// Subtítol de la pàgina
   String? _subtitle;
   
+  /// Comptador de proves
+  int _counter = 0;
+  
   /// Constructor
   TestPageModel() {
-    setTag('TestPageModel');
+    tag = 'TestPageModel';
     _initializeValues();
   }
   
@@ -24,7 +28,8 @@ class TestPageModel extends SabinaModel {
   void _initializeValues() {
     _title = L.sSabina.tx;
     _subtitle = L.sAppSabina.tx;
-    Debug.info("$tag: Model inicialitzat amb títol '$_title' i subtítol '$_subtitle'");
+    _counter = 0;
+    Debug.info("$tag: Model inicialitzat amb títol '$_title', subtítol '$_subtitle' i comptador $_counter");
   }
   
   /// Obté el títol de la pàgina
@@ -51,6 +56,17 @@ class TestPageModel extends SabinaModel {
         Debug.info("$tag: Subtítol actualitzat a '$_subtitle'");
       });
     }
+  }
+  
+  /// Obté el comptador
+  int get counter => _counter;
+  
+  /// Incrementa el comptador
+  void incrementCounter() {
+    notifyListeners(() {
+      _counter++;
+      Debug.info("$tag: Comptador incrementat a $_counter");
+    });
   }
   
   /// Actualitza els textos segons l'idioma actual

@@ -1,30 +1,31 @@
-// base_model.dart
+// ld_base_model.dart
 // Model base simplificat per a l'aplicació
 // Created: 2025/04/29 dt. CLA[JIQ]
 
-import 'package:ld_wbench5/core/taggable_mixin.dart';
+import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Interfície per a comunicar canvis en el model
-abstract class ModelObserver {
+abstract class LdModelObserver {
   /// Notifica que el model ha canviat
-  void onModelChanged(void Function() updateFunction);
+  void onModelChanged(void Function() pfUpdate);
 }
 
 /// Model base que proporciona funcionalitat de notificació de canvis
-class SabinaModel with LdTaggable {
+class LdModel 
+with  LdTaggableMixin {
   /// Observador opcional associat per actualitzar la UI
-  ModelObserver? _observer;
+  LdModelObserver? _obs;
   
   /// Vincula un observador a aquest model per a les actualitzacions d'UI
-  void attachObserver(ModelObserver observer) {
-    _observer = observer;
+  void attachObserver(LdModelObserver pObs) {
+    _obs = pObs;
     Debug.info("$tag: Observador assignat");
   }
   
   /// Desvincula l'observador
   void detachObserver() {
-    _observer = null;
+    _obs = null;
     Debug.info("$tag: Observador desvinculat");
   }
   
@@ -34,8 +35,8 @@ class SabinaModel with LdTaggable {
     action();
     
     // Si hi ha un observador, notifica-li del canvi
-    if (_observer != null) {
-      _observer!.onModelChanged(() {});
+    if (_obs != null) {
+      _obs!.onModelChanged(() {});
       Debug.info("$tag: Canvi notificat a l'observador");
     } else {
       Debug.info("$tag: Canvi en el model sense observador");
@@ -44,7 +45,7 @@ class SabinaModel with LdTaggable {
   
   /// Allibera els recursos del model
   void dispose() {
-    _observer = null;
+    _obs = null;
     Debug.info("$tag: Model alliberat");
   }
   
