@@ -4,18 +4,18 @@
 
 import 'package:flutter/material.dart';
 
-import 'ld_test_01.dart';
+import 'package:ld_wbench5/03_core/abstraction/ld_view_abs.dart';
+import 'package:ld_wbench5/03_core/views/ld_view_ctrl_abs.dart';
 import 'package:ld_wbench5/02_widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/02_widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
-import 'package:ld_wbench5/03_core/views/ld_view_ctrl.dart';
-import 'package:ld_wbench5/08_theme/ld_theme.dart';
+import 'package:ld_wbench5/08_theme/ld_theme_serv.dart';
 import 'package:ld_wbench5/09_intl/L.dart';
 import 'package:ld_wbench5/10_tools/debug.dart';
 
 /// Controlador específic de la vista de proves 'LdTest01'.
 class   LdTest01Ctrl
-extends LdViewCtrl<LdTest01> {
+extends LdViewCtrlAbs {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "LdTest01Ctrl";
 
@@ -26,7 +26,12 @@ extends LdViewCtrl<LdTest01> {
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   /// Constructor bàsic del controlador de la vista 'LdTest01'.
   LdTest01Ctrl({ 
-    required super.pView, super.pTag });
+    required super.pView,    
+    super.pTag
+  });
+
+  // 🪟 GETTERS I SETTERS --------------
+
 
   /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
   @override String baseTag() => LdTest01Ctrl.className;
@@ -34,7 +39,7 @@ extends LdViewCtrl<LdTest01> {
   // ♻️ CLICLE DE VIDA ----------------
   /// 📍 'LdCtrlLifecycleIntf': Called when this object is inserted into the tree.
   @override
-  void onInit() {
+  void onInitState() {
     _tagBtnLang  = LdTagBuilder.newWidgetTag("btnLang");
     _tagBtnTheme = LdTagBuilder.newWidgetTag("btnTheme");
     Debug.info("[$tag.onInit()]: Instància inserida a l'arbre.");
@@ -66,10 +71,9 @@ extends LdViewCtrl<LdTest01> {
     Debug.info("[$tag.onInit()]: Instància inserida a l'arbre.");
   }
   
-  /// 📍 'LdCtrlLifecycleIntf': Equivalent a didUpdateWidget
+  /// 📍 'LdCtrlLifecycleIntf': cridat des de 'didUpdateWidget' de la vista.
   @override
-  void onWidgetUpdated(LdTest01 pOldView) {
-    view = pOldView;
+  void onInstanceUpdated(LdViewAbs pOldView) {
   }
   
   /// 📍 'LdViewCtrl': Descripció explícita de l'arbre de widgets de la pàina 'LdTest01'.
@@ -102,13 +106,12 @@ extends LdViewCtrl<LdTest01> {
               pView: view,
               text: "Canvia el Tema",
               onPressed: () {
-                ThemeMode mode = LdTheme.single.themeMode;
-                LdTheme.single.changeThemeMode((mode == ThemeMode.dark)?ThemeMode.light: ThemeMode.dark);
+                ThemeMode mode = LdThemeServ.single.themeMode;
+                LdThemeServ.single.changeThemeMode((mode == ThemeMode.dark)?ThemeMode.light: ThemeMode.dark);
               },
             ),
           ],
         )
       )
     );
-
 }

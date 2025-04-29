@@ -2,19 +2,26 @@
 // Controlador del widget  'LdButton'.
 // CreatedAt: 2025/04/18 dv. JIQ
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:ld_wbench5/02_widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/02_widgets/ld_button/ld_button_model.dart';
-import 'package:ld_wbench5/03_core/ld_model.dart';
-import 'package:ld_wbench5/03_core/streams/stream_envelope.dart';
-import 'package:ld_wbench5/03_core/widgets/ld_widget.dart';
+import 'package:ld_wbench5/03_core/abstraction/ld_widget_abs.dart';
+import 'package:ld_wbench5/03_core/interfaces/ld_stream_listener_intf.dart';
+import 'package:ld_wbench5/03_core/mixins/stream_emitter_mixin.dart';
+import 'package:ld_wbench5/03_core/event/stream/stream_event.dart';
+import 'package:ld_wbench5/03_core/widgets/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/10_tools/conversions.dart';
 
 /// Controlador del widget  'LdButton'.
 /// 🎮 Controlador per al LdButton
-class   LdButtonCtrl 
-extends LdWidgetCtrl<LdButton> {
+class   LdButtonCtrl
+extends LdWidgetCtrlAbs {
+  static final String className = "LdButtonCtrl";
+
   // 🧩 MEMBRES ------------------------
         bool               isPrimary;
   final VoidCallback?      onPressed;
@@ -66,7 +73,8 @@ extends LdWidgetCtrl<LdButton> {
     : padding = pPadding ?? EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 8.0.h);
     
   // 🪟 GETTERS I SETTERS --------------
-  @override LdButton get widget => super.widget;
+  @override LdButton      get widget => super.widget as LdButton;
+  @override LdButtonModel get model  => super.model as LdButtonModel;
 
   @override
   void initState() {
@@ -104,7 +112,7 @@ extends LdWidgetCtrl<LdButton> {
   void setIsPrimary(bool pValue)
   => (isPrimary != pValue)? setState(() => isPrimary = pValue): null;
 
-  void listened(StreamEnvelope<LdModel> pEnvelope) {
+  void listened(StreamEvent pEnvelope) {
     // Implementació futura
   }
 
@@ -208,7 +216,7 @@ extends LdWidgetCtrl<LdButton> {
   }
 
   @override
-  String baseTag() => "LdButtonCtrl";
+  String baseTag() => className;
 
   @override
   Widget buildWidget(BuildContext pBCtx) {
@@ -232,7 +240,7 @@ extends LdWidgetCtrl<LdButton> {
   }
 
   @override
-  void onInit() {
+  void onInitState() {
     // TODO: implement onInit
   }
 
@@ -241,8 +249,34 @@ extends LdWidgetCtrl<LdButton> {
     // TODO: implement onRendered
   }
 
+  // @override
+  // void onWidgetUpdated(covariant StatefulWidget pOldWidget) {
+  //   // TODO: implement onWidgetUpdated
+  // }
+
   @override
-  void onWidgetUpdated(covariant StatefulWidget pOldWidget) {
-    // TODO: implement onWidgetUpdated
+  void cancelAllSubscriptions() {
+    // TODO: implement cancelAllSubscriptions
+  }
+
+  @override
+  void disposeSubscriptions() {
+    // TODO: implement disposeSubscriptions
+  }
+
+  @override
+  void onInstanceUpdated(covariant LdWidgetAbs pOldWidget) {
+    // TODO: implement onInstanceUpdated
+  }
+
+  @override
+  StreamSubscription subscribeToEmitter(StreamEmitterMixin pCtrl, LdStreamListenerAbs pLstn) {
+    // TODO: implement subscribeToEmitter
+    throw UnimplementedError();
+  }
+
+  @override
+  void unsubscribeFromEmitter(LdStreamListenerAbs pLstn) {
+    // TODO: implement unsubscribeFromEmitter
   }
 }

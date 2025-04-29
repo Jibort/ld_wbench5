@@ -11,13 +11,13 @@ import 'ld_disposable_intf.dart';
 abstract class LdCtrlIntf<W extends StatefulWidget>
 extends  LdDisposableIntf {
   /// Equivalent a initState
-  void onInit();
+  void onInitState();
 
   /// Equivalent a didChangeDependencies
   void onDependenciesResolved();
 
   /// Equivalent a didUpdateWidget
-  void onWidgetUpdated(covariant W pOldWidget);
+  void onInstanceUpdated(covariant W pOldWidget);
 
   /// Opcional: notifica quan la vista ha estat construïda.
   void onRendered(BuildContext pBCtx);

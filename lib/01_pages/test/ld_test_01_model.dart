@@ -1,4 +1,4 @@
-// ld_test_01_model.dart
+// ld_test_01_model_abs.dart
 // Model de dades per a la pàgina de proves 'LdTest01'.
 // CreatedAt: 2025/02/08 dt. JIQ
 
@@ -6,12 +6,12 @@ import 'dart:convert';
 
 import 'package:ld_wbench5/10_tools/ld_map.dart';
 
-import 'package:ld_wbench5/03_core/views/ld_view_model.dart';
+import 'package:ld_wbench5/03_core/views/ld_view_model_abs.dart';
 import 'package:ld_wbench5/09_intl/L.dart';
 
 /// Model de dades per a la pàgina de proves 'LdTest01'.
 class   LdTest01Model
-extends LdViewModel {
+extends LdViewModelAbs {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "LdTest01Model";
   

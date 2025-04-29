@@ -16,6 +16,8 @@ implements Map<String, T> {
     if (pMap != null) _map.addAll(pMap);
   }
 
+  LdMap.empty();
+
   // 🌥️ 'Map' -------------------------
   @override T? operator [](Object? key) => _map[key];
   @override operator []=(String key, T value) 

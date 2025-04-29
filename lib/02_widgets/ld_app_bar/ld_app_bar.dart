@@ -6,14 +6,14 @@ import 'dart:async';
 
 import 'package:ld_wbench5/02_widgets/ld_app_bar/ld_app_bar_ctrl.dart';
 import 'package:ld_wbench5/02_widgets/ld_app_bar/ld_app_bar_model.dart';
-import 'package:ld_wbench5/03_core/ld_model.dart';
+import 'package:ld_wbench5/03_core/abstraction/ld_widget_abs.dart';
 import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
-import 'package:ld_wbench5/03_core/streams/stream_envelope.dart';
-import 'package:ld_wbench5/03_core/widgets/ld_widget.dart';
+import 'package:ld_wbench5/03_core/event/stream/stream_event.dart';
+import 'package:ld_wbench5/03_core/widgets/ld_widget_ctrl_abs.dart';
 
 /// Widget adaptat per a la barra de capçalera de cada pàgina.
 class      LdAppBar
-extends    LdWidget {
+extends    LdWidgetAbs {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "LdAppBar";
   
@@ -47,27 +47,24 @@ extends    LdWidget {
   @override String baseTag() => LdAppBar.className;
 
   /// 📍 'StatefulWidget': Retorna el controlador del Widget.
-  @override LdWidgetCtrl createState() => wCtrl;
+  @override LdWidgetCtrlAbs createState() => wCtrl;
 
   @override
-  StreamSubscription<StreamEnvelope<LdModel>>? sLstn;
-
-  @override
-  StreamSubscription<StreamEnvelope<LdModel>>? vSub;
-
-  @override
-  void listened(StreamEnvelope<LdModel> pEnv) {
-    // TODO: implement listened
+  StreamSubscription<StreamEvent>? vSub;
+  
+  // 📍 'ViewListenerIntf' =====================================================
+  /// 📍 'ViewListenerIntf': Gestió dels events de la vista.
+  @override listenViewEvent(StreamEvent pEnv) {
+    // TODO: implement listenViewEvent
   }
-
-  @override
-  void onDone() {
-    // TODO: implement onDone
+  
+  /// 📍 'ViewListenerIntf': Gestió ??? a l'Stream de la vista.
+  @override onViewStreamDone() {
+    // TODO: implement onViewStreamDone
   }
-
-  @override
-  void onError(Object pError, StackTrace pSTrace) {
-    // TODO: implement onError
+  
+  /// 📍 'ViewListenerIntf': Gestió dels errors a l'Stream de la vista.
+  @override onViewStreamError(Object pError, StackTrace pTrace) {
+    // TODO: implement onViewStreamError
   }
-
 }

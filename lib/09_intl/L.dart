@@ -3,11 +3,9 @@
 // CreatedAt: 2025/04/08 dt. JIQ
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/03_core/ld_model.dart';
+
 import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
-import 'package:ld_wbench5/03_core/mixins/stream_emitter_mixin.dart';
-import 'package:ld_wbench5/03_core/streams/stream_envelope.dart';
-import 'package:ld_wbench5/09_intl/events/lang_changed_event.dart';
+import 'package:ld_wbench5/03_core/streams/import.dart';
 
 import 'ca.dart';
 import 'en.dart';
@@ -16,8 +14,8 @@ import 'package:ld_wbench5/10_tools/ld_map.dart';
 import 'package:ld_wbench5/10_tools/once_set.dart';
 
 /// Gestor per a l'ús de diferents llengües dins l'aplicació.
-class L 
-with  StreamEmitterMixin<StreamEnvelope<LdModel>, LdModel> {
+class L
+with  StreamEmitterMixin {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final L single = L();
   static final String className = "L";
@@ -79,10 +77,12 @@ with  StreamEmitterMixin<StreamEnvelope<LdModel>, LdModel> {
     _currLocale = Locale(code);
     _currDict = _dicts[code]!;
 
-    single.send(LangChangedEvent(
-      pSrc: tag, 
-      oldLocale: old,
-      newLocale: _currLocale!));
+    single.send(LangEventModel.envelope(
+      pSrc: tag,
+      pModel: LangEventModel(
+        pOld: old,
+        pNew: _currLocale?? Locale("es"))
+    ));
   }
 
   /// Retorna la traducció de l'etiqueta especificada en la llengua actual.

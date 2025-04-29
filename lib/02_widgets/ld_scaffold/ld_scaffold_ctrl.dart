@@ -2,17 +2,21 @@
 // Controlador del widget 'LdScaffold'.
 // CreatedAt: 2025/04/18 dv. JIQ
 
+import 'dart:async';
 import 'package:flutter/material.dart';
+
 import 'package:ld_wbench5/02_widgets/ld_app_bar/ld_app_bar.dart';
-import 'package:ld_wbench5/02_widgets/ld_scaffold/ld_scaffold.dart';
-import 'package:ld_wbench5/03_core/widgets/ld_widget.dart';
+import 'package:ld_wbench5/03_core/abstraction/ld_widget_abs.dart';
+import 'package:ld_wbench5/03_core/interfaces/ld_stream_listener_intf.dart';
+import 'package:ld_wbench5/03_core/mixins/stream_emitter_mixin.dart';
+import 'package:ld_wbench5/03_core/widgets/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/10_tools/debug.dart';
 import 'package:ld_wbench5/10_tools/full_set.dart';
 import 'package:ld_wbench5/10_tools/once_set.dart';
 
 /// Controlador del widget 'LdScaffold'.
-class   LdScaffoldCtrl 
-extends LdWidgetCtrl<LdScaffold> {
+class LdScaffoldCtrl
+extends LdWidgetCtrlAbs {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "LdScaffoldCtrl";
   
@@ -58,7 +62,7 @@ extends LdWidgetCtrl<LdScaffold> {
 
   /// 📍 'LdCtrlLifecycleIntf': Equivalent a initState
   @override
-  void onInit() {
+  void onInitState() {
     Debug.info("[$tag.onInit()]: Instància inserida a l'arbre.");
   }
 
@@ -74,14 +78,6 @@ extends LdWidgetCtrl<LdScaffold> {
     Debug.info("[$tag.onInit()]: Instància inserida a l'arbre.");
   }
 
-
-  /// 📍 'LdCtrlLifecycleIntf': Equivalent a didUpdateWidget
-  @override
-  void onWidgetUpdated(covariant LdScaffold pOldWidget) {
-    widget = pOldWidget;
-    Debug.info("[$tag.onInit()]: Instància inserida a l'arbre.");
-  }
-  
   // ⚙️📍 FUNCIONALITAT ----------------
   /// Creació de tot l'arbre de components de 'LdAppbar'.
   @override
@@ -94,4 +90,30 @@ extends LdWidgetCtrl<LdScaffold> {
       ),
       body: _body.get(),
     );
+
+  @override
+  void cancelAllSubscriptions() {
+    // TODO: implement cancelAllSubscriptions
+  }
+
+  @override
+  void disposeSubscriptions() {
+    // TODO: implement disposeSubscriptions
+  }
+
+  @override
+  void onInstanceUpdated(covariant LdWidgetAbs pOldWidget) {
+    // TODO: implement onInstanceUpdated
+  }
+
+  @override
+  StreamSubscription subscribeToEmitter(StreamEmitterMixin pCtrl, LdStreamListenerAbs pLstn) {
+    // TODO: implement subscribeToEmitter
+    throw UnimplementedError();
+  }
+
+  @override
+  void unsubscribeFromEmitter(LdStreamListenerAbs pLstn) {
+    // TODO: implement unsubscribeFromEmitter
+  }
 }

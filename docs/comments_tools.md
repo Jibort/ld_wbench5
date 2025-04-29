@@ -9,6 +9,7 @@
   // 🎯 Mètodes/Funcions internes
   // ♻️ CLICLE DE VIDA ----------------
   // 📍 IMPLEMENTACIÓ ABSTRACTA -------
+  // ⚙️📍 IMPLEMENTACIÓ ABSTRACTA ------
 
 ## Proposta B
   // 📦 String? _token;

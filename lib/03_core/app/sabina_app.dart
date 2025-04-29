@@ -2,30 +2,32 @@
 // Generalització del widget principal de l'aplicació.
 // CreatedAt: 2025/04/08 dt. JIQ
 
-import 'dart:async';
-
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ld_wbench5/01_pages/ui_consts.dart';
-import 'package:ld_wbench5/03_core/mixins/stream_receiver_mixin.dart';
-import 'package:ld_wbench5/03_core/streams/events/rebuild_event.dart';
-import 'package:ld_wbench5/08_theme/events/theme_model.dart';
-import 'package:ld_wbench5/08_theme/ld_theme.dart';
-import 'package:ld_wbench5/09_intl/events/lang_changed_event.dart';
-import 'package:ld_wbench5/10_tools/debug.dart';
 
-import 'package:ld_wbench5/routes.dart';
-import 'package:ld_wbench5/03_core/ld_model.dart';
-import 'package:ld_wbench5/03_core/mixins/stream_emitter_mixin.dart';
-import 'package:ld_wbench5/03_core/streams/stream_envelope.dart';
+import 'package:ld_wbench5/03_core/app/sabina_app_state.dart';
+import 'package:ld_wbench5/03_core/event/app/app_event_model.dart';
+import 'package:ld_wbench5/03_core/event/intl/lang_changed_event.dart';
+import 'package:ld_wbench5/03_core/event/theme/theme_event.dart';
+import 'package:ld_wbench5/03_core/listeners/lang_listener.dart';
+import 'package:ld_wbench5/03_core/streams/import.dart';
+import 'package:ld_wbench5/03_core/event/theme/theme_event_model.dart';
+import 'package:ld_wbench5/03_core/listeners/theme_listener.dart';
+import 'package:ld_wbench5/03_core/tag/ld_tag_mixin.dart';
 import 'package:ld_wbench5/09_intl/L.dart';
+import 'package:ld_wbench5/10_tools/debug.dart';
+import 'package:ld_wbench5/10_tools/once_set.dart';
 
 /// Generalització del widget principal de l'aplicació.
-class   SabinaApp
-extends StatelessWidget
-with    StreamEmitterMixin<StreamEnvelope<LdModel>, LdModel>,
-        StreamReceiverMixin<StreamEnvelope<LdModel>, LdModel> {
+class      SabinaApp
+extends    StatefulWidget
+with       LdTagMixin,
+           WidgetsBindingObserver,
+           StreamEmitterMixin,
+           StreamReceiverMixin
+implements ThemeListenerIntf,
+           LangListenerIntf {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "SabinaApp";
   static SabinaApp? _inst;
@@ -38,75 +40,144 @@ with    StreamEmitterMixin<StreamEnvelope<LdModel>, LdModel>,
   }
 
   // 🧩 MEMBRES ------------------------
-  StreamSubscription<StreamEnvelope<LdModel>>? _subsTheme;
-  StreamSubscription<StreamEnvelope<LdModel>>? _subsLang;
-
+  final OnceSet<ThemeStreamListener> _lstnTheme = OnceSet<ThemeStreamListener>();
+  final OnceSet<LangStreamListener>  _lstnLang  = OnceSet<LangStreamListener>();
 
   // 🛠️ CONSTRUCTORS/CLEANERS ---------
   /// Constructor fosc i unic de l'aplicació.
-  SabinaApp._() {
+  SabinaApp._() { 
     WidgetsFlutterBinding.ensureInitialized();
     L.devLocale = WidgetsBinding.instance.platformDispatcher.locale;
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      _subsTheme = LdTheme.single.subscribe(pLstn: listened, pOnDone: onDone, pOnError: onError);
-      _subsLang  = L.single.subscribe(pLstn: listened, pOnDone: onDone, pOnError: onError);
-
+      _lstnTheme.set(ThemeStreamListener(pLstn: this));
+      _lstnLang.set(LangStreamListener(pLstn: this));
     });
   }
 
-  /// Alliberem la subscripció
-  void dispose() {
-    LdTheme.single.unsubscribe(_subsTheme);
-    L.single.unsubscribe(_subsLang);
+  /// Alliberem les subscripcions
+  @override void dispose() {
+    _lstnTheme.get().emtTheme.unsubscribe(_lstnTheme.get());
+    _lstnLang.get().emtTheme.unsubscribe(_lstnLang.get());
+    super.dispose();
   }
 
-  // ♻️ CLICLE DE VIDA ----------------
-  @override
-  Widget build(BuildContext pBCtx) 
-  => ScreenUtilInit(
-      // Tamaño de diseño base (normalmente el tamaño en el que diseñaste la UI)
-      designSize:      resSabina,
-      minTextAdapt:    true,
-      splitScreenMode: true,
-      builder: (context, child) => MaterialApp(
-        title: L.sSabina.tx,
-        debugShowCheckedModeBanner: false,
-        routes: pageRoutes,
-        initialRoute: rootPage,
-      ),
-  );
+  // ♻️📍 'WidgetsBindingObserver' ==================================================
+  @override void didChangeMetrics() {
+    send(
+      AppEventModel.envelope(
+        pSrc:   tag,
+        pModel: AppEventModel(
+          pEType: AppEventTypeEnum.changeMetrics,
+        ),
+      )
+    );
+  }
   
-  @override
-  void listened(StreamEnvelope<LdModel> pEnv) {
-    Debug.info("SabinaApp.listened(...): Executant...");  
-    if (pEnv.hasModel) {
-      switch (pEnv.model) {
-      case ThemeEventModel _:
-      case LangChangedEvent _:
-        send(pEnv);
-        break;
+  @override void didChangeTextScaleFactor() {
+    send(
+      AppEventModel.envelope(
+        pSrc:   tag,
+        pModel: AppEventModel(
+          pEType: AppEventTypeEnum.changeTextScaleFactor,
+        ),
+      )
+    );
+  }
+
+  @override void didChangeAppLifecycleState(AppLifecycleState pState) {
+    send(
+      AppEventModel.envelope(
+        pSrc:   tag,
+        pModel: AppEventModel(
+          pEType: AppEventTypeEnum.changeAppLifecycleState,
+        ),
+      )
+    );
+  }
+
+  @override Future<AppExitResponse> didRequestAppExit() async {
+    Debug.info("SabinaApp.didRequestAppExit(): El sistema demana acabar l'execució de 'SabinaApp'!");  
+    return AppExitResponse.exit;
+  }
+
+  @override void didHaveMemoryPressure() {
+    Debug.info("SabinaApp.didHaveMemoryPressure(): Escassos de memòria!");  
+
+  }
+  // ♻️📍 'ThemeListenerIntf' ==================================================
+  // 📍 'ThemeListenerIntf': Oïdor d'events provinents de l'Stream de 'LdTheme'.
+  @override void listenThemeEvent(ThemeEvent pEvent) {
+    Debug.info("SabinaApp.listenThemeEvent(event): Executant...");  
+    if (pEvent.hasModel) {
+      switch (pEvent.model) {
+        case ThemeEventModel _:
+          send(pEvent);
+          break;
+        // default:
+        // String msg = "${L.sAppSabina}.listenThemeEvent(event): Tipus d'event no admés '${pEvent.instClassName}";
+        // Debug.fatal(msg, Exception(msg));
       } 
     } else {
-      switch (pEnv) {
-      case RebuildEvent re:
-        send(re);
-        break;
-      case LangChangedEvent re:
-        send(re);
-        break;
+      switch (pEvent) {
+        case RebuildEvent re:
+          send(re);
+          break;
+        default:
+          String msg = "${L.sAppSabina}.listenThemeEvent(event): Tipus d'event no admés '${pEvent.instClassName}";
+          Debug.fatal(msg, Exception(msg));
       }
     }
-    Debug.info("SabinaApp.listened(...): ...Executat");  
+    Debug.info("SabinaApp.listenThemeEvent(event): ...Executat");  
   }
   
-  @override
-  void onDone() {
-    Debug.info("SabinaApp.onDone(): Executat!");
-  }
-  
-  @override
-  void onError(Object pError, StackTrace pSTrace) {
+  // 📍 'ThemeListenerIntf': ???
+  @override void onThemeStreamDone() => Debug.info("SabinaApp.onThemeStreamDone(): Executat!");
+
+  /// 📍 'ThemeListenerIntf': Processa els errors provocats pel gestor del Tema Visual.
+  @override void onThemeStreamError(Object pError, StackTrace pSTrace) {
     String msg = "Error: ${pError.toString()}\nTrace: ${pSTrace.toString()}";
-    Debug.fatal("SabinaApp.onError(...): $msg", Exception(msg));
+    Debug.fatal("SabinaApp.onThemeStreamError(...): $msg", Exception(msg));
   }
+  
+  // ♻️📍 'LangListenerIntf' ===================================================
+  // 📍 'ThemeListenerIntf': Oïdor d'events provinents de l'Stream del gestor d'idiomes.
+  @override void listenLangEvent(LangEvent pEvent) {
+    Debug.info("SabinaApp.listenLangEvent(event): Executant...");
+    if (pEvent.hasModel) {
+      switch (pEvent.model) {
+        case LangEventModel _:
+          send(pEvent);
+          break;
+        default:
+          String msg = "${L.sAppSabina}.listenThemeEvent(event): Tipus d'event no admés '${pEvent.instClassName}";
+          Debug.fatal(msg, Exception(msg));
+      } 
+    } else {
+      switch (pEvent) {
+        case LangChangedEvent lce:
+          send(lce);
+          break;
+        default:
+          String msg = "${L.sAppSabina}.listenThemeEvent(event): Tipus d'event no admés '${pEvent.instClassName}";
+          Debug.fatal(msg, Exception(msg));
+      }
+    }
+    Debug.info("SabinaApp.listenLangEvent(event): ...Executat");
+  }
+  
+  // 📍 'LangListenerIntf': ???
+  @override void onLangStreamDone() => Debug.info("SabinaApp.onLangStreamDone(): Executat!");
+
+  /// 📍 'LangListenerIntf': Processa els errors provocats pel gestor d'idiomes.
+  @override void onLangStreamError(Object pError, StackTrace pSTrace) {
+    String msg = "Error: ${pError.toString()}\nTrace: ${pSTrace.toString()}";
+    Debug.fatal("SabinaApp.onLangStreamError(...): $msg", Exception(msg));
+   }
+  
+  /// 📍 'LdMixinTag': Retorna el tag base per a utilitzar quan no se n'ofereix un concret.
+  @override String baseTag() => className;
+
+  /// 📍 'StatefulWidget': Retorna l'state del widget.
+  @override
+  State<StatefulWidget> createState() => SabinaAppState();
 }

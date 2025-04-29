@@ -4,14 +4,14 @@
 
 import 'dart:convert';
 
-import 'package:ld_wbench5/03_core/ld_model.dart';
-import 'package:ld_wbench5/03_core/widgets/ld_widget.dart';
+import 'package:ld_wbench5/03_core/model/ld_model_abs.dart';
+import 'package:ld_wbench5/03_core/widgets/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/10_tools/conversions.dart';
 import 'package:ld_wbench5/10_tools/ld_map.dart';
 
 /// Model de dades del widget LdAppBar.
 class LdAppBarModel
-extends LdWidgetModel {
+extends LdWidgetModelAbs {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "LdAppBar";
 

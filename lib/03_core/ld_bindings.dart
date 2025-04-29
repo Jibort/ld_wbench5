@@ -2,7 +2,7 @@
 // Repositori d'instàncies 'LdTagMixin' com a dependències disponibles.
 // CreatedAt: 2025/04/15 dt. JIQ
 
-import 'package:ld_wbench5/03_core/mixins/ld_tag_mixin.dart';
+import 'package:ld_wbench5/03_core/tag/ld_tag_mixin.dart';
 import 'package:ld_wbench5/10_tools/ld_map.dart';
 
 /// Repositori d'instàncies 'LdTagMixin' com a dependències disponibles.

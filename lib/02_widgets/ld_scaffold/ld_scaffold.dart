@@ -2,19 +2,18 @@
 // Widget principal de cada pàgina.
 // CreatedAt: 2025/02/09 dc. JIQ
 
-import 'dart:async';
-
 import 'package:flutter/widgets.dart';
+
 import 'package:ld_wbench5/02_widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/02_widgets/ld_scaffold/ld_scaffold_ctrl.dart';
 import 'package:ld_wbench5/02_widgets/ld_scaffold/ld_scaffold_model.dart';
-import 'package:ld_wbench5/03_core/ld_model.dart';
+import 'package:ld_wbench5/03_core/abstraction/ld_widget_abs.dart';
+import 'package:ld_wbench5/03_core/event/view/view_event.dart';
+import 'package:ld_wbench5/03_core/interfaces/ld_stream_listener_intf.dart';
 import 'package:ld_wbench5/03_core/ld_tag_builder.dart';
-import 'package:ld_wbench5/03_core/streams/stream_envelope.dart';
-import 'package:ld_wbench5/03_core/widgets/ld_widget.dart';
 
 class LdScaffold
-extends LdWidget {
+extends LdWidgetAbs {
   // 📦 MEMBRES ESTÀTICS ---------------
   static final String className = "LdScaffold";
   late final String _tagAppBar;
@@ -28,16 +27,30 @@ extends LdWidget {
     required String pTitle,
     String? pSubTitle,
     Widget pBody = const SizedBox() })
- {  wModel = LdScaffoldModel(pView: view, pWidget: this);
-    _tagAppBar = LdTagBuilder.newWidgetTag(LdAppBar.className);
+ {  _tagAppBar = LdTagBuilder.newWidgetTag(LdAppBar.className);
+    wModel = LdScaffoldModel(pView: view, pWidget: this);
     wCtrl = LdScaffoldCtrl(
       pView: view, 
-      pWidget: this,
+      pWidget: this as LdWidgetAbs,
       pAppBarTag: _tagAppBar,
       pTitle: pTitle,
       pSubTitle: pSubTitle,
       pBody: pBody,
     );
+  }
+
+  // 🪟 GETTERS I SETTERS --------------
+  @override LdScaffoldCtrl get wCtrl => super.wCtrl as LdScaffoldCtrl;
+  @override LdScaffoldModel get wModel => super.wModel as LdScaffoldModel;
+
+  @override
+  set wCtrl(LdScaffoldCtrl pCtrl) {
+    // TODO: implement wCtrl
+  }
+
+  @override
+  set wModel(LdScaffoldModel pModel) {
+    // TODO: implement wModel
   }
 
   /// 📍 'ldTagMixin': Retorna la base del tag a fer servir en cas que no es proporcioni cap.
@@ -47,30 +60,28 @@ extends LdWidget {
   @override
   LdScaffoldCtrl createState() => wCtrl;
 
-  @override
-  StreamSubscription<StreamEnvelope<LdModel>>? sLstn;
-
-  @override
-  StreamSubscription<StreamEnvelope<LdModel>>? vSub;
-
-  @override
-  void listened(StreamEnvelope<LdModel> pEnv) {
-    // TODO: implement listened
+  @override cancelAllSubscriptions() {
+    // TODO: implement cancelAllSubscriptions
   }
 
-  @override
-  void onDone() {
-    // TODO: implement onDone
+  @override disposeSubscriptions() {
+    // TODO: implement disposeSubscriptions
   }
 
-  @override
-  void onError(Object pError, StackTrace pSTrace) {
-    // TODO: implement onError
+  @override unsubscribeFromEmitter(LdStreamListenerAbs pLstn) {
+    // TODO: implement unsubscribeFromEmitter
   }
+  
 
-  // 🪟 GETTERS I SETTERS --------------
-  @override LdScaffoldCtrl get wCtrl   => super.wCtrl as LdScaffoldCtrl;
-  @override LdScaffoldModel get wModel => super.wModel as LdScaffoldModel;
-
+  @override listenViewEvent(ViewEvent pEnv) {
+    // TODO: implement listenViewEvent
+  }
+  
+  @override onViewStreamDone() {
+    // TODO: implement onViewStreamDone
+  }
+  
+  @override onViewStreamError(Object pError, StackTrace pTrace) {
+    // TODO: implement onViewStreamError
+  }
 }
-

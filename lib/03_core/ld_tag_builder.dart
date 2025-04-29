@@ -16,6 +16,7 @@ class LdTagBuilder {
   static const String cntModels  = "cntModels";
   static const String cntCtrls   = "cntCtrls";
   static const String cntServs   = "cntServs";
+  static const String cntLstns   = "ctnLstns";
 
   // 📐 FUNCIONALITAT ESTÀTICA ---------
   /// Retorna el següent identificador únic per a vistes.
@@ -35,7 +36,6 @@ class LdTagBuilder {
 
   /// Retorna el següent identificador únic per a controladors.
   static int get _newCtrlId => _newId(cntCtrls);
-
   /// Retorna el següent tag únic per a models.
   static String newCtrlTag(String pTag) => "${pTag}_$_newCtrlId";
 
@@ -46,6 +46,11 @@ class LdTagBuilder {
   static int get _newServiceId => _newId(cntServs);
   /// Retorna el següent tag únic per a serveis.
   static String newServiceTag(String pTag) => "${pTag}_$_newServiceId";
+
+  /// Retorna el següent identificador únic per a oïdors d'Streams.
+  static int get _newLstnId => _newId(cntLstns);
+  /// Retorna el següent tag únic per a oïdors d'Streams.
+  static String newLstnTag(String pTag) => "${pTag}_$_newLstnId";
 
   /// Retorna el següent identificador únic per a una categoria customitzada.
   static int _newId(String pCategory) {
