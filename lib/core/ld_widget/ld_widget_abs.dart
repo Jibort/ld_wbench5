@@ -32,19 +32,19 @@ with     LdTaggableMixin {
   /// Estableix el model del widget.
   set wModel(LdWidgetModelAbs pModel) => _model.set(pModel);
 
-  /// Crea un nou widget base
+  /// CONSTRUCTOR GENERAL -------------
   LdWidgetAbs({
     super.key, 
-    String? pTag
-  }) {
-    tag = (pTag != null) 
+    String? pTag,
+    bool isVisible = true,
+    bool canFocus = true,
+    bool isEnabled = true }) 
+  { tag = (pTag != null) 
       ? pTag
       : className;
-    // Ara el controlador el podem assignar des d'on ens vagi millor.
-    // wCtrl.cWidget = this;
   }
-  
+
+  // 'StatefulWidget': Retorna el controlador de l'aplicació.
   @override
   State<LdWidgetAbs> createState() => wCtrl;
 }
-

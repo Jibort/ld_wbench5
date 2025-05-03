@@ -1,6 +1,8 @@
-// ld_button_ctrl.dart
+// lib/ui/widgets/ld_button/ld_button_ctrl.dart
 // Controlador pel widget LdButton.
+// Actualitzat amb gestió de visibilitat, focus i estat actiu.
 // CreatedAt: 2025/05/01 dc. JIQ
+// Updated: 2025/05/03 ds.
 
 import 'package:flutter/material.dart';
 
@@ -11,7 +13,7 @@ import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador pel widget LdButton.
-class   LdButtonCtrl
+class   LdButtonCtrl 
 extends LdWidgetCtrlAbs<LdButton> {
   /// Retorna el model del widget.
   LdButtonModel get model => widget.wModel as LdButtonModel;
@@ -27,6 +29,9 @@ extends LdWidgetCtrlAbs<LdButton> {
     super.pWidget, {
     this.onPressed,
     this.backgroundColor,
+    super.isVisible = true,
+    super.canFocus = true,
+    super.isEnabled = true,
   });
   
   @override
@@ -46,14 +51,31 @@ extends LdWidgetCtrlAbs<LdButton> {
   
   @override
   Widget buildContent(BuildContext context) {
-    String text = (model.text == null && model.iconData == null)? errInText : model.text ?? errInText;
+    String text = (model.text == null && model.iconData == null) ? errInText : model.text ?? errInText;
     
+    // Determinar si el botó està actiu
+    final VoidCallback? effectiveOnPressed = isEnabled ? onPressed : null;
+    
+    // Crear el botó amb el focusNode del controlador
     return ElevatedButton(
-      onPressed: onPressed,
-      style: backgroundColor != null 
-        ? ElevatedButton.styleFrom(backgroundColor: backgroundColor) 
-        : null,
-      child: Text(text),
+      onPressed: effectiveOnPressed,
+      focusNode: focusNode, // Utilitzem el node de focus del controlador
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor,
+      ),
+      child: model.iconData != null
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(model.iconData),
+                if (model.text != null) 
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(text),
+                  ),
+              ],
+            )
+          : Text(text),
     );
   }
 }

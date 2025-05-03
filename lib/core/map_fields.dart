@@ -30,6 +30,19 @@ const String mfThemeMode = 'mfThemeMode';
 const String mfLifecycleState = 'mfLifecycleState';
 
 //============================================================
+// CAMPS PER A EVENTS RELACIONATS AMB L'ESTAT DE L'APLICACIÓ
+//============================================================
+
+// Nous camps per als mapes de models
+/// Camp per a l'estat de visibilitat d'un widget
+const String mfIsVisible = "mfIsVisible";
+/// Camp per a l'estat de focus d'un widget
+const String mfCanFocus = "mfCanFocus";
+/// Camp per a l'estat d'activació d'un widget
+const String mfIsEnabled = "mfIsEnabled";
+
+
+//============================================================
 // CAMPS PER A MODELS
 //============================================================
 
