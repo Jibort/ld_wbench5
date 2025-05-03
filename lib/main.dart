@@ -4,7 +4,7 @@
 
 import 'package:flutter/material.dart';
 
-import 'package:ld_wbench5/ui/app.dart';
+import 'package:ld_wbench5/ui/app/sabina_app.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 void main() {
@@ -16,5 +16,5 @@ void main() {
   Debug.activateAllLevels();
   
   // Iniciar l'aplicació
-  runApp(SabinaApp.inst);
+  runApp(SabinaApp.s);
 }

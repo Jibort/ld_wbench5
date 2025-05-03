@@ -5,6 +5,9 @@
 
 import 'package:flutter/material.dart';
 
+/// Constant de text que apareixerà sempre que existeixi un problema amb cadenes de text.
+const String errInText = "!#?";
+
 /// iPhone 13/14 Pro Max
 const Size dsIPhone_13_14_Pro_Max = Size(428, 926); 
 

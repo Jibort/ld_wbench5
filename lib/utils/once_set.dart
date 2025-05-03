@@ -7,23 +7,31 @@
 class OnceSet<T> {
   // 🧩 MEMBRES ------------------------
   T? _inst;
-  bool isSet = false;
+  bool _isSet      = false;
+  bool _isNullable = true;
 
   // 🛠️ CONSTRUCTORS/CLEANERS --------- 
-  OnceSet({ T? pInst }) {
+  OnceSet({ T? pInst, bool pIsNullable = true }) {
+    assert(pInst != null || pIsNullable, "No es pot crear aquesta instància OnceSetSet amb null!");
     _inst = pInst;
-    isSet = (_inst != null);
+    _isNullable = pIsNullable;
+    _isSet = (_inst != null);
   }
 
   // 🪟 GETTERS I SETTERS --------------
-  T get({ String? pError }) {
-    assert(isSet, pError?? "Error en recuperació 'OnceSet'!");
-    return _inst!;
+  bool get isSet => _isSet;
+  bool get isNullable => _isNullable;
+  
+  T? get({ String? pError, pCouldBeNull = true }) {
+    assert(_isSet, pError?? "OnceSet: La instància no ha estat encara assignada!");
+    assert(_inst != null || _isNullable, "OnceSet: La instància no pot ser nul·la en llegir-la!");
+    return _inst;
   }
 
-  void set(T pValue, { String? pError }) {
-    assert(!isSet, pError?? "Error en assignació 'OnceSet'!");
+  void set(T? pValue, { String? pError }) {
+    assert(!_isSet, pError?? "Error en assignació 'OnceSet'!");
+    assert(pValue != null || _isNullable, "No es pot assignar null a aquest OnceSet!");
     _inst = pValue;
-    isSet = true;
+    _isSet = true;
   }
 }

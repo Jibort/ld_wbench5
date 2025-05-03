@@ -44,3 +44,9 @@ const String mfSubTitle = 'mfSubTitle';
 
 /// Camp per al text d'un model
 const String mfText = 'mfText';
+
+/// Camp per a les dades d'una icona d'un model
+const String mfIconData = "mfIconData";
+
+/// Camp per a un comptador
+const String mfCounter = "mfCounter";

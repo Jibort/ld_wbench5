@@ -3,8 +3,9 @@
 // Created: 2025/04/29 dt. CLA[JIQ]
 
 import 'package:flutter/material.dart';
+import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
-import 'package:ld_wbench5/core/event_system.dart';
+import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/utils/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
@@ -21,7 +22,7 @@ with  LdTaggableMixin {
   
   /// Instància singleton
   static final L _inst = L._();
-  static L get inst => _inst;
+  static L get s => _inst;
   
   /// Idioma detectat al dispositiu
   late Locale _deviceLocale;
@@ -30,7 +31,7 @@ with  LdTaggableMixin {
   Locale? _currentLocale;
   
   /// Diccionaris disponibles
-  final Map<String, Dictionary> _dictionaries = {};
+  final LdMap<Dictionary> _dictionaries = {};
   
   /// Constructor privat
   L._() {
@@ -40,48 +41,48 @@ with  LdTaggableMixin {
   }
   
   /// Retorna l'idioma del dispositiu
-  static Locale get deviceLocale => inst._deviceLocale;
+  static Locale get deviceLocale => s._deviceLocale;
   
   /// Estableix l'idioma del dispositiu
   static set deviceLocale(Locale locale) {
-    inst._deviceLocale = locale;
-    Debug.info("${inst.tag}: Idioma del dispositiu detectat: ${locale.languageCode}");
-    if (inst._currentLocale == null) {
+    s._deviceLocale = locale;
+    Debug.info("${s.tag}: Idioma del dispositiu detectat: ${locale.languageCode}");
+    if (s._currentLocale == null) {
       setCurrentLocale(locale);
     }
   }
   
   /// Retorna l'idioma actual
   static Locale getCurrentLocale() {
-    if (inst._currentLocale == null) {
-      inst._currentLocale = inst._deviceLocale;
+    if (s._currentLocale == null) {
+      s._currentLocale = s._deviceLocale;
       // Si el diccionari de l'idioma del dispositiu no existeix, usa espanyol
-      if (!inst._dictionaries.containsKey(inst._currentLocale!.languageCode)) {
-        inst._currentLocale = const Locale('es');
+      if (!s._dictionaries.containsKey(s._currentLocale!.languageCode)) {
+        s._currentLocale = const Locale('es');
       }
     }
-    return inst._currentLocale!;
+    return s._currentLocale!;
   }
   
   /// Estableix l'idioma actual
   static void setCurrentLocale(Locale locale) {
     String languageCode = locale.languageCode;
-    if (!inst._dictionaries.containsKey(languageCode)) {
+    if (!s._dictionaries.containsKey(languageCode)) {
       languageCode = 'es'; // Fallback a espanyol si l'idioma no està disponible
-      Debug.info("${inst.tag}: Idioma $languageCode no disponible, usant 'es' per defecte");
+      Debug.info("${s.tag}: Idioma $languageCode no disponible, usant 'es' per defecte");
     }
     
-    Locale? oldLocale = inst._currentLocale;
-    inst._currentLocale = Locale(languageCode);
-    Debug.info("${inst.tag}: Idioma canviat de ${oldLocale?.languageCode ?? 'null'} a $languageCode");
+    Locale? oldLocale = s._currentLocale;
+    s._currentLocale = Locale(languageCode);
+    Debug.info("${s.tag}: Idioma canviat de ${oldLocale?.languageCode ?? 'null'} a $languageCode");
     
     // Notifica del canvi d'idioma
     EventBus().emit(LdEvent(
-      type: EventType.languageChanged,
-      srcTag: inst.tag,
-      data: {
+      eType: EventType.languageChanged,
+      srcTag: s.tag,
+      eData: {
         mfOldLocale: oldLocale?.languageCode,
-        mfNewLocale: inst._currentLocale!.languageCode,
+        mfNewLocale: s._currentLocale!.languageCode,
       },
     ));
   }
@@ -121,7 +122,7 @@ with  LdTaggableMixin {
   /// Obté la traducció d'una clau
   static String tx(String key) {
     Locale locale = getCurrentLocale();
-    Dictionary? dictionary = inst._dictionaries[locale.languageCode];
+    Dictionary? dictionary = s._dictionaries[locale.languageCode];
     return dictionary?.getOr(key, '!?') ?? '!?';
   }
   

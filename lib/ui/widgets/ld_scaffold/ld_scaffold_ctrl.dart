@@ -1,35 +1,16 @@
-// lib/ui/widgets/sabina_scaffold.dart
-// Scaffold personalitzat de Sabina
-// Created: 2025/04/29 DT. CLA[JIQ]
+// ld_scaffold_ctrl.dart
+// Controlador del widget LdScaffold.
+// CreatedAt: 2025/05/03 ds. JIQ
 
 import 'package:flutter/material.dart';
 
-import 'package:ld_wbench5/core/ld_widget.dart';
-import 'package:ld_wbench5/core/event_system.dart';
+import 'package:ld_wbench5/core/event_bus/ld_event.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
-/// Scaffold personalitzat de Sabina
-class SabinaScaffold extends LdWidget {
-  /// Constructor
-  SabinaScaffold({
-    super.key,
-    PreferredSizeWidget? appBar,
-    required Widget body,
-    Widget? floatingActionButton,
-    Widget? drawer,
-  }) : super(
-    pTag: 'SabinaScaffold',
-    ctrl: SabinaScaffoldCtrl(
-      appBar: appBar,
-      body: body,
-      floatingActionButton: floatingActionButton,
-      drawer: drawer,
-    ),
-  );
-}
-
 /// Controlador per al SabinaScaffold
-class SabinaScaffoldCtrl extends LdWidgetCtrl<SabinaScaffold> {
+class LdScaffoldCtrl extends LdWidgetCtrlAbs<LdScaffold> {
   /// Barra superior
   final PreferredSizeWidget? appBar;
   
@@ -43,7 +24,7 @@ class SabinaScaffoldCtrl extends LdWidgetCtrl<SabinaScaffold> {
   final Widget? drawer;
   
   /// Constructor
-  SabinaScaffoldCtrl({
+  LdScaffoldCtrl(super.pWidget, {
     this.appBar,
     required this.body,
     this.floatingActionButton,
@@ -61,7 +42,7 @@ class SabinaScaffoldCtrl extends LdWidgetCtrl<SabinaScaffold> {
   }
   
   @override
-  void onEvent(LdEvent event) {
+  void onEvent(LdEvent pEvent) {
     // Gestionar events específics si cal
   }
   

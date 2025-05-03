@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
-import 'package:ld_wbench5/core/event_system.dart';
+import 'package:ld_wbench5/core/event_bus/ld_event.dart';
+import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/utils/full_set.dart';
@@ -17,7 +18,7 @@ class ThemeService
 with  LdTaggableMixin {
   /// Instància singleton
   static final ThemeService _inst = ThemeService._();
-  static ThemeService get inst => _inst;
+  static ThemeService get s => _inst;
   
   /// Mode del tema actual
   final FullSet<ThemeMode> _themeMode = FullSet<ThemeMode>(pInst: ThemeMode.system);
@@ -102,9 +103,9 @@ with  LdTaggableMixin {
     Debug.info("$tag: Notificant canvi de tema");
     
     EventBus().emit(LdEvent(
-      type: EventType.themeChanged,
+      eType: EventType.themeChanged,
       srcTag: tag,
-      data: {
+      eData: {
         mfIsDarkMode: _isDarkMode,
         mfThemeMode: _themeMode.toString(),
       },

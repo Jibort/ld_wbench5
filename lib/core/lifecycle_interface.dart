@@ -3,7 +3,7 @@
 // Created: 2025/04/29 dt. CLA[JIQ]
 
 /// Interfície que defineix els mètodes bàsics del cicle de vida dels components
-abstract class LdLifecycle {
+abstract class LdLifecycleIntf {
   /// Cridat quan el component s'inicialitza
   /// Equivalent a initState en StatefulWidget
   void initialize();

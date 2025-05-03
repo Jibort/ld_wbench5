@@ -1,36 +1,21 @@
-// lib/ui/widgets/sabina_button.dart
-// Botó personalitzat de Sabina
-// Created: 2025/04/29 DT. CLA[JIQ]
+// ld_button_ctrl.dart
+// Controlador pel widget LdButton.
+// CreatedAt: 2025/05/01 dc. JIQ
 
 import 'package:flutter/material.dart';
 
-import 'package:ld_wbench5/core/ld_widget.dart';
-import 'package:ld_wbench5/core/event_system.dart';
+import 'package:ld_wbench5/core/event_bus/ld_event.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/ui/ui_consts.dart';
+import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
-/// Botó personalitzat de Sabina
-class SabinaButton extends LdWidget {
-  /// Constructor
-  SabinaButton({
-    super.key,
-    required String text,
-    VoidCallback? onPressed,
-    Color? backgroundColor,
-  }) : super(
-    pTag: 'SabinaButton',
-    ctrl: SabinaButtonCtrl(
-      text: text,
-      onPressed: onPressed,
-      backgroundColor: backgroundColor,
-    ),
-  );
-}
+/// Controlador pel widget LdButton.
+class   LdButtonCtrl
+extends LdWidgetCtrlAbs<LdButton> {
+  /// Retorna el model del widget.
+  LdButtonModel get model => widget.wModel as LdButtonModel;
 
-/// Controlador per al SabinaButton
-class SabinaButtonCtrl extends LdWidgetCtrl<SabinaButton> {
-  /// Text del botó
-  final String text;
-  
   /// Callback quan es prem el botó
   final VoidCallback? onPressed;
   
@@ -38,8 +23,8 @@ class SabinaButtonCtrl extends LdWidgetCtrl<SabinaButton> {
   final Color? backgroundColor;
   
   /// Constructor
-  SabinaButtonCtrl({
-    required this.text,
+  LdButtonCtrl(
+    super.pWidget, {
     this.onPressed,
     this.backgroundColor,
   });
@@ -55,12 +40,14 @@ class SabinaButtonCtrl extends LdWidgetCtrl<SabinaButton> {
   }
   
   @override
-  void onEvent(LdEvent event) {
+  void onEvent(LdEvent pEvent) {
     // Gestionar events específics si cal
   }
   
   @override
   Widget buildContent(BuildContext context) {
+    String text = (model.text == null && model.iconData == null)? errInText : model.text ?? errInText;
+    
     return ElevatedButton(
       onPressed: onPressed,
       style: backgroundColor != null 

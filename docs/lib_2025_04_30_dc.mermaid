@@ -1,0 +1,237 @@
+classDiagram
+    %% Classes base de Flutter
+    class StatefulWidget {
+        <<Flutter>>
+    }
+    class State {
+        <<Flutter>>
+    }
+
+    %% Classes Core: Mixins i Interfaces
+    class LdTaggableMixin {
+        +String? _tag
+        +String get className
+        +String get tag
+        +set tag(String)
+        -String _generateTag()
+    }
+    class LdLifecycle {
+        <<interface>>
+        +void initialize()
+        +void update()
+        +void dispose()
+    }
+    class LdModelObserver {
+        <<interface>>
+        +void onModelChanged(Function)
+    }
+
+    %% Components i Models
+    class LdModel {
+        -LdModelObserver? _obs
+        +void attachObserver(LdModelObserver)
+        +void detachObserver()
+        +void notifyListeners(Function)
+        +void dispose()
+    }
+
+    class LdEvent {
+        +EventType type
+        +Map~String,dynamic~ data
+        +String? srcTag
+        +List~String~? tgtTags
+        -FullSet~bool~ _consumed
+        +bool get isConsumed
+        +set isConsumed(bool)
+        +bool isTargetedAt(String)
+    }
+
+    class EventBus {
+        -static EventBus _instance
+        +static EventBus instance()
+        -StreamController~LdEvent~ _controller
+        +Stream~LdEvent~ get events
+        +void emit(LdEvent)
+        +void dispose()
+    }
+
+    %% Widgets Base
+    class LdPage {
+        +LdPageCtrl ctrl
+        +LdPage(key, tag, ctrl)
+        +State~LdPage~ createState()
+    }
+
+    class LdPageCtrl {
+        -OnceSet~T~ _page
+        -StreamSubscription? _subcEvent
+        +T get page
+        +set page(T)
+        +void initialize()
+        +void update()
+        +void onEvent(LdEvent)
+        +void dispose()
+        +Widget buildPage(BuildContext)
+        +Widget build(BuildContext)
+    }
+
+    class LdWidget {
+        +LdWidgetCtrl ctrl
+        +LdWidget(key, tag, ctrl)
+        +State~LdWidget~ createState()
+    }
+
+    class LdWidgetCtrl {
+        -StreamSubscription? _eventSubscription
+        +T widget
+        +void initialize()
+        +void update()
+        +void onEvent(LdEvent)
+        +void dispose()
+        +Widget buildContent(BuildContext)
+        +Widget build(BuildContext)
+    }
+
+    %% Classes Utilitàries
+    class OnceSet~T~ {
+        -T? _inst
+        +bool isSet
+        +T get()
+        +void set(T)
+    }
+
+    class FullSet~T~ {
+        -T? _inst
+        -bool _isSet
+        +bool get isSet
+        +T? get()
+        +void set(T?)
+    }
+
+    %% Implementacions concretes
+    class SabinaApp {
+        -static SabinaApp _inst
+        +static SabinaApp get inst
+        -SabinaApp._()
+        +State~SabinaApp~ createState()
+    }
+
+    class TestPage {
+        +TestPage(key)
+    }
+
+    class TestPageController {
+        +TestPageModel model
+        +void initialize()
+        +void update()
+        +void dispose()
+        +void onEvent(LdEvent)
+        +void changeLanguage()
+        +void changeTheme()
+        +Widget buildPage(BuildContext)
+    }
+
+    class TestPageModel {
+        -String _title
+        -String? _subtitle
+        -int _counter
+        +String get title
+        +set title(String)
+        +String? get subtitle
+        +set subtitle(String?)
+        +int get counter
+        +void incrementCounter()
+        +void updateTexts()
+    }
+
+    class SabinaAppBar {
+        +SabinaAppBar(key, title, actions)
+    }
+
+    class SabinaButton {
+        +SabinaButton(key, text, onPressed, backgroundColor)
+    }
+
+    class SabinaScaffold {
+        +SabinaScaffold(key, appBar, body, floatingActionButton, drawer)
+    }
+
+    %% Serveis
+    class L {
+        -static L _inst
+        +static L get inst
+        -Locale _deviceLocale
+        -Locale? _currentLocale
+        -Map~String,Dictionary~ _dictionaries
+        +static Locale get deviceLocale
+        +static set deviceLocale(Locale)
+        +static Locale getCurrentLocale()
+        +static void setCurrentLocale(Locale)
+        -void _loadDictionaries()
+        +static String tx(String)
+        +static void toggleLanguage()
+    }
+
+    class ThemeService {
+        -static ThemeService _inst
+        +static ThemeService get inst
+        -FullSet~ThemeMode~ _themeMode
+        -bool _isDarkMode
+        -ThemeData _currentTheme
+        -ThemeService._()
+        -void _initialize()
+        +bool get isDarkMode
+        +ThemeData get currentTheme
+        +ThemeData get lightTheme
+        +ThemeData get darkTheme
+        +void changeThemeMode(ThemeMode)
+        +void toggleTheme()
+        -void _notifyThemeChanged(ThemeData?, ThemeData)
+    }
+
+    %% Relacions d'Herència
+    LdModel --|> LdTaggableMixin
+    LdPage --|> StatefulWidget
+    LdPage --|> LdTaggableMixin
+    LdPageCtrl --|> State
+    LdPageCtrl --|> LdTaggableMixin
+    LdPageCtrl ..|> LdLifecycle
+    LdPageCtrl ..|> LdModelObserver
+    LdWidget --|> StatefulWidget
+    LdWidget --|> LdTaggableMixin
+    LdWidgetCtrl --|> State
+    LdWidgetCtrl --|> LdTaggableMixin
+    LdWidgetCtrl ..|> LdLifecycle
+    LdWidgetCtrl ..|> LdModelObserver
+    
+    SabinaApp --|> StatefulWidget
+    SabinaApp --|> LdTaggableMixin
+    TestPage --|> LdPage
+    TestPageController --|> LdPageCtrl
+    TestPageModel --|> LdModel
+    SabinaAppBar --|> LdWidget
+    SabinaButton --|> LdWidget
+    SabinaScaffold --|> LdWidget
+    L --|> LdTaggableMixin
+    ThemeService --|> LdTaggableMixin
+
+    %% Dependències i Associacions
+    LdPage *-- LdPageCtrl : té
+    LdWidget *-- LdWidgetCtrl : té
+    LdPageCtrl o-- LdEvent : processa
+    LdWidgetCtrl o-- LdEvent : processa
+    TestPageController *-- TestPageModel : té
+    
+    %% Utilització dels utils
+    LdModel ..> LdModelObserver : notifica
+    LdEvent ..> FullSet : utilitza
+    LdPageCtrl ..> OnceSet : utilitza per page
+    EventBus ..> LdEvent : emet
+    
+    %% Dependències de serveis
+    ThemeService ..> EventBus : publica events
+    L ..> EventBus : publica events
+    
+    %% Fluxes d'informació
+    TestPageController ..> L : utilitza
+    TestPageController ..> ThemeService : utilitza

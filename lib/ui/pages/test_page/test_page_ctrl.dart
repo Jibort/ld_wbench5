@@ -1,43 +1,39 @@
-// test_page.dart
-// Pàgina de prova que mostra la implementació simplificada
+// test_page_ctrl.dart
+// Controlador de la pàgina de prova que mostra la implementació simplificada.
 // Created: 2025/04/29 DT. CLA[JIQ]
 
-// lib/ui/pages/test_page.dart
+
+
+
 import 'package:flutter/material.dart';
 
-import 'test_page_model.dart';
-import 'package:ld_wbench5/core/ld_page.dart';
-import 'package:ld_wbench5/core/event_system.dart';
+import 'package:ld_wbench5/core/event_bus/ld_event.dart';
+import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/services/theme_service.dart';
+import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
+import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
+import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
+import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/ui/widgets/sabina_app_bar.dart';
-import 'package:ld_wbench5/ui/widgets/sabina_button.dart';
-import 'package:ld_wbench5/ui/widgets/sabina_scaffold.dart';
-
-
-/// Pàgina de prova que mostra la nova arquitectura simplificada
-class TestPage extends LdPage {
-  /// Constructor
-  TestPage({super.key}) 
-    : super(
-        pTag: 'TestPage',
-        ctrl: TestPageController(),
-      );
-}
 
 /// Controlador per a la pàgina de prova
-class TestPageController extends LdPageCtrl<TestPage> {
+class   TestPageCtrl 
+extends LdPageCtrl<TestPage> {
   /// Model de dades de la pàgina
-  late final TestPageModel model;
+  TestPageModel get model => cPage.vModel as TestPageModel;
+
+  /// Constructor.
+  TestPageCtrl({ super.pTag, required super.pPage });
   
   @override
   void initialize() {
     Debug.info("$tag: Inicialitzant controlador");
     
     // Crear i inicialitzar el model
-    model = TestPageModel();
+    // El model es crea amb els paràmetres rebuts pel constructor.
+    // model = TestPageModel();
     model.attachObserver(this);
   }
   
@@ -56,11 +52,11 @@ class TestPageController extends LdPageCtrl<TestPage> {
   
   @override
   void onEvent(LdEvent event) {
-    Debug.info("$tag: Event rebut: ${event.type}");
+    Debug.info("$tag: Event rebut: ${event.eType.name}");
     
     // Actualitzar model quan canvia l'idioma
-    if (event.type == EventType.languageChanged) {
-      String? newLocale = event.data[mfNewLocale] as String?;
+    if (event.eType == EventType.languageChanged) {
+      String? newLocale = event.eData[mfNewLocale] as String?;
       Debug.info("$tag: Idioma canviat a: $newLocale");
       model.updateTexts();
     }
@@ -76,15 +72,15 @@ class TestPageController extends LdPageCtrl<TestPage> {
   /// Canvia el tema entre clar i fosc
   void changeTheme() {
     Debug.info("$tag: Canviant tema");
-    ThemeService.inst.toggleTheme();
+    ThemeService.s.toggleTheme();
   }
   
   @override
   Widget buildPage(BuildContext context) {
-    return SabinaScaffold(
+    return LdScaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: SabinaAppBar(
+        child: LdAppBar(
           title: model.title,
         ),
       ),
@@ -93,9 +89,9 @@ class TestPageController extends LdPageCtrl<TestPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Subtítol
-            if (model.subtitle != null)
+            if (model.subTitle != null)
               Text(
-                model.subtitle!,
+                model.subTitle!,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             
@@ -110,7 +106,7 @@ class TestPageController extends LdPageCtrl<TestPage> {
             const SizedBox(height: 16),
             
             // Botó per canviar idioma
-            SabinaButton(
+            LdButton(
               text: L.sChangeLanguage.tx,
               onPressed: changeLanguage,
             ),
@@ -118,7 +114,7 @@ class TestPageController extends LdPageCtrl<TestPage> {
             const SizedBox(height: 16),
             
             // Botó per canviar tema
-            SabinaButton(
+            LdButton(
               text: L.sChangeTheme.tx,
               onPressed: changeTheme,
               backgroundColor: Theme.of(context).colorScheme.secondary,
