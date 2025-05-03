@@ -1,6 +1,7 @@
 // ld_widget_abs.dart
 // Widget base simplificat per a l'aplicació
 // Created: 2025/04/29 dt. CLA[JIQ]
+// Updated: 2025/05/03 ds. CLA
 
 import 'package:flutter/material.dart';
 
@@ -31,8 +32,10 @@ with     LdTaggableMixin {
   LdWidgetModelAbs<LdWidgetAbs> get wModel => _model.get(pCouldBeNull: false)!;
   /// Estableix el model del widget.
   set wModel(LdWidgetModelAbs pModel) => _model.set(pModel);
+  /// Indica si el widget té un model assignat
+  bool get hasModel => _model.isSet;
 
-  /// CONSTRUCTOR GENERAL -------------
+  /// Crea un nou widget base
   LdWidgetAbs({
     super.key, 
     String? pTag,

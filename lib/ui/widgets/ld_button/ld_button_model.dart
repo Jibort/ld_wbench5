@@ -1,6 +1,6 @@
 // ld_button_model.dart
 // Model del widget LdButton.
-// CreatedAt: 2025-05-01 dc. JIQ
+// Created: 2025-05-01 dc. JIQ
 
 // Model del widget LdButton.
 import 'package:flutter/material.dart';

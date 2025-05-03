@@ -1,6 +1,6 @@
 // main.dart
 // Entrada principal a l'aplicació 'Sabina'.
-// CreatedAt: 2025/04/29 dt. CLA[JIQ]
+// Created: 2025/04/29 dt. CLA[JIQ]
 
 import 'package:flutter/material.dart';
 

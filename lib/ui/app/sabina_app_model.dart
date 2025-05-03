@@ -1,9 +1,9 @@
 // sabina_app_model.dart
 // Model del widget principal de l'aplicació.
-// CreatedAt: 2025/05/03 ds. JIQ
+// Created: 2025/05/03 ds. JIQ
 
 
-import 'package:ld_wbench5/core/ld_model.dart';
+import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/ui/app/sabina_app.dart';
 import 'package:ld_wbench5/utils/map_extensions.dart';
 import 'package:ld_wbench5/utils/once_set.dart';

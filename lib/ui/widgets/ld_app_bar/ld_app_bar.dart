@@ -18,11 +18,11 @@ extends LdWidgetAbs {
   LdAppBar({
     super.key,
     super.pTag, 
-    required String title,
+    required String pTitle,
     String? pSubTitle,
     List<Widget>? actions })
   { wModel = LdAppBarModel(this,
-      pTitle:    title, 
+      pTitle:    pTitle, 
       pSubTitle: pSubTitle);
     wCtrl = LdAppBarCtrl(this,
       actions: actions);

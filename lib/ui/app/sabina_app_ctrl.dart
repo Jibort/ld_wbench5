@@ -1,6 +1,7 @@
 // sabina_app_ctrl.dart
 // Controlador principal de l'aplicació
 // Created: 2025/05/03 ds. JIQ
+// Updated: 2025/05/03 ds. CLA
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -18,9 +19,7 @@ import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/utils/once_set.dart';
 
 /// Controlador principal de l'aplicació
-class   SabinaAppCtrl 
-extends State<SabinaApp> 
-with    WidgetsBindingObserver {
+class SabinaAppCtrl extends State<SabinaApp> with WidgetsBindingObserver {
   /// Referència a la instància de l'aplicació.
   final OnceSet<SabinaApp> _app = OnceSet<SabinaApp>();
 
@@ -35,6 +34,9 @@ with    WidgetsBindingObserver {
   
   /// Mode del tema actual
   ThemeMode _themeMode = ThemeMode.system;
+  
+  /// Indicador de reconstrucció per canvi d'idioma
+  bool _languageChanged = false;
   
   /// CONSTRUCTORS --------------------
   SabinaAppCtrl({ required SabinaApp pApp }) { app = pApp; }
@@ -63,9 +65,30 @@ with    WidgetsBindingObserver {
   
   /// Gestiona els events rebuts
   void _handleEvent(LdEvent event) {
+    Debug.info("SabinaApp: Rebut esdeveniment ${event.eType.name}");
+    
+    // Gestionar canvi de tema
     if (event.eType == EventType.themeChanged) {
       setState(() {
         _themeMode = ThemeService.s.themeMode;
+        Debug.info("SabinaApp: Actualitzant tema a $_themeMode");
+      });
+    }
+    
+    // Gestionar canvi d'idioma
+    if (event.eType == EventType.languageChanged) {
+      setState(() {
+        _languageChanged = true;
+        Debug.info("SabinaApp: Reconstruint l'aplicació per canvi d'idioma");
+      });
+    }
+    
+    // Gestionar reconstrucció global de la UI
+    if (event.eType == EventType.rebuildUI) {
+      setState(() {
+        // JAB_Q: ???
+        _languageChanged = true;
+        Debug.info("SabinaApp: Reconstruint l'aplicació completa");
       });
     }
   }
@@ -75,7 +98,7 @@ with    WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     Debug.info("SabinaApp: Canvi d'estat del cicle de vida: $state");
     
-    EventBus().emit(LdEvent(
+    EventBus.s.emit(LdEvent(
       eType: EventType.applicationStateChanged,
       srcTag: widget.tag,
       eData: {
@@ -86,6 +109,13 @@ with    WidgetsBindingObserver {
   
   @override
   Widget build(BuildContext context) {
+    Debug.info("SabinaApp: Construint aplicació. Tema: $_themeMode, Idioma canviat: $_languageChanged");
+    
+    // Si s'ha canviat l'idioma, reiniciem el flag
+    if (_languageChanged) {
+      _languageChanged = false;
+    }
+    
     return ScreenUtilInit(
       designSize: designSize,
       minTextAdapt: true,

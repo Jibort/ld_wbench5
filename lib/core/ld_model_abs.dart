@@ -1,4 +1,4 @@
-// ld_model.dart
+// ld_model_abs.dart
 // Model base simplificat per a l'aplicació
 // Created: 2025/04/29 dt. CLA[JIQ]
 

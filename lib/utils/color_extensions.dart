@@ -1,6 +1,6 @@
 // lib/utils/color_extensions.dart
 // Extensions per a facilitar el treball amb colors.
-// CreatedAt: 2025/05/03 ds JIQ
+// Created: 2025/05/03 ds JIQ
 
 import 'package:flutter/animation.dart';
 

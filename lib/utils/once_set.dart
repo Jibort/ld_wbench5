@@ -1,6 +1,6 @@
 // once_set.dart
 // Eina que assegura que la instància que acull només s'inicia un cop.
-// CreatedAt: 2025/04/07 dl. JIQ
+// Created: 2025/04/07 dl. JIQ
 
 /// Eina que assegura que la instància que acull només s'inicia un cop
 /// independentment si s'inicialitza com a nul.

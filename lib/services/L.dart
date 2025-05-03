@@ -77,7 +77,7 @@ with  LdTaggableMixin {
     Debug.info("${s.tag}: Idioma canviat de ${oldLocale?.languageCode ?? 'null'} a $languageCode");
     
     // Notifica del canvi d'idioma
-    EventBus().emit(LdEvent(
+    EventBus.s.emit(LdEvent(
       eType: EventType.languageChanged,
       srcTag: s.tag,
       eData: {

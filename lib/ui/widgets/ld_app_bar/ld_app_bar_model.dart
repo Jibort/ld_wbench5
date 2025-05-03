@@ -1,6 +1,6 @@
 // ld_app_bar_model.dart
 // Model de dades del widget LdAppBar.
-// CreatedAt: 2025-05-01 dc. JIQ
+// Created: 2025-05-01 dc. JIQ
 
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
@@ -12,6 +12,9 @@ import 'package:ld_wbench5/utils/map_extensions.dart';
 /// Model de dades del widget LdAppBar.
 class   LdAppBarModel
 extends LdWidgetModelAbs<LdAppBar> {
+  /// Retorna el controlador del widget.
+  LdAppBarCtrl get wCtrl => cWidget.wCtrl as LdAppBarCtrl;
+  
   /// Títol de la barra d'aplicació.
   final FullSet<String> _title = FullSet<String>();
   /// Retorna el títol de la barra d'aplicació.

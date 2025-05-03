@@ -1,8 +1,8 @@
 // lib/ui/widgets/ld_button/ld_button_ctrl.dart
 // Controlador pel widget LdButton.
 // Actualitzat amb gestió de visibilitat, focus i estat actiu.
-// CreatedAt: 2025/05/01 dc. JIQ
-// Updated: 2025/05/03 ds.
+// Created: 2025/05/01 dc. JIQ
+// Updated: 2025/05/03 ds. CLA
 
 import 'package:flutter/material.dart';
 
@@ -13,10 +13,9 @@ import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador pel widget LdButton.
-class   LdButtonCtrl 
-extends LdWidgetCtrlAbs<LdButton> {
+class LdButtonCtrl extends LdWidgetCtrlAbs<LdButton> {
   /// Retorna el model del widget.
-  LdButtonModel get model => widget.wModel as LdButtonModel;
+  LdButtonModel get model => cWidget.wModel as LdButtonModel;
 
   /// Callback quan es prem el botó
   final VoidCallback? onPressed;
@@ -37,6 +36,8 @@ extends LdWidgetCtrlAbs<LdButton> {
   @override
   void initialize() {
     Debug.info("$tag: Inicialitzant controlador del botó");
+    
+    // El registre com a observador del model ara es fa automàticament a la classe base
   }
   
   @override
@@ -45,8 +46,65 @@ extends LdWidgetCtrlAbs<LdButton> {
   }
   
   @override
-  void onEvent(LdEvent pEvent) {
-    // Gestionar events específics si cal
+  void onEvent(LdEvent event) {
+    Debug.info("$tag: Rebut esdeveniment ${event.eType.name}");
+    
+    // Gestionar canvis d'idioma
+    if (event.eType == EventType.languageChanged) {
+      Debug.info("$tag: Processant esdeveniment de canvi d'idioma");
+      
+      // Forçar una reconstrucció del botó per actualitzar el text
+      if (mounted) {
+        setState(() {
+          Debug.info("$tag: Forçant reconstrucció del botó amb el nou idioma");
+        });
+      }
+    }
+    
+    // Gestionar canvis de tema
+    if (event.eType == EventType.themeChanged) {
+      Debug.info("$tag: Processant esdeveniment de canvi de tema");
+      
+      // Forçar una reconstrucció del botó per actualitzar l'estil
+      if (mounted) {
+        setState(() {
+          Debug.info("$tag: Forçant reconstrucció del botó amb el nou tema");
+        });
+      }
+    }
+    
+    // Gestionar reconstrucció global de la UI
+    if (event.eType == EventType.rebuildUI) {
+      Debug.info("$tag: Processant esdeveniment de reconstrucció de la UI");
+      
+      if (mounted) {
+        setState(() {
+          Debug.info("$tag: Reconstruint el botó");
+        });
+      }
+    }
+  }
+  
+  /// Alterna la visibilitat del botó
+  @override
+  void toggleVisibility() {
+    Debug.info("$tag: Cridant a toggleVisibility(). Estat actual: $isVisible");
+    
+    setState(() {
+      isVisible = !isVisible;
+      Debug.info("$tag: Visibilitat alternada a $isVisible");
+    });
+  }
+  
+  /// Alterna l'estat d'activació del botó
+  @override
+  void toggleEnabled() {
+    Debug.info("$tag: Cridant a toggleEnabled(). Estat actual: $isEnabled");
+    
+    setState(() {
+      isEnabled = !isEnabled;
+      Debug.info("$tag: Estat d'activació alternat a $isEnabled");
+    });
   }
   
   @override
@@ -55,6 +113,8 @@ extends LdWidgetCtrlAbs<LdButton> {
     
     // Determinar si el botó està actiu
     final VoidCallback? effectiveOnPressed = isEnabled ? onPressed : null;
+    
+    Debug.info("$tag: Construint el botó. Text: '$text', Visible: $isVisible, Enabled: $isEnabled");
     
     // Crear el botó amb el focusNode del controlador
     return ElevatedButton(

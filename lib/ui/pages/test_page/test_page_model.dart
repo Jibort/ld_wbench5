@@ -5,6 +5,7 @@
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
+import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/utils/full_set.dart';
@@ -13,6 +14,9 @@ import 'package:ld_wbench5/utils/map_extensions.dart';
 /// Model de dades per a la pàgina de prova
 class   TestPageModel
 extends LdPageModelAbs {
+  /// Model de dades de la pàgina
+  TestPageCtrl get ctrl => cPage.vCtrl as TestPageCtrl;
+
   /// Títol de la pàgina.
   final FullSet<String> _title = FullSet<String>();
   
@@ -23,7 +27,7 @@ extends LdPageModelAbs {
   int _counter = 0;
   
   /// CONSTRUCTORS --------------------
-  TestPageModel({ required String? pTitle, String? pSubTitle }) {
+  TestPageModel({ required super.pPage, required String? pTitle, String? pSubTitle }) {
     tag = className;
     _initializeValues(pTitle, pSubTitle);
   }
@@ -33,7 +37,7 @@ extends LdPageModelAbs {
     _title.set(pTitle ?? L.sSabina.tx);
     _subTitle.set(pSubTitle ?? L.sAppSabina.tx);
     _counter = 0;
-    Debug.info("$tag: Model inicialitzat amb títol '$_title', subtítol '$_subTitle' i comptador $_counter");
+    Debug.info("$tag: Model inicialitzat amb títol '$title', subtítol '$subTitle' i comptador $counter");
   }
   
   // GETTERS/SETTERS ------------------
@@ -58,11 +62,23 @@ extends LdPageModelAbs {
     if (_subTitle.get() != value) {
       notifyListeners(() {
         _subTitle.set(value);
-        Debug.info("$tag: Subtítol actualitzat a '$_subTitle'");
+        Debug.info("$tag: Subtítol actualitzat a '$subTitle'");
       });
     }
   }
   
+  /// Estableix el títol i el subtítol de la pàgina.
+  setTitles({ required String pTitle, String? pSubTitle }) {
+    if (_subTitle.get() != pSubTitle) {
+      notifyListeners(() {
+        _title.set(pTitle);
+        _subTitle.set(pSubTitle);
+        Debug.info("$tag: Títol actualitzat a    '$title'");
+        Debug.info("$tag: Subtítol actualitzat a '$subTitle'");
+      });
+    }
+  }
+
   /// Obté el comptador
   int get counter => _counter;
   

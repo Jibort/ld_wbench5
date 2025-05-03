@@ -1,6 +1,7 @@
 // ld_event.dart
 // Event base de l'aplicació.
-// CreatedAt: 2025/05/02 dj. JIQ
+// Created: 2025/05/02 dj. JIQ
+// Updated: 2025/05/03 ds. CLA
 
 import 'package:ld_wbench5/utils/full_set.dart';
 import 'package:ld_wbench5/utils/map_extensions.dart';
@@ -13,7 +14,7 @@ enum EventType {
   languageChanged(1),
   /// Canvi en l'estat de l'aplicació (primer pla, fons, etc.)
   applicationStateChanged(2),
-  /// Reconstrucció de la UI
+  /// Reconstrucció de la UI - Aquest event s'utilitza per forçar una reconstrucció global
   rebuildUI(3),
   /// Events personalitzats
   custom(9999);
@@ -57,6 +58,5 @@ class LdEvent {
   => (tgtTags == null || tgtTags!.isEmpty || tgtTags!.contains(tag));
     
   @override
-  String toString() => 'SabinaEvent(type: ${eType.name}[${eType.idx}], source: $srcTag, targets: $tgtTags, data: $eData)';
+  String toString() => 'LdEvent(type: ${eType.name}[${eType.idx}], source: $srcTag, targets: $tgtTags, data: $eData)';
 }
-

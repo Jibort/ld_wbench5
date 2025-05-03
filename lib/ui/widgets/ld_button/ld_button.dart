@@ -12,8 +12,7 @@ export 'ld_button_ctrl.dart';
 export 'ld_button_model.dart';
 
 /// Botó personalitzat de Sabina
-class   LdButton 
-extends LdWidgetAbs {
+class LdButton extends LdWidgetAbs {
   /// Constructor
   LdButton({
     super.key,
@@ -21,8 +20,9 @@ extends LdWidgetAbs {
     String? text,
     IconData? pIcon,
     VoidCallback? onPressed,
-    Color? backgroundColor })
-  { wModel = LdButtonModel(this,
+    Color? backgroundColor,
+  }) { 
+    wModel = LdButtonModel(this,
       pText: text,
       pIcon: pIcon,
     );

@@ -1,6 +1,7 @@
 // ld_scaffold_ctrl.dart
 // Controlador del widget LdScaffold.
-// CreatedAt: 2025/05/03 ds. JIQ
+// Created: 2025/05/03 ds. JIQ
+// Updated: 2025/05/03 ds. CLA
 
 import 'package:flutter/material.dart';
 
@@ -42,12 +43,37 @@ class LdScaffoldCtrl extends LdWidgetCtrlAbs<LdScaffold> {
   }
   
   @override
-  void onEvent(LdEvent pEvent) {
-    // Gestionar events específics si cal
+  void onEvent(LdEvent event) {
+    Debug.info("$tag: Rebut esdeveniment ${event.eType.name}");
+    
+    // Gestionar canvis d'idioma
+    if (event.eType == EventType.languageChanged) {
+      Debug.info("$tag: Processant esdeveniment de canvi d'idioma");
+      
+      // Forçar una reconstrucció del Scaffold
+      if (mounted) {
+        setState(() {
+          Debug.info("$tag: Forçant reconstrucció del Scaffold amb el nou idioma");
+        });
+      }
+    }
+    
+    // Gestionar reconstrucció global de la UI
+    if (event.eType == EventType.rebuildUI) {
+      Debug.info("$tag: Processant esdeveniment de reconstrucció de la UI");
+      
+      if (mounted) {
+        setState(() {
+          Debug.info("$tag: Reconstruint el Scaffold");
+        });
+      }
+    }
   }
   
   @override
   Widget buildContent(BuildContext context) {
+    Debug.info("$tag: Construint Scaffold");
+    
     return Scaffold(
       appBar: appBar,
       body: body,

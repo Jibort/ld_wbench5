@@ -1,13 +1,13 @@
 // ld_page_ctrl.dart
 // Controlador base per a les pàgines.
-// CreatedAt: 2025/05/03 ds. JIQ
+// Created: 2025/05/03 ds. JIQ
 
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
-import 'package:ld_wbench5/core/ld_model.dart';
+import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/lifecycle_interface.dart';
@@ -76,10 +76,14 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   
   /// Implementació de ModelObserver
   @override
-  void onModelChanged(void Function() updateFunction) {
+  void onModelChanged(void Function() pfUpdate) {
+    Debug.info("$tag.onModelChanged(): executant ...");
     if (mounted) {
-      setState(updateFunction);
+      setState(pfUpdate);
+    } else {
+      pfUpdate();
     }
+    Debug.info("$tag.onModelChanged(): ... executat");
   }
   
   /// Mètode que ha d'implementar cada pàgina per construir la seva UI

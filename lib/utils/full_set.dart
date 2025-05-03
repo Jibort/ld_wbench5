@@ -1,6 +1,6 @@
 // full_set.dart
 // Eina que assegura que la instància que acull sempre es pot modificar.
-// CreatedAt: 2025/04/07 dl. JIQ
+// Created: 2025/04/07 dl. JIQ
 
 // Eina que assegura que la instància que acull sempre es pot modificar.
 class FullSet<T> {
