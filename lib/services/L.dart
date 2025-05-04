@@ -85,6 +85,12 @@ with  LdTaggableMixin {
         mfNewLocale: s._currentLocale!.languageCode,
       },
     ));
+
+    // NOVA línia: Emetre event de reconstrucció global
+    EventBus.s.emit(LdEvent(
+      eType: EventType.rebuildUI,
+      srcTag: s.tag,
+    ));
   }
   
   /// Carrega tots els diccionaris disponibles

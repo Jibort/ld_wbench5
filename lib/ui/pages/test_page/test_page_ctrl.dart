@@ -62,27 +62,35 @@ extends LdPageCtrl<TestPage> {
   void onEvent(LdEvent event) {
     Debug.info("$tag: Event rebut: ${event.eType.name}");
     
-    // Actualitzar model quan canvia l'idioma
-    if (event.eType == EventType.languageChanged) {
-      String? newLocale = event.eData[mfNewLocale] as String?;
-      Debug.info("$tag: Idioma canviat a: $newLocale");
-      
-      // Actualitzar els textos del model
-      model.updateTexts();
-      
-      // També forcem una actualització global a tota l'aplicació
-      // per assegurar-nos que tots els widgets rebin l'esdeveniment
-      EventBus.s.emit(LdEvent(
-        eType: EventType.rebuildUI,
-        srcTag: tag,
-        eData: {},
-      ));
-      
-      // Forçar una reconstrucció de la UI
-      setState(() {
-        // Aquest setState() forçarà a reconstruir la UI amb els nous textos
-        Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'idioma");
-      });
+    if (event.eType == EventType.rebuildUI) {
+      if (mounted) {
+        setState(() {
+          Debug.info("$tag: Reconstruint completament");
+        });
+      }
+    } else {
+      // Actualitzar model quan canvia l'idioma
+      if (event.eType == EventType.languageChanged) {
+        String? newLocale = event.eData[mfNewLocale] as String?;
+        Debug.info("$tag: Idioma canviat a: $newLocale");
+        
+        // Actualitzar els textos del model
+        model.updateTexts();
+        
+        // També forcem una actualització global a tota l'aplicació
+        // per assegurar-nos que tots els widgets rebin l'esdeveniment
+        EventBus.s.emit(LdEvent(
+          eType: EventType.rebuildUI,
+          srcTag: tag,
+          eData: {},
+        ));
+        
+        // Forçar una reconstrucció de la UI
+        setState(() {
+          // Aquest setState() forçarà a reconstruir la UI amb els nous textos
+          Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'idioma");
+        });
+      }
     }
   }
 
