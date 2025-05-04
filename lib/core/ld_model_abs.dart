@@ -39,7 +39,7 @@ with     LdTaggableMixin {
     
     // Si hi ha un observador, notifica-li del canvi
     if (_obs != null) {
-      _obs!.onModelChanged(() {});
+      _obs!.onModelChanged(action);
       Debug.info("$tag: Canvi notificat a l'observador");
     } else {
       Debug.info("$tag: Canvi en el model sense observador");

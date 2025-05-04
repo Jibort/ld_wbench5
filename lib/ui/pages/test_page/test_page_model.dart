@@ -93,9 +93,13 @@ extends LdPageModelAbs {
   /// Actualitza els textos segons l'idioma actual
   void updateTexts() {
     notifyListeners(() {
-      title = L.sSabina.tx;
-      subTitle = L.sAppSabina.tx;
-    });
+    // Actualizar todos los textos que provienen de las traducciones
+    title = L.sSabina.tx;
+    subTitle = L.sAppSabina.tx;
+    // Nota: los textos de los botones se recuperan directamente en la construcción 
+    // de los widgets usando L.tx(), por lo que no necesitan ser actualizados aquí
+    Debug.info("$tag: Textos actualitzats amb l'idioma actual: ${L.getCurrentLocale().languageCode}");
+  });
   }
 
   // 'LdPageModelAbs' -----------------

@@ -19,7 +19,9 @@ with  LdTaggableMixin {
   static const String sWelcome = "sWelcome";
   static const String sChangeLanguage = "sChangeLanguage";
   static const String sChangeTheme = "sChangeTheme";
-  
+  static const String sToggleThemeButtonVisibility = "sToggleThemeButtonVisibility";
+  static const String sToggleLanguageButtonEnabled = "sToggleLanguageButtonEnabled";
+
   /// Instància singleton
   static final L _inst = L._();
   static L get s => _inst;
@@ -76,7 +78,8 @@ with  LdTaggableMixin {
     s._currentLocale = Locale(languageCode);
     Debug.info("${s.tag}: Idioma canviat de ${oldLocale?.languageCode ?? 'null'} a $languageCode");
     
-    // Notifica del canvi d'idioma
+    // Notifica del canvi d'idioma amb un sol event
+    // Aquest event hauria de ser suficient per actualitzar tota l'aplicació
     EventBus.s.emit(LdEvent(
       eType: EventType.languageChanged,
       srcTag: s.tag,
@@ -84,12 +87,6 @@ with  LdTaggableMixin {
         mfOldLocale: oldLocale?.languageCode,
         mfNewLocale: s._currentLocale!.languageCode,
       },
-    ));
-
-    // NOVA línia: Emetre event de reconstrucció global
-    EventBus.s.emit(LdEvent(
-      eType: EventType.rebuildUI,
-      srcTag: s.tag,
     ));
   }
   
@@ -104,6 +101,8 @@ with  LdTaggableMixin {
       sWelcome: "Benvingut/da",
       sChangeLanguage: "Canvia l'Idioma",
       sChangeTheme: "Canvia el Tema",
+      sToggleThemeButtonVisibility: "Alternar visibilitat botó tema",
+      sToggleLanguageButtonEnabled: "Alternar estat botó idioma",
     };
     
     // Espanyol
@@ -113,6 +112,8 @@ with  LdTaggableMixin {
       sWelcome: "Bienvenido/a",
       sChangeLanguage: "Cambiar Idioma",
       sChangeTheme: "Cambiar Tema",
+      sToggleThemeButtonVisibility: "Alternar visibilidad botón tema",
+      sToggleLanguageButtonEnabled: "Alternar estado botón idioma",
     };
     
     // Anglès
@@ -122,6 +123,8 @@ with  LdTaggableMixin {
       sWelcome: "Welcome",
       sChangeLanguage: "Change Language",
       sChangeTheme: "Change Theme",
+      sToggleThemeButtonVisibility: "Toggle theme button visibility",
+      sToggleLanguageButtonEnabled: "Toggle language button enabled state",
     };
   }
   

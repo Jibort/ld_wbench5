@@ -6,7 +6,6 @@
 // Updated: 2025/05/03 ds. CLA
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
@@ -61,34 +60,27 @@ extends LdPageCtrl<TestPage> {
   @override
   void onEvent(LdEvent event) {
     Debug.info("$tag: Event rebut: ${event.eType.name}");
-    
-    if (event.eType == EventType.rebuildUI) {
+  
+    // Actualizar modelo cuando cambia el idioma
+    if (event.eType == EventType.languageChanged) {
+      String? newLocale = event.eData[mfNewLocale] as String?;
+      Debug.info("$tag: Idioma canviat a: $newLocale");
+      
+      // Actualizar los textos del modelo
+      model.updateTexts();
+      
+      // Forzar reconstrucción de la UI
+      if (mounted) {
+        setState(() {
+          Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'idioma");
+        });
+      }
+    }
+    // Manejamos rebuildUI por separado
+    else if (event.eType == EventType.rebuildUI) {
       if (mounted) {
         setState(() {
           Debug.info("$tag: Reconstruint completament");
-        });
-      }
-    } else {
-      // Actualitzar model quan canvia l'idioma
-      if (event.eType == EventType.languageChanged) {
-        String? newLocale = event.eData[mfNewLocale] as String?;
-        Debug.info("$tag: Idioma canviat a: $newLocale");
-        
-        // Actualitzar els textos del model
-        model.updateTexts();
-        
-        // També forcem una actualització global a tota l'aplicació
-        // per assegurar-nos que tots els widgets rebin l'esdeveniment
-        EventBus.s.emit(LdEvent(
-          eType: EventType.rebuildUI,
-          srcTag: tag,
-          eData: {},
-        ));
-        
-        // Forçar una reconstrucció de la UI
-        setState(() {
-          // Aquest setState() forçarà a reconstruir la UI amb els nous textos
-          Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'idioma");
         });
       }
     }
@@ -113,23 +105,6 @@ extends LdPageCtrl<TestPage> {
   void changeLanguage() {
     Debug.info("$tag: Canviant idioma");
     L.toggleLanguage();
-    
-    // Com a backup, també forcem una actualització aquí per si l'esdeveniment no es rebés
-    Future.delayed(const Duration(milliseconds: 100), () {
-      model.updateTexts();
-      
-      // Emetre un esdeveniment de reconstrucció de la UI per a tota l'aplicació
-      EventBus.s.emit(LdEvent(
-        eType: EventType.rebuildUI,
-        srcTag: tag,
-      ));
-      
-      if (mounted) {
-        setState(() {
-          Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'idioma (backup)");
-        });
-      }
-    });
   }
   
   /// Canvia el tema entre clar i fosc
@@ -199,24 +174,25 @@ extends LdPageCtrl<TestPage> {
     // Creem els botons i guardem referència als seus controladors mitjançant keys
     final themeButton = LdButton(
       key: _themeButtonKey,
-      text: L.sChangeTheme.tx,
+      text: L.sChangeTheme.tx, // Ya usa correctamente .tx
       onPressed: changeTheme,
       backgroundColor: Theme.of(context).colorScheme.secondary,
     );
     
     final languageButton = LdButton(
       key: _languageButtonKey,
-      text: L.sChangeLanguage.tx,
+      text: L.sChangeLanguage.tx, // Ya usa correctamente .tx
       onPressed: changeLanguage,
     );
     
+    // Asegurarnos de que todos los textos estáticos usen la traducción correcta
     final toggleVisibilityButton = LdButton(
-      text: "Alternar visibilitat botó tema",
+      text: L.sToggleThemeButtonVisibility.tx,
       onPressed: toggleThemeButtonVisibility,
     );
-    
+
     final toggleEnabledButton = LdButton(
-      text: "Alternar estat botó idioma",
+      text: L.sToggleLanguageButtonEnabled.tx,
       onPressed: toggleLanguageButtonEnabled,
     );
     
@@ -324,4 +300,5 @@ extends LdPageCtrl<TestPage> {
       ),
     );
   }
+
 }

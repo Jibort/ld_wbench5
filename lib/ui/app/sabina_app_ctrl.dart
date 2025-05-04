@@ -19,7 +19,9 @@ import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/utils/once_set.dart';
 
 /// Controlador principal de l'aplicació
-class SabinaAppCtrl extends State<SabinaApp> with WidgetsBindingObserver {
+class   SabinaAppCtrl 
+extends State<SabinaApp> 
+with    WidgetsBindingObserver {
   /// Referència a la instància de l'aplicació.
   final OnceSet<SabinaApp> _app = OnceSet<SabinaApp>();
 
@@ -66,7 +68,7 @@ class SabinaAppCtrl extends State<SabinaApp> with WidgetsBindingObserver {
   /// Gestiona els events rebuts
   void _handleEvent(LdEvent event) {
     Debug.info("SabinaApp: Rebut esdeveniment ${event.eType.name}");
-    
+  
     // Gestionar canvi de tema
     if (event.eType == EventType.themeChanged) {
       setState(() {
@@ -75,20 +77,11 @@ class SabinaAppCtrl extends State<SabinaApp> with WidgetsBindingObserver {
       });
     }
     
-    // Gestionar canvi d'idioma
-    if (event.eType == EventType.languageChanged) {
+    // Gestionar canvi d'idioma o reconstrucció global
+    if (event.eType == EventType.languageChanged || event.eType == EventType.rebuildUI) {
       setState(() {
         _languageChanged = true;
-        Debug.info("SabinaApp: Reconstruint l'aplicació per canvi d'idioma");
-      });
-    }
-    
-    // Gestionar reconstrucció global de la UI
-    if (event.eType == EventType.rebuildUI) {
-      setState(() {
-        // JAB_Q: ???
-        _languageChanged = true;
-        Debug.info("SabinaApp: Reconstruint l'aplicació completa");
+        Debug.info("SabinaApp: Reconstruint l'aplicació per canvi d'${event.eType == EventType.languageChanged ? 'idioma' : 'event global'}");
       });
     }
   }
@@ -108,13 +101,8 @@ class SabinaAppCtrl extends State<SabinaApp> with WidgetsBindingObserver {
   }
   
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext pBCtx) {
     Debug.info("SabinaApp: Construint aplicació. Tema: $_themeMode, Idioma canviat: $_languageChanged");
-    
-    // Si s'ha canviat l'idioma, reiniciem el flag
-    if (_languageChanged) {
-      _languageChanged = false;
-    }
     
     return ScreenUtilInit(
       designSize: designSize,
@@ -124,14 +112,27 @@ class SabinaAppCtrl extends State<SabinaApp> with WidgetsBindingObserver {
         // Ara ScreenUtil ja està preparat
         _themeMode = ThemeService.s.themeMode;
 
-        return MaterialApp(
-          title: L.sSabina.tx,
+        final app = MaterialApp(
+          title: L.sSabina.tx, // Asegurarnos de que siempre use la función tx
           debugShowCheckedModeBanner: false,
           theme: ThemeService.s.lightTheme,
           darkTheme: ThemeService.s.darkTheme,
           themeMode: _themeMode,
           home: child ?? TestPage(),
         );
+        
+        // Reiniciamos el flag después de construir la UI
+        if (_languageChanged) {
+          // Usar un post-frame callback para asegurar que el flag se reinicie después de la reconstrucción
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            setState(() {
+              _languageChanged = false;
+              Debug.info("SabinaApp: Flag de canvi d'idioma reiniciat després de la reconstrucció");
+            });
+          });
+        }
+        
+        return app;
       }
     );
   }
