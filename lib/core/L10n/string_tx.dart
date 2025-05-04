@@ -15,7 +15,7 @@ class StringTx {
   
   /// Crea un text (literal o clau) a partir d'una cadena de text.
   StringTx(String? pStr) {
-    if (pStr == null || !(pStr.startsWith(r"##") && !pStr.startsWith(r"###"))) {
+    if (pStr == null || !(pStr.startsWith("##") && !pStr.startsWith("###"))) {
       _key = null;
       _text = pStr;
     } else {

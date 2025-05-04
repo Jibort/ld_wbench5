@@ -34,15 +34,15 @@ with     LdTaggableMixin {
   
   /// Notifica als observadors que el model ha canviat
   void notifyListeners(void Function() action) {
-    // Executa l'acció sempre, independentment de l'observador
+    // Execute the action regardless of observer
     action();
     
-    // Si hi ha un observador, notifica-li del canvi
+    // If there's an observer, notify it of the change
     if (_obs != null) {
+      Debug.info("$tag: Notifying observer of model change");
       _obs!.onModelChanged(action);
-      Debug.info("$tag: Canvi notificat a l'observador");
     } else {
-      Debug.info("$tag: Canvi en el model sense observador");
+      Debug.warn("$tag: Model changed without an observer");
     }
   }
   

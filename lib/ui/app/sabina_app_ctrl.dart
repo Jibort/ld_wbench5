@@ -67,25 +67,24 @@ with    WidgetsBindingObserver {
   
   /// Gestiona els events rebuts
   void _handleEvent(LdEvent event) {
-    Debug.info("SabinaApp: Rebut esdeveniment ${event.eType.name}");
-  
-    // Gestionar canvi de tema
-    if (event.eType == EventType.themeChanged) {
+    Debug.info("SabinaApp: Received event ${event.eType.name}");
+
+    if (event.eType == EventType.languageChanged || event.eType == EventType.rebuildUI) {
+      Debug.info("SabinaApp: Rebuilding app due to ${event.eType == EventType.languageChanged ? 'language change' : 'global event'}");
       setState(() {
-        _themeMode = ThemeService.s.themeMode;
-        Debug.info("SabinaApp: Actualitzant tema a $_themeMode");
+        // No need for the complex flag mechanism
       });
     }
     
-    // Gestionar canvi d'idioma o reconstrucció global
-    if (event.eType == EventType.languageChanged || event.eType == EventType.rebuildUI) {
+    // Handle theme changes as before
+    if (event.eType == EventType.themeChanged) {
       setState(() {
-        _languageChanged = true;
-        Debug.info("SabinaApp: Reconstruint l'aplicació per canvi d'${event.eType == EventType.languageChanged ? 'idioma' : 'event global'}");
+        _themeMode = ThemeService.s.themeMode;
+        Debug.info("SabinaApp: Updating theme to $_themeMode");
       });
     }
   }
-  
+
   /// Gestiona els canvis en l'estat del cicle de vida de l'aplicació
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -113,12 +112,12 @@ with    WidgetsBindingObserver {
         _themeMode = ThemeService.s.themeMode;
 
         final app = MaterialApp(
-          title: L.sSabina.tx, // Utilitzem la funció tx per a totes les traduccions
+          title: L.sSabina, // Utilitzem la funció tx per a totes les traduccions
           debugShowCheckedModeBanner: false,
           theme: ThemeService.s.lightTheme,
           darkTheme: ThemeService.s.darkTheme,
           themeMode: _themeMode,
-          home: child ?? TestPage(),
+          home: child ?? TestPage(pTitleKey: L.sAppSabina, pSubTitleKey: L.sWelcome),
         );
         
         // Reiniciar el flag només després que hagi passat un temps adequat

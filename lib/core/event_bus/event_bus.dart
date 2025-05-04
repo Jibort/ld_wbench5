@@ -35,11 +35,11 @@ class EventBus {
 
   /// Emet un event a tots els subscriptors
   void emit(LdEvent event) {
-    if (!_ctrl.isClosed) {
-      Debug.info("EventBus: Emetent event de tipus ${event.eType}");
-      _ctrl.add(event);
-    }
+  if (!_ctrl.isClosed) {
+    Debug.info("EventBus: Emitting event of type ${event.eType} from ${event.srcTag} to targets ${event.tgtTags}");
+    _ctrl.add(event);
   }
+}
   
   /// Tanca el stream controller
   void dispose() {

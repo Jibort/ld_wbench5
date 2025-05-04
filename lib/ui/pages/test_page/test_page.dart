@@ -13,12 +13,18 @@ export 'test_page_model.dart';
 /// Pàgina de prova que mostra la nova arquitectura simplificada
 class TestPage extends LdPageAbs {
   /// Constructor
-  TestPage({super.key}) 
+  TestPage({super.key, required String pTitleKey, String? pSubTitleKey}) 
+
   : super(pTag: 'TestPage')
   { vCtrl = TestPageCtrl(pPage: this);
     
     // En comptes de passar les traduccions aquí, deixem que el model les obtingui directament
-    vModel = TestPageModel(pPage: this);
+    vModel = TestPageModel(
+      pPage: this,
+      pTitleKey: pTitleKey,
+      pSubTitleKey: pSubTitleKey
+      );
+
   }
 }
 

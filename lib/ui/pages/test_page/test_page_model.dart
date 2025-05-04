@@ -27,15 +27,18 @@ extends LdPageModelAbs {
   int _counter = 0;
   
   /// CONSTRUCTORS --------------------
-  TestPageModel({ required super.pPage }) {
+  TestPageModel({
+    required super.pPage,
+    required String pTitleKey,
+    String? pSubTitleKey }) {
     tag = className;
-    updateTexts(); // Carreguem els textos directament des del constructor
+    updateTexts(pTitleKey, pSubTitleKey); // Carreguem els textos directament des del constructor
   }
 
   /// Actualitza els textos segons l'idioma actual
-  void updateTexts() {
-    _title.t = L.sSabina;
-    _subTitle.t = L.sAppSabina;
+  void updateTexts(String pTitleKey, String? pSubTitleKey) {
+    _title.t = pTitleKey;
+    _subTitle.t = pSubTitleKey?? L.sAppSabina;
     Debug.info("$tag: Textos actualitzats amb l'idioma actual: ${L.getCurrentLocale().languageCode}");
   }
 

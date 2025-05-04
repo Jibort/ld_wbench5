@@ -67,7 +67,7 @@ extends LdPageCtrl<TestPage> {
       Debug.info("$tag: Idioma canviat a: $newLocale");
       
       // Actualizar los textos del modelo
-      model.updateTexts();
+      // JAB_Q: No cal, oi? model.updateTexts();
       
       // Forzar reconstrucción de la UI
       if (mounted) {
@@ -175,25 +175,25 @@ extends LdPageCtrl<TestPage> {
     // Creem els botons i guardem referència als seus controladors mitjançant keys
     final themeButton = LdButton(
       key: _themeButtonKey,
-      text: L.sChangeTheme.tx, // Ya usa correctamente .tx
+      text: L.sChangeTheme, // JAB_Q: .tx, // Ya usa correctamente .tx
       onPressed: changeTheme,
       backgroundColor: Theme.of(context).colorScheme.secondary,
     );
     
     final languageButton = LdButton(
       key: _languageButtonKey,
-      text: L.sChangeLanguage.tx, // Ya usa correctamente .tx
+      text: L.sChangeLanguage, // JAB_Q: .tx, // Ya usa correctamente .tx
       onPressed: changeLanguage,
     );
     
     // Asegurarnos de que todos los textos estáticos usen la traducción correcta
     final toggleVisibilityButton = LdButton(
-      text: L.sToggleThemeButtonVisibility.tx,
+      text: L.sToggleThemeButtonVisibility, // JAB_Q: .tx,
       onPressed: toggleThemeButtonVisibility,
     );
 
     final toggleEnabledButton = LdButton(
-      text: L.sToggleLanguageButtonEnabled.tx,
+      text: L.sToggleLanguageButtonEnabled, // JAB_Q: .tx,
       onPressed: toggleLanguageButtonEnabled,
     );
     

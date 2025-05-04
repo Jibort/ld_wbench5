@@ -134,7 +134,13 @@ static String tx(String key) {
   Locale locale = getCurrentLocale();
   Dictionary? dictionary = s._dictionaries[locale.languageCode];
   String translation = dictionary?.getOr(key, errInText) ?? errInText;
-  Debug.info("L.tx: Traducció de '$key' a '${locale.languageCode}': '$translation'");
+  
+  if (translation == errInText) {
+    Debug.warn("L.tx: Translation key '$key' not found in '${locale.languageCode}' dictionary");
+  } else {
+    Debug.info("L.tx: Translated '$key' to '$translation' in '${locale.languageCode}'");
+  }
+  
   return translation;
 }
   
