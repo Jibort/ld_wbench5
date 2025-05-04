@@ -54,9 +54,14 @@ class LdEvent {
   });
   
   /// Comprova si aquest event està dirigit a un tag específic
-  bool isTargetedAt(String tag)
-  => (tgtTags == null || tgtTags!.isEmpty || tgtTags!.contains(tag));
-    
+  bool isTargetedAt(String tag) => 
+    // Events globals que sempre s'han de processar
+    (eType == EventType.languageChanged || 
+    eType == EventType.themeChanged || 
+    eType == EventType.rebuildUI) ||
+    // O bé events específics per aquest tag
+    (tgtTags == null || tgtTags!.isEmpty || tgtTags!.contains(tag));
+
   @override
   String toString() => 'LdEvent(type: ${eType.name}[${eType.idx}], source: $srcTag, targets: $tgtTags, data: $eData)';
 }

@@ -49,7 +49,11 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   
   /// Processa un event rebut
   void _handleEvent(LdEvent event) {
-    if (event.isTargetedAt(tag)) {
+    // Eliminar el filtratge per tag en events globals importants
+    if (event.eType == EventType.languageChanged || 
+        event.eType == EventType.themeChanged || 
+        event.eType == EventType.rebuildUI || 
+        event.isTargetedAt(tag)) {
       Debug.info("$tag: Processant event ${event.eType.name}");
       onEvent(event);
     }

@@ -7,6 +7,7 @@ import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/utils/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
@@ -14,13 +15,13 @@ import 'package:ld_wbench5/utils/debug.dart';
 class L 
 with  LdTaggableMixin {
   /// Constants de les claus de text
-  static const String sSabina = "sSabina";
-  static const String sAppSabina = "sAppSabina";
-  static const String sWelcome = "sWelcome";
-  static const String sChangeLanguage = "sChangeLanguage";
-  static const String sChangeTheme = "sChangeTheme";
-  static const String sToggleThemeButtonVisibility = "sToggleThemeButtonVisibility";
-  static const String sToggleLanguageButtonEnabled = "sToggleLanguageButtonEnabled";
+  static const String sSabina = "##sSabina";
+  static const String sAppSabina = "##sAppSabina";
+  static const String sWelcome = "##sWelcome";
+  static const String sChangeLanguage = "##sChangeLanguage";
+  static const String sChangeTheme = "##sChangeTheme";
+  static const String sToggleThemeButtonVisibility = "##sToggleThemeButtonVisibility";
+  static const String sToggleLanguageButtonEnabled = "##sToggleLanguageButtonEnabled";
 
   /// Instància singleton
   static final L _inst = L._();
@@ -129,11 +130,13 @@ with  LdTaggableMixin {
   }
   
   /// Obté la traducció d'una clau
-  static String tx(String key) {
-    Locale locale = getCurrentLocale();
-    Dictionary? dictionary = s._dictionaries[locale.languageCode];
-    return dictionary?.getOr(key, '!?') ?? '!?';
-  }
+static String tx(String key) {
+  Locale locale = getCurrentLocale();
+  Dictionary? dictionary = s._dictionaries[locale.languageCode];
+  String translation = dictionary?.getOr(key, errInText) ?? errInText;
+  Debug.info("L.tx: Traducció de '$key' a '${locale.languageCode}': '$translation'");
+  return translation;
+}
   
   /// Alternativa l'idioma entre català i espanyol
   static void toggleLanguage() {

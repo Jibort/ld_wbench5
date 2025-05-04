@@ -113,7 +113,7 @@ with    WidgetsBindingObserver {
         _themeMode = ThemeService.s.themeMode;
 
         final app = MaterialApp(
-          title: L.sSabina.tx, // Asegurarnos de que siempre use la función tx
+          title: L.sSabina.tx, // Utilitzem la funció tx per a totes les traduccions
           debugShowCheckedModeBanner: false,
           theme: ThemeService.s.lightTheme,
           darkTheme: ThemeService.s.darkTheme,
@@ -121,13 +121,18 @@ with    WidgetsBindingObserver {
           home: child ?? TestPage(),
         );
         
-        // Reiniciamos el flag después de construir la UI
+        // Reiniciar el flag només després que hagi passat un temps adequat
         if (_languageChanged) {
-          // Usar un post-frame callback para asegurar que el flag se reinicie después de la reconstrucción
+          // Incrementar el delay per assegurar que la UI es reconstrueix completament
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            setState(() {
-              _languageChanged = false;
-              Debug.info("SabinaApp: Flag de canvi d'idioma reiniciat després de la reconstrucció");
+            // Utilitzar un timer per donar més temps
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mounted) {
+                setState(() {
+                  _languageChanged = false;
+                  Debug.info("SabinaApp: Flag de canvi d'idioma reiniciat després de la reconstrucció");
+                });
+              }
             });
           });
         }

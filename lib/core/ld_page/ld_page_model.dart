@@ -19,7 +19,5 @@ extends  LdModelAbs {
   set cPage(T pPage) => _page.set(pPage);
 
   /// Constructor ---------------------
-  LdPageModelAbs({ required T pPage }) {
-    cPage = pPage;
-  }
+  LdPageModelAbs({ required T pPage }) { cPage = pPage; }
 }

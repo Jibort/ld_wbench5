@@ -60,7 +60,7 @@ extends LdPageCtrl<TestPage> {
   @override
   void onEvent(LdEvent event) {
     Debug.info("$tag: Event rebut: ${event.eType.name}");
-  
+
     // Actualizar modelo cuando cambia el idioma
     if (event.eType == EventType.languageChanged) {
       String? newLocale = event.eData[mfNewLocale] as String?;
@@ -76,6 +76,7 @@ extends LdPageCtrl<TestPage> {
         });
       }
     }
+
     // Manejamos rebuildUI por separado
     else if (event.eType == EventType.rebuildUI) {
       if (mounted) {
@@ -200,7 +201,7 @@ extends LdPageCtrl<TestPage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: LdAppBar(
-          pTitle: model.title,
+          pTitle:    model.title,
           pSubTitle: model.subTitle,
         ),
       ),

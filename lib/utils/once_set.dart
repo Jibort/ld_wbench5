@@ -2,11 +2,17 @@
 // Eina que assegura que la instància que acull només s'inicia un cop.
 // Created: 2025/04/07 dl. JIQ
 
+
+
+import 'package:flutter/material.dart';
+import 'package:ld_wbench5/core/L10n/string_tx.dart';
+
 /// Eina que assegura que la instància que acull només s'inicia un cop
 /// independentment si s'inicialitza com a nul.
 class OnceSet<T> {
   // 🧩 MEMBRES ------------------------
   T? _inst;
+  @protected T? get i => get(pError: "Error en recuperació de OnceSet.StringTx!", pCouldBeNull: _isNullable);
   bool _isSet      = false;
   bool _isNullable = true;
 
@@ -15,11 +21,11 @@ class OnceSet<T> {
     assert(pInst != null || pIsNullable, "No es pot crear aquesta instància OnceSetSet amb null!");
     _inst = pInst;
     _isNullable = pIsNullable;
-    _isSet = (_inst != null);
+    _isSet = (_inst != null && pInst !is StringTx);
   }
 
   // 🪟 GETTERS I SETTERS --------------
-  bool get isSet => _isSet;
+  bool get isSet      => _isSet;
   bool get isNullable => _isNullable;
   
   T? get({ String? pError, pCouldBeNull = true }) {

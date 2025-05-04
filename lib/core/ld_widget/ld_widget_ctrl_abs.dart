@@ -233,12 +233,17 @@ abstract class LdWidgetCtrlAbs<T extends LdWidgetAbs>
   }
   
   /// Processa un event rebut
-  void _handleEvent(LdEvent event) {
-    if (event.isTargetedAt(tag)) {
-      Debug.info("$tag: Processant event ${event.eType.name}");
-      onEvent(event);
-    }
+void _handleEvent(LdEvent event) {
+  // Eliminar el filtratge per tag en events globals importants
+  // i assegurar que tots els widgets rebin aquests events
+  if (event.eType == EventType.languageChanged || 
+      event.eType == EventType.themeChanged || 
+      event.eType == EventType.rebuildUI || 
+      event.isTargetedAt(tag)) {
+    Debug.info("$tag: Processant event ${event.eType.name}");
+    onEvent(event);
   }
+}
   
   /// Mètode a sobreescriure per gestionar events
   void onEvent(LdEvent event);

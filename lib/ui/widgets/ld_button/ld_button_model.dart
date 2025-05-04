@@ -10,14 +10,15 @@ import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/utils/full_set.dart';
 import 'package:ld_wbench5/utils/map_extensions.dart';
+import 'package:ld_wbench5/utils/str_full_set.dart';
 
 class   LdButtonModel
 extends LdWidgetModelAbs<LdButton> {
   /// Text del botó.
-  final FullSet<String?> _text = FullSet<String?>();
+  final StrFullSet _text = StrFullSet();
   /// Retorna el text del botó.
-  String? get text => _text.get();
-  set text(String? value)  => notifyListeners(() { _text.set(value); });
+  String? get text => _text.t;
+  set text(String? value)  => notifyListeners(() { _text.t = value ?? ""; });
 
   /// Icona del botó.
   final FullSet<IconData?> _iconData = FullSet<IconData?>();
