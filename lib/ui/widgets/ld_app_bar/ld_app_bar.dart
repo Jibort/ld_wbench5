@@ -15,22 +15,23 @@ export 'ld_app_bar_ctrl.dart';
 export 'ld_app_bar_model.dart';
 
 /// Widget de la barra d'aplicació personalitzada
-class LdAppBar extends LdWidgetAbs {
+class LdAppBar 
+extends LdWidgetAbs {
   /// Constructor
   LdAppBar({
     super.key,
     super.pTag, 
-    required String pTitle,
-    String? pSubTitle,
+    required String pTitleKey,
+    String? pSubTitleKey,
     List<Widget>? actions,
   }) { 
-    Debug.info("$tag: Creant LdAppBar amb títol '$pTitle' i subtítol '$pSubTitle'");
+    Debug.info("$tag: Creant LdAppBar amb títol '$pTitleKey' i subtítol '$pSubTitleKey'");
     
     // Crear primer el model amb les claus o textos literals
     wModel = LdAppBarModel(
       this,
-      pTitle: pTitle, 
-      pSubTitle: pSubTitle
+      pTitleKey: pTitleKey, 
+      pSubTitleKey: pSubTitleKey
     );
     
     // Després el controlador amb les accions opcionals
@@ -55,8 +56,8 @@ class LdAppBar extends LdWidgetAbs {
     // Passar les claus de traducció o textos literals
     wModel = LdAppBarModel(
       this,
-      pTitle: pTitle.key ?? pTitle.literalText ?? "",
-      pSubTitle: pSubTitle?.key ?? pSubTitle?.literalText
+      pTitleKey: pTitle.key ?? pTitle.literalText ?? "",
+      pSubTitleKey: pSubTitle?.key ?? pSubTitle?.literalText
     );
     
     // Després el controlador amb les accions opcionals

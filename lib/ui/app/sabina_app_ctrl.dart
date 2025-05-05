@@ -117,7 +117,7 @@ with    WidgetsBindingObserver {
           theme: ThemeService.s.lightTheme,
           darkTheme: ThemeService.s.darkTheme,
           themeMode: _themeMode,
-          home: child ?? TestPage(pTitleKey: L.sAppSabina, pSubTitleKey: L.sWelcome),
+          home: TestPage(pTitleKey: L.sAppSabina, pSubTitleKey: L.sWelcome), // JAB_Q: child ?? 
         );
         
         // Reiniciar el flag només després que hagi passat un temps adequat

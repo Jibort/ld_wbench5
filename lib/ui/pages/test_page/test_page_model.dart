@@ -48,10 +48,10 @@ extends LdPageModelAbs {
   String get title => _title.t!;
   
   /// Estableix el títol de la pàgina
-  set title(String pTitle) {
-    if (_title.t != pTitle) {
+  set title(String pTitleKey) {
+    if (_title.t != pTitleKey) {
       notifyListeners(() {
-        _title.t = pTitle;
+        _title.t = pTitleKey;
         Debug.info("$tag: Títol actualitzat a '$_title'");
       });
     }
@@ -61,16 +61,16 @@ extends LdPageModelAbs {
   String? get subTitle => _subTitle.t;
   
   /// Estableix el subtítol de la pàgina
-  set subTitle(String? pSubTitle) {
-    if (_subTitle.t != pSubTitle) {
+  set subTitle(String? pSubTitleKey) {
+    if (_subTitle.t != pSubTitleKey) {
       notifyListeners(() {
-        _subTitle.t = pSubTitle;
+        _subTitle.t = pSubTitleKey;
         Debug.info("$tag: Títol actualitzat a '$_title'");
       });
     }
-    if (_subTitle.t != pSubTitle) {
+    if (_subTitle.t != pSubTitleKey) {
       notifyListeners(() {
-        _subTitle.t = pSubTitle;
+        _subTitle.t = pSubTitleKey;
         Debug.info("$tag: Subtítol actualitzat a '$subTitle'");
       });
     }

@@ -6,7 +6,6 @@
 import 'package:ld_wbench5/core/L10n/string_tx.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/utils/debug.dart';
@@ -14,7 +13,8 @@ import 'package:ld_wbench5/utils/map_extensions.dart';
 import 'package:ld_wbench5/utils/str_full_set.dart';
 
 /// Model de dades del widget LdAppBar.
-class LdAppBarModel extends LdWidgetModelAbs<LdAppBar> {
+class   LdAppBarModel 
+extends LdWidgetModelAbs<LdAppBar> {
   /// Retorna el controlador del widget.
   LdAppBarCtrl get wCtrl => cWidget.wCtrl as LdAppBarCtrl;
   
@@ -22,20 +22,20 @@ class LdAppBarModel extends LdWidgetModelAbs<LdAppBar> {
   final StrFullSet _titleKey = StrFullSet();
   
   /// Retorna el títol traduït de la barra d'aplicació.
-  String get title {
-    if (_titleKey.t != null && _titleKey.t!.startsWith("##")) {
-      String translated = L.tx(_titleKey.t!);
-      Debug.info("$tag: Títol traduït: '$translated' de clau '${_titleKey.t}'");
+  String get titleKey {
+    if (_titleKey.t != null && _titleKey.isKey) {
+      String translated = _titleKey.tx!; // JAB_Q: L.tx(_titleKey.t!);
+      Debug.info("$tag: Títol traduït: '$translated' de clau '${_titleKey.tx}'");
       return translated;
     }
     return _titleKey.t ?? errInText;
   }
   
   /// Estableix la clau de traducció o text literal pel títol de la barra d'aplicació.
-  set title(String pTitle) {
+  set titleKey(String pTitleKey) {
     notifyListeners(() {
-      _titleKey.t = pTitle;
-      Debug.info("$tag: Clau/text de títol establert a '$pTitle'");
+      _titleKey.t = pTitleKey;
+      Debug.info("$tag: Clau/text de títol establert a '$pTitleKey'");
     });
   }
 
@@ -43,52 +43,46 @@ class LdAppBarModel extends LdWidgetModelAbs<LdAppBar> {
   final StrFullSet _subTitleKey = StrFullSet();
   
   /// Retorna el subtítol traduït de la barra d'aplicació.
-  String? get subTitle {
-    if (_subTitleKey.t != null && _subTitleKey.t!.startsWith("##")) {
-      String translated = L.tx(_subTitleKey.t!);
-      Debug.info("$tag: Subtítol traduït: '$translated' de clau '${_subTitleKey.t}'");
+  String? get subTitleKey {
+    if (_subTitleKey.t != null && _subTitleKey.isKey) {
+      String translated = _subTitleKey.tx!; // JAB_Q: L.tx(_subTitleKey.t!);
+      Debug.info("$tag: Subtítol traduït: '$translated' de clau '${_subTitleKey.tx}'");
       return translated;
     }
     return _subTitleKey.t;
   }
   
   /// Estableix la clau de traducció o text literal pel subtítol de la barra d'aplicació.
-  set subTitle(String? pSubTitle) {
+  set subTitleKey(String? pSubTitleKey) {
     notifyListeners(() {
-      _subTitleKey.t = pSubTitle;
-      Debug.info("$tag: Clau/text de subtítol establert a '$pSubTitle'");
+      _subTitleKey.t = pSubTitleKey;
+      Debug.info("$tag: Clau/text de subtítol establert a '$pSubTitleKey'");
     });
   }
   
   /// Estableix el títol i el subtítol en la mateixa crida.
-  void setTitles({required String pTitle, String? pSubTitle}) {
+  void setTitles({ required String pTitleKey, String? pSubTitleKey }) {
     notifyListeners(() {
-      _titleKey.t = pTitle;
-      _subTitleKey.t = pSubTitle;
-      Debug.info("$tag: Títol i subtítol establerts a '$pTitle' i '$pSubTitle'");
+      _titleKey.t = pTitleKey;
+      _subTitleKey.t = pSubTitleKey;
+      Debug.info("$tag: Títol i subtítol establerts a '$pTitleKey' i '$pSubTitleKey'");
     });
   }
 
   /// Actualitza les traduccions quan canvia l'idioma
   void updateTranslations() {
-    bool hasTranslatableTexts = 
-        (_titleKey.t != null && _titleKey.t!.startsWith("##")) || 
-        (_subTitleKey.t != null && _subTitleKey.t!.startsWith("##"));
-        
-    if (hasTranslatableTexts) {
-      notifyListeners(() {
-        Debug.info("$tag: Textos actualitzats per canvi d'idioma");
-        Debug.info("$tag: Títol actualitzat: '$title'");
-        Debug.info("$tag: Subtítol actualitzat: '$subTitle'");
-      });
-    }
+    notifyListeners(() {
+      Debug.info("$tag: Textos actualitzats per canvi d'idioma");
+      Debug.info("$tag: Títol actualitzat: '$titleKey'");
+      Debug.info("$tag: Subtítol actualitzat: '$subTitleKey'");
+    });
   }
 
   /// Constructor General
-  LdAppBarModel(super.pWidget, {required String pTitle, String? pSubTitle}) {
-    _titleKey.t = pTitle;
-    _subTitleKey.t = pSubTitle;
-    Debug.info("$tag: Model creat amb títol '$pTitle' i subtítol '$pSubTitle'");
+  LdAppBarModel(super.pWidget, { required String pTitleKey, String? pSubTitleKey }) {
+    _titleKey.t = pTitleKey;
+    _subTitleKey.t = pSubTitleKey;
+    Debug.info("$tag: Model creat amb títol '$pTitleKey' i subtítol '$pSubTitleKey'");
   }
 
   /// Constructor des d'un mapa de valors.
@@ -100,8 +94,8 @@ class LdAppBarModel extends LdWidgetModelAbs<LdAppBar> {
   @override
   void fromMap(LdMap pMap) {
     super.fromMap(pMap);
-    title = pMap[mfTitle] as String;
-    subTitle = pMap[mfSubTitle] as String?;
+    titleKey = pMap[mfTitle] as String;
+    subTitleKey = pMap[mfSubTitle] as String?;
   }
 
   /// Retorna un mapa amb els membres del model.
@@ -120,9 +114,9 @@ class LdAppBarModel extends LdWidgetModelAbs<LdAppBar> {
   @override
   getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) {
     if (pKey == mfTitle) {
-      return title;
+      return titleKey;
     } else if (pKey == mfSubTitle) {
-      return subTitle;
+      return subTitleKey;
     } else {
       return super.getField(
         pKey: pKey, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
@@ -138,15 +132,15 @@ class LdAppBarModel extends LdWidgetModelAbs<LdAppBar> {
     String? pErrorMsg
   }) {
     if (pKey == mfTitle && (pValue is String || pValue is StringTx)) {
-      title = (pValue is StringTx) ? pValue.key ?? pValue.literalText ?? "" : pValue;
+      titleKey = (pValue is StringTx) ? pValue.key ?? pValue.literalText ?? "" : pValue;
     } else if (pKey == mfSubTitle && (pValue is String? || pValue is StringTx?)) {
-      subTitle = (pValue is StringTx) 
+      subTitleKey = (pValue is StringTx) 
         ? pValue.key ?? pValue.literalText 
         : pValue as String?;
     } else if (pKey == "$mfTitle|$mfSubTitle" && pValue is String) {
       setTitles(
-        pTitle: pValue.split(r"|").first,
-        pSubTitle: pValue.split(r"|").last
+        pTitleKey: pValue.split(r"|").first,
+        pSubTitleKey: pValue.split(r"|").last
       );
     } else {
       super.setField(

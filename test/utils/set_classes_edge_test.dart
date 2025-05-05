@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:ld_wbench5/core/L10n/string_tx.dart';
 import 'package:ld_wbench5/utils/full_set.dart';
 import 'package:ld_wbench5/utils/once_set.dart';
@@ -210,6 +211,7 @@ void main() {
     test('StrFullSet - Cicle de vida complet amb StringTx', () {
       // StringTx nul i no nul
       final stringTxNul = StringTx(null);
+      stringTxNul.isNull;
       final stringTxValor = StringTx('valor');
       
       // StrFullSet amb StringTx nul

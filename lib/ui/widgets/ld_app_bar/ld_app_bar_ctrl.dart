@@ -42,8 +42,8 @@ class LdAppBarCtrl extends LdWidgetCtrlAbs<LdAppBar> {
     if (event.eType == EventType.languageChanged) {
       Debug.info("$tag: Processant esdeveniment de canvi d'idioma");
       
-      // Actualitzar les traduccions del model
-      model.updateTranslations();
+      // JAB_Q: Actualitzar les traduccions del model
+      // model.updateTranslations();
       
       // Forçar una reconstrucció de l'AppBar
       if (mounted) {
@@ -67,22 +67,22 @@ class LdAppBarCtrl extends LdWidgetCtrlAbs<LdAppBar> {
   
   @override
   Widget buildContent(BuildContext context) {
-    Debug.info("$tag: Construint AppBar amb títol: '${model.title}'");
+    Debug.info("$tag: Construint AppBar amb títol: '${model.titleKey}'");
     
-    return (model.subTitle != null)
+    return (model.subTitleKey != null)
       ? AppBar(
           title: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(model.title, style: TextStyle(fontSize: 20.0.sp)),
-              Text(model.subTitle!, style: TextStyle(fontSize: 14.0.sp)),
+              Text(model.titleKey, style: TextStyle(fontSize: 20.0.sp)),
+              Text(model.subTitleKey!, style: TextStyle(fontSize: 14.0.sp)),
             ],
           ),
           actions: actions,
         )
       : AppBar(
-        title: Text(model.title),
+        title: Text(model.titleKey),
         actions: actions,
       );
   }

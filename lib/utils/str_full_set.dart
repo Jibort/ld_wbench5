@@ -16,12 +16,20 @@ extends FullSet<StringTx> {
   StrFullSet({ String? pStrOrKey, super.pIsNullable })
   : super(pInst: StringTx(pStrOrKey));
 
+  /// Cert només si el contingut del StringTx és una clau a traduir.
+  bool get isKey
+   => (inst?.isTranslatable?? false);
+
   /// Cert només si el contingut del StringTx és nul.
   @override bool get isNull
   => (inst == null || inst!.isNull);
 
-  /// Retorna el text de la instància.
+  /// Retorna el text (clau o literal) de la instància.
   String? get t
+  => (isNull)? null : inst!.source;
+
+  /// Retorna el text de la instància (traduït si cal).
+  String? get tx
   => (!isNull)
     ? inst!.text
     : null;

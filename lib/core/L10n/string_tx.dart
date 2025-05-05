@@ -36,9 +36,18 @@ class StringTx {
   /// Retorna el text literal (o null si és traduïble)
   String? get literalText => _text;
   
+  /// Retorna el text sigui clau o literal.
+  String? get source => (_key ?? _text);
+
   /// Retorna el text traduït o literal segons correspongui
   String? get text => isTranslatable ? L.tx(_key!) : literalText;
   
+  /// Retorna el contingut de la instància (sigui clau o text literal).
+  String? get() =>
+    (_key != null)
+      ? _key
+      : _text;
+
   /// Permet reestablir els valors segons les necessitats.
   void set(String? pText) {
     if (pText != null && pText.startsWith("##")) {

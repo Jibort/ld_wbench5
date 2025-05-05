@@ -18,8 +18,12 @@ extends OnceSet<StringTx> {
 
   @override bool get isNull => (inst!.isNull);
 
-  /// Retorna el text de la instància.
+  /// Retorna el text (clau o literal) de la instància.
   String? get t
+  => (isNull)? null : inst!.source;
+
+  /// Retorna el text de la instància.
+  String? get tx
   => (!isNull)
     ? inst!.text
     : null;

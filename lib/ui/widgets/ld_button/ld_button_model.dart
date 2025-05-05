@@ -17,8 +17,8 @@ extends LdWidgetModelAbs<LdButton> {
   /// Text del botó.
   final StrFullSet _text = StrFullSet();
   /// Retorna el text del botó.
-  String? get text => _text.t;
-  set text(String? value)  => notifyListeners(() { _text.t = value ?? ""; });
+  String? get text => _text.tx;
+  set text(String? pTextOrKey)  => notifyListeners(() { _text.t = pTextOrKey ?? ""; });
 
   /// Icona del botó.
   final FullSet<IconData?> _iconData = FullSet<IconData?>();

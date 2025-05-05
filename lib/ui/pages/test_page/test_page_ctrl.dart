@@ -201,8 +201,8 @@ extends LdPageCtrl<TestPage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: LdAppBar(
-          pTitle:    model.title,
-          pSubTitle: model.subTitle,
+          pTitleKey:    model.title,
+          pSubTitleKey: model.subTitle,
         ),
       ),
       body: Center(
@@ -212,7 +212,7 @@ extends LdPageCtrl<TestPage> {
             // Subtítol
             if (model.subTitle != null)
               Text(
-                model.subTitle!,
+                model.subTitle!.tx,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             
