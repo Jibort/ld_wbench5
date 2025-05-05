@@ -21,7 +21,7 @@ with     LdTaggableMixin {
   /// Controlador del widget
   final OnceSet<LdWidgetCtrlAbs<LdWidgetAbs>> _ctrl = OnceSet<LdWidgetCtrlAbs<LdWidgetAbs>>();
   /// Retorna el controlador del widget
-  LdWidgetCtrlAbs<LdWidgetAbs> get wCtrl => _ctrl.get(pCouldBeNull: false)!;
+  LdWidgetCtrlAbs<LdWidgetAbs> get wCtrl => _ctrl.get()!;
   /// Estableix el controlador del widget
   set wCtrl(LdWidgetCtrlAbs<LdWidgetAbs> pCtrl) => _ctrl.set(pCtrl);
 
@@ -29,7 +29,7 @@ with     LdTaggableMixin {
   /// Model del widget
   final OnceSet<LdWidgetModelAbs<LdWidgetAbs>> _model = OnceSet<LdWidgetModelAbs<LdWidgetAbs>>();
   /// Retorna el model del widget.
-  LdWidgetModelAbs<LdWidgetAbs> get wModel => _model.get(pCouldBeNull: false)!;
+  LdWidgetModelAbs<LdWidgetAbs> get wModel => _model.get()!;
   /// Estableix el model del widget.
   set wModel(LdWidgetModelAbs pModel) => _model.set(pModel);
   /// Indica si el widget té un model assignat

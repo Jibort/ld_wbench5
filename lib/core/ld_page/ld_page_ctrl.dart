@@ -22,7 +22,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   /// Referència a la pàgina
   final OnceSet<T> _page = OnceSet<T>();
   /// Retorna la referència a la pàgina del controlador.
-  T get cPage => _page.get(pCouldBeNull: false)!;
+  T get cPage => _page.get()!;
   /// Estableix la referència a la pàgina del controlador.
   set cPage(T pPage) => _page.set(pPage);
 

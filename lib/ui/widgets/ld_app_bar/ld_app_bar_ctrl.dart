@@ -1,7 +1,7 @@
 // ld_app_bar_ctrl.dart
 // Controlador del widget LdAppBar.
 // Created: 2025-05-01 dc. JIQ
-// Updated: 2025/05/03 ds. CLA
+// Updated: 2025/05/05 dl. CLA - Millora del suport d'internacionalització
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,7 +42,10 @@ class LdAppBarCtrl extends LdWidgetCtrlAbs<LdAppBar> {
     if (event.eType == EventType.languageChanged) {
       Debug.info("$tag: Processant esdeveniment de canvi d'idioma");
       
-      // Forçar una reconstrucció de l'AppBar per actualitzar el text
+      // Actualitzar les traduccions del model
+      model.updateTranslations();
+      
+      // Forçar una reconstrucció de l'AppBar
       if (mounted) {
         setState(() {
           Debug.info("$tag: Forçant reconstrucció de l'AppBar amb el nou idioma");

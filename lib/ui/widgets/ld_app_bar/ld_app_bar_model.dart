@@ -14,8 +14,7 @@ import 'package:ld_wbench5/utils/map_extensions.dart';
 import 'package:ld_wbench5/utils/str_full_set.dart';
 
 /// Model de dades del widget LdAppBar.
-class   LdAppBarModel 
-extends LdWidgetModelAbs<LdAppBar> {
+class LdAppBarModel extends LdWidgetModelAbs<LdAppBar> {
   /// Retorna el controlador del widget.
   LdAppBarCtrl get wCtrl => cWidget.wCtrl as LdAppBarCtrl;
   

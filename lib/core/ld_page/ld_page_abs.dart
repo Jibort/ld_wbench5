@@ -20,7 +20,7 @@ with     LdTaggableMixin {
   /// Controlador de la pàgina
   final OnceSet<LdPageCtrl> _ctrl = OnceSet<LdPageCtrl>();
   /// Retorna el controlador de la pàgina.
-  LdPageCtrl get vCtrl => _ctrl.get(pCouldBeNull: false)!;
+  LdPageCtrl get vCtrl => _ctrl.get()!;
   /// Estableix el controlador de la pàgina.
   set vCtrl(LdPageCtrl pCtrl) => _ctrl.set(pCtrl);
 
@@ -28,7 +28,7 @@ with     LdTaggableMixin {
   /// Model de dades de la pàgina
   final OnceSet<LdPageModelAbs> _model = OnceSet<LdPageModelAbs>();
   /// Retorna el controlador de la pàgina.
-  LdPageModelAbs get vModel => _model.get(pCouldBeNull: false)!;
+  LdPageModelAbs get vModel => _model.get()!;
   /// Estableix el controlador de la pàgina.
   set vModel(LdPageModelAbs pModel) => _model.set(pModel);
 
@@ -46,5 +46,5 @@ with     LdTaggableMixin {
   }
   
   @override
-  State<LdPageAbs> createState() => _ctrl.get(pCouldBeNull: false)!;
+  State<LdPageAbs> createState() => _ctrl.get()!;
 }

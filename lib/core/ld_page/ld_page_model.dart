@@ -13,7 +13,7 @@ extends  LdModelAbs {
   final OnceSet<T> _page = OnceSet<T>();
 
   /// Retorna la referència a la pàgina del model.
-  T get cPage => _page.get(pCouldBeNull: false)!;
+  T get cPage => _page.get()!;
 
   /// Estableix la referència a la pàgina  del model.
   set cPage(T pPage) => _page.set(pPage);

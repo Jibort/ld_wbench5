@@ -30,9 +30,10 @@ extends LdPageModelAbs {
   TestPageModel({
     required super.pPage,
     required String pTitleKey,
-    String? pSubTitleKey }) {
-    tag = className;
-    updateTexts(pTitleKey, pSubTitleKey); // Carreguem els textos directament des del constructor
+    String? pSubTitleKey }) 
+  { tag = className;
+    // Carreguem els textos directament des del constructor
+    updateTexts(pTitleKey, pSubTitleKey); 
   }
 
   /// Actualitza els textos segons l'idioma actual

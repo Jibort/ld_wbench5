@@ -108,8 +108,10 @@ class Debug {
   /// Registra un error fatal i llança una excepció
   static void fatal(String message, [Exception? exception]) {
     if (exception == null) {
+      assert(false, "FATAL ⚠️: $message");
       Error.throwWithStackTrace("FATAL ⚠️: $message", StackTrace.current);
     } else {
+      assert(false, "EXCEPTION ⚠️: $message");
       Error.throwWithStackTrace(
         "FATAL ⚠️: $message\nEXCEPTION ⚠️: ${exception.toString()}",
         StackTrace.current,

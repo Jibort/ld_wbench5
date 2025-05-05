@@ -13,7 +13,7 @@ extends  LdModelAbs {
   /// Referència al widget
   final OnceSet<T> _widget = OnceSet<T>();
   /// Retorna la referència al widget del controlador.
-  T get cWidget => _widget.get(pCouldBeNull: false)!;
+  T get cWidget => _widget.get()!;
   /// Estableix la referència al widget del controlador.
   set cWidget(T pPage) => _widget.set(pPage);
 

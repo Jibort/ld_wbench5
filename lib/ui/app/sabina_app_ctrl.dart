@@ -26,7 +26,7 @@ with    WidgetsBindingObserver {
   final OnceSet<SabinaApp> _app = OnceSet<SabinaApp>();
 
   /// Retorna la referència a la instància de l'aplicació.
-  SabinaApp get app => _app.get(pCouldBeNull: false)!;
+  SabinaApp get app => _app.get()!;
 
   /// Estableix la referència a la instància de l'aplicació.
   set app(SabinaApp pPage) => _app.set(pPage);

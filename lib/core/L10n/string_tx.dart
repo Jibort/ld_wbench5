@@ -15,7 +15,7 @@ class StringTx {
   
   /// Crea un text (literal o clau) a partir d'una cadena de text.
   StringTx(String? pStr) {
-    if (pStr == null || !(pStr.startsWith("##") && !pStr.startsWith("###"))) {
+    if (pStr == null || !pStr.startsWith("##")) {
       _key = null;
       _text = pStr;
     } else {
@@ -25,7 +25,7 @@ class StringTx {
   }
   
   /// Indica si el text és traduïble
-  bool get isTranslatable => _key != null;
+  bool get isTranslatable => (_key != null);
   
   /// Indica si el text és nul.
   bool get isNull => _key == null && _text == null;
@@ -37,11 +37,11 @@ class StringTx {
   String? get literalText => _text;
   
   /// Retorna el text traduït o literal segons correspongui
-  String? get text => isTranslatable ? L.tx(_key!) : _text;
+  String? get text => isTranslatable ? L.tx(_key!) : literalText;
   
   /// Permet reestablir els valors segons les necessitats.
   void set(String? pText) {
-    if (pText != null && pText.startsWith(r"##") && !pText.startsWith(r"###")) {
+    if (pText != null && pText.startsWith("##")) {
       _key  = pText;
       _text = null;
     } else {

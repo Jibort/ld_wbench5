@@ -28,7 +28,7 @@ with  LdTaggableMixin {
   static L get s => _inst;
   
   /// Idioma detectat al dispositiu
-  late Locale _deviceLocale;
+  Locale _deviceLocale = const Locale('ca');
   
   /// Idioma actual de l'aplicació
   Locale? _currentLocale;
