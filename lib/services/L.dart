@@ -11,6 +11,7 @@ import 'package:ld_wbench5/ui/app/sabina_app.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/utils/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
+import 'package:ld_wbench5/utils/string_extensions.dart';
 
 /// Servei centralitzat per a la gestió d'idiomes
 class L 
@@ -23,6 +24,9 @@ with  LdTaggableMixin {
   static const String sChangeTheme = "##sChangeTheme";
   static const String sToggleThemeButtonVisibility = "##sToggleThemeButtonVisibility";
   static const String sToggleLanguageButtonEnabled = "##sToggleLanguageButtonEnabled";
+  static const String sCounter = "##sCounter";
+  static const String sCurrentLanguage = "##sCurrentLanguage";
+  static const String sFeaturesDemo = "##sFeaturesDemo";
 
   /// Instància singleton
   static final L _inst = L._();
@@ -145,6 +149,9 @@ with  LdTaggableMixin {
       sChangeTheme: "Canvia el Tema",
       sToggleThemeButtonVisibility: "Alternar visibilitat botó tema",
       sToggleLanguageButtonEnabled: "Alternar estat botó idioma",
+      sCounter: "Comptador:",
+      sCurrentLanguage: "Idioma actual:",
+      sFeaturesDemo: "Demostració de característiques:",
     };
     
     // Espanyol
@@ -156,6 +163,9 @@ with  LdTaggableMixin {
       sChangeTheme: "Cambiar Tema",
       sToggleThemeButtonVisibility: "Alternar visibilidad botón tema",
       sToggleLanguageButtonEnabled: "Alternar estado botón idioma",
+      sCounter: "Contador:",
+      sCurrentLanguage: "Idioma actual:",
+      sFeaturesDemo: "Demostración de características:",
     };
     
     // Anglès
@@ -167,23 +177,54 @@ with  LdTaggableMixin {
       sChangeTheme: "Change Theme",
       sToggleThemeButtonVisibility: "Toggle theme button visibility",
       sToggleLanguageButtonEnabled: "Toggle language button enabled state",
+      sCounter: "Counter:",
+      sCurrentLanguage: "Current language:",
+      sFeaturesDemo: "Features demonstration:",
     };
   }
   
   /// Obté la traducció d'una clau
-static String tx(String key) {
-  Locale locale = getCurrentLocale();
-  Dictionary? dictionary = s._dictionaries[locale.languageCode];
-  String translation = dictionary?.getOr(key, errInText) ?? errInText;
-  
-  if (translation == errInText) {
-    Debug.warn("L.tx: Translation key '$key' not found in '${locale.languageCode}' dictionary");
-  } else {
-    Debug.info("L.tx: Translated '$key' to '$translation' in '${locale.languageCode}'");
+  // Modificació a lib/services/L.dart
+
+  // Afegir a les imports
+
+  // Modificar el mètode tx per utilitzar extractKey
+  static String tx(String key) {
+    Locale locale = getCurrentLocale();
+    Dictionary? dictionary = s._dictionaries[locale.languageCode];
+    
+    // Extreure només la clau base si conté símbol o espai
+    String baseKey = key.extractKey;
+    
+    String translation = dictionary?.getOr(baseKey, errInText) ?? errInText;
+    
+    if (translation == errInText) {
+      Debug.warn("L.tx: Translation key '$baseKey' not found in '${locale.languageCode}' dictionary");
+    } else {
+      Debug.info("L.tx: Translated '$baseKey' to '$translation' in '${locale.languageCode}'");
+    }
+    
+    return translation;
   }
-  
-  return translation;
-}
+  // CLA_2:static String tx(String key) {
+  // CLA_2:  Locale locale = getCurrentLocale();
+  // CLA_2:  Dictionary? dictionary = s._dictionaries[locale.languageCode];
+  // CLA_2:  String translation = dictionary?.getOr(key, errInText) ?? errInText;
+  // CLA_2:
+  // CLA_2:  if (translation == errInText) {
+  // CLA_2:    Debug.warn("L.tx: Translation key '$key' not found in '${locale.languageCode}' dictionary");
+  // CLA_2:  } else {
+  // CLA_2:    Debug.info("L.tx: Translated '$key' to '$translation' in '${locale.languageCode}'");
+  // CLA_2:  }
+  // CLA_2:
+  // CLA_2:  return translation;
+  // CLA_2:}
+
+
+  // Afegir un nou mètode per format
+  static String txFormat(String key, List<dynamic> args) {
+    return tx(key).format(args);
+  }
   
   /// Alternativa l'idioma entre català i espanyol
   static void toggleLanguage() {

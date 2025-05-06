@@ -15,6 +15,7 @@ import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
+import 'package:ld_wbench5/ui/widgets/ld_text/ld_text.dart';
 import 'package:ld_wbench5/utils/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
@@ -227,24 +228,38 @@ extends LdPageCtrl<TestPage> {
           children: [
             // Subtítol
             if (model.subTitle != null)
-              Text(
-                model.subTitle!.tx,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+            LdText(
+              text: model.subTitle!,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            // CLA_2: Text(
+            // CLA_2:   model.subTitle!.tx,
+            // CLA_2:   style: Theme.of(context).textTheme.bodyLarge,
+            // CLA_2: ),
             
             const SizedBox(height: 16),
             
             // Mostrar comptador
-            Text(
-              'Comptador: ${model.counter}',
+            LdText(
+              text: L.sCounter,
+              args: [model.counter],
               style: Theme.of(context).textTheme.bodyMedium,
             ),
+            // CLA_2: Text(
+            // CLA_2:   'Comptador: ${model.counter}',
+            // CLA_2:   style: Theme.of(context).textTheme.bodyMedium,
+            // CLA_2: ),
             
             // Mostrar idioma actual
-            Text(
-              'Idioma actual: $currentLanguage',
+            LdText(
+              text: L.sCurrentLanguage,
+              args: [currentLanguage],
               style: Theme.of(context).textTheme.bodyMedium,
             ),
+            // CLA_2: Text(
+            // CLA_2:   'Idioma actual: $currentLanguage',
+            // CLA_2:   style: Theme.of(context).textTheme.bodyMedium,
+            // CLA_2: ),
             
             const SizedBox(height: 24),
             
@@ -283,10 +298,14 @@ extends LdPageCtrl<TestPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Demostració de característiques:',
+                  LdText(
+                    text: L.sFeaturesDemo,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
+                  // CLA_2: Text(
+                  // CLA_2:   'Demostració de característiques:',
+                  // CLA_2:   style: Theme.of(context).textTheme.titleMedium,
+                  // CLA_2: ),
                   const SizedBox(height: 16),
                   toggleVisibilityButton,
                   const SizedBox(height: 12),
