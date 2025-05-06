@@ -24,15 +24,8 @@ class LdTextModel extends LdWidgetModelAbs<LdText> {
   /// Retorna el text traduït i formatat
   String get displayText {
     if (_text.startsWith('##')) {
-      String translated = L.tx(_text);
-      
-      // Aplicar format si hi ha arguments
-      if (_args != null && _args!.isNotEmpty) {
-        translated = translated.format(_args!);
-      }
-      
-      Debug.info("$tag: Text traduït i formatat: '$translated'");
-      return translated;
+      // Utilitzar directament el mètode tx amb arguments
+      return L.tx(_text, _args);
     }
     
     // Si no és una clau, aplicar format directament al text si cal
@@ -41,14 +34,6 @@ class LdTextModel extends LdWidgetModelAbs<LdText> {
     }
     
     return _text;
-  }
-  
-  /// Estableix el text o clau de traducció
-  set text(String value) {
-    notifyListeners(() {
-      _text = value;
-      Debug.info("$tag: Text establert a '$value'");
-    });
   }
   
   /// Estableix els arguments per format
@@ -113,7 +98,7 @@ class LdTextModel extends LdWidgetModelAbs<LdText> {
     String? pErrorMsg
   }) {
     if (pKey == mfText && pValue is String) {
-      text = pValue;
+      _text = pValue;
     } else if (pKey == 'args' && (pValue == null || pValue is List<dynamic>)) {
       args = pValue;
     } else {

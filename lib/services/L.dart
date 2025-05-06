@@ -27,6 +27,8 @@ with  LdTaggableMixin {
   static const String sCounter = "##sCounter";
   static const String sCurrentLanguage = "##sCurrentLanguage";
   static const String sFeaturesDemo = "##sFeaturesDemo";
+  static const String sTextField = "##sTextField";
+  static const String sTextFieldHelp = "##sTextFieldHelp";
 
   /// Instància singleton
   static final L _inst = L._();
@@ -149,9 +151,11 @@ with  LdTaggableMixin {
       sChangeTheme: "Canvia el Tema",
       sToggleThemeButtonVisibility: "Alternar visibilitat botó tema",
       sToggleLanguageButtonEnabled: "Alternar estat botó idioma",
-      sCounter: "Comptador:",
-      sCurrentLanguage: "Idioma actual:",
+      sCounter: "[ca] Comptador: {0}",
+      sCurrentLanguage: "[ca] Idioma actual: {0}",
       sFeaturesDemo: "Demostració de característiques:",
+      sTextField: "Camp de text",
+      sTextFieldHelp: "Introdueix un text",
     };
     
     // Espanyol
@@ -163,9 +167,11 @@ with  LdTaggableMixin {
       sChangeTheme: "Cambiar Tema",
       sToggleThemeButtonVisibility: "Alternar visibilidad botón tema",
       sToggleLanguageButtonEnabled: "Alternar estado botón idioma",
-      sCounter: "Contador:",
-      sCurrentLanguage: "Idioma actual:",
+      sCounter: "[es] Contador: {0}",
+      sCurrentLanguage: "[es] Idioma actual: {0}",
       sFeaturesDemo: "Demostración de características:",
+      sTextField: "Campo de texto",
+      sTextFieldHelp: "Introduce un texto",
     };
     
     // Anglès
@@ -177,9 +183,11 @@ with  LdTaggableMixin {
       sChangeTheme: "Change Theme",
       sToggleThemeButtonVisibility: "Toggle theme button visibility",
       sToggleLanguageButtonEnabled: "Toggle language button enabled state",
-      sCounter: "Counter:",
-      sCurrentLanguage: "Current language:",
+      sCounter: "Counter: {0}",
+      sCurrentLanguage: "Current language: {0}",
       sFeaturesDemo: "Features demonstration:",
+      sTextField: "Text field",
+      sTextFieldHelp: "Enter text",
     };
   }
   
@@ -189,7 +197,8 @@ with  LdTaggableMixin {
   // Afegir a les imports
 
   // Modificar el mètode tx per utilitzar extractKey
-  static String tx(String key) {
+  /// Obté la traducció d'una clau i aplica format si s'especifiquen arguments
+  static String tx(String key, [List<dynamic>? args]) {
     Locale locale = getCurrentLocale();
     Dictionary? dictionary = s._dictionaries[locale.languageCode];
     
@@ -202,10 +211,18 @@ with  LdTaggableMixin {
       Debug.warn("L.tx: Translation key '$baseKey' not found in '${locale.languageCode}' dictionary");
     } else {
       Debug.info("L.tx: Translated '$baseKey' to '$translation' in '${locale.languageCode}'");
+      
+      // Si hi ha arguments, aplicar el format
+      if (args != null && args.isNotEmpty) {
+        String original = translation;
+        translation = original.format(args);
+        Debug.info("L.tx: Formatted '$original' with args $args to '$translation'");
+      }
     }
     
     return translation;
   }
+
   // CLA_2:static String tx(String key) {
   // CLA_2:  Locale locale = getCurrentLocale();
   // CLA_2:  Dictionary? dictionary = s._dictionaries[locale.languageCode];

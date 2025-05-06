@@ -256,6 +256,82 @@ void _handleEvent(LdEvent event) {
     update();
   }
   
+  /// 'State': Gestiona l'actualització del widget quan canvien les propietats
+  @override
+  void didUpdateWidget(covariant T oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    // Obtenir els models antic i actual
+    if (widget.hasModel && oldWidget.hasModel) {
+      LdWidgetModelAbs oldModel = oldWidget.wModel;
+      LdWidgetModelAbs newModel = widget.wModel;
+      
+      // Verificar si els models són diferents
+      if (_shouldUpdateModel(oldModel, newModel)) {
+        Debug.info("$tag: Model actualitzat, forçant reconstrucció");
+        setState(() {
+          // Forçar reconstrucció
+        });
+      }
+    }
+  }
+
+  /// Determina si cal actualitzar el model basant-se en els canvis
+  bool _shouldUpdateModel(LdWidgetModelAbs oldModel, LdWidgetModelAbs newModel) {
+    // Implementació per defecte que compara els mapes dels models
+    return !_areMapEqual(oldModel.toMap(), newModel.toMap());
+  }
+
+  /// Compara dos mapes recursivament
+  bool _areMapEqual(Map<String, dynamic> map1, Map<String, dynamic> map2) {
+    if (map1.length != map2.length) return false;
+    
+    for (final key in map1.keys) {
+      if (!map2.containsKey(key)) return false;
+      
+      final value1 = map1[key];
+      final value2 = map2[key];
+      
+      if (value1 is Map && value2 is Map) {
+        if (!_areMapEqual(value1 as Map<String, dynamic>, value2 as Map<String, dynamic>)) {
+          return false;
+        }
+      } else if (value1 is List && value2 is List) {
+        if (!_areListEqual(value1, value2)) {
+          return false;
+        }
+      } else if (value1 != value2) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  /// Compara dues llistes recursivament
+  bool _areListEqual(List list1, List list2) {
+    if (list1.length != list2.length) return false;
+    
+    for (int i = 0; i < list1.length; i++) {
+      final value1 = list1[i];
+      final value2 = list2[i];
+      
+      if (value1 is Map && value2 is Map) {
+        if (!_areMapEqual(value1 as Map<String, dynamic>, value2 as Map<String, dynamic>)) {
+          return false;
+        }
+      } else if (value1 is List && value2 is List) {
+        if (!_areListEqual(value1, value2)) {
+          return false;
+        }
+      } else if (value1 != value2) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
   /// 'State': Allibera els recursos.
   @override
   void dispose() {
@@ -300,7 +376,7 @@ void _handleEvent(LdEvent event) {
       });
     }
   }
-  
+
   // CLA_1:/// 'LdModelObserverIntf': Notifica que el model ha canviat.
   // CLA_1:@override
   // CLA_1:void onModelChanged(void Function() updateFunction) {

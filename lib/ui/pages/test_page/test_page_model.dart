@@ -3,6 +3,8 @@
 // Created: 2025/04/29 dt. CLA[JIQ]
 
 import 'package:ld_wbench5/core/L10n/string_tx.dart';
+import 'package:ld_wbench5/core/event_bus/event_bus.dart';
+import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
@@ -92,12 +94,18 @@ extends LdPageModelAbs {
   int get counter => _counter;
   
   /// Incrementa el comptador
-  void incrementCounter() {
-    notifyListeners(() {
-      _counter++;
-      Debug.info("$tag: Comptador incrementat a $_counter");
-    });
-  }
+void incrementCounter() {
+  notifyListeners(() {
+    _counter++;
+    Debug.info("$tag: Comptador incrementat a $_counter");
+    
+    // Emetre un event de reconstrucció global
+    EventBus.s.emit(LdEvent(
+      eType: EventType.rebuildUI,
+      srcTag: tag,
+    ));
+  });
+}
 
   // 'LdPageModelAbs' -----------------
   @override // Arrel

@@ -3,6 +3,7 @@
 // Created: 2025/05/06 dt. CLA
 
 import 'package:ld_wbench5/services/L.dart';
+import 'package:ld_wbench5/utils/debug.dart';
 
 /// Extensions útils per a strings
 extension StringExtensions on String {
@@ -10,12 +11,21 @@ extension StringExtensions on String {
   String get tx => L.tx(this);
   
   /// Retorna la traducció d'aquest string amb format aplicat
-  String txFormat(List<dynamic> args) => L.tx(this).format(args);
+  String txFormat(List<dynamic> args) => L.tx(this, args);
+  
   /// Aplica format reemplaçant {0}, {1}, etc. amb els arguments proporcionats
   String format(List<dynamic> args) {
     String result = this;
+    
+    // Imprimir per depuració
+    Debug.info("Format: text original = '$result', args = $args");
+    
+    // Assegurar-nos que el patró de substitució funciona
     for (int i = 0; i < args.length; i++) {
-      result = result.replaceAll('{$i}', args[i].toString());
+      String placeholder = '{$i}';
+      String replacement = args[i].toString();
+      result = result.replaceAll(placeholder, replacement);
+      Debug.info("Format: reemplaçant '$placeholder' per '$replacement', resultat = '$result'");
     }
     return result;
   }

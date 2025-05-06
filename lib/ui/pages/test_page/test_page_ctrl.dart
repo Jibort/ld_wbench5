@@ -16,6 +16,7 @@ import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text/ld_text.dart';
+import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
 import 'package:ld_wbench5/utils/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
@@ -104,20 +105,38 @@ extends LdPageCtrl<TestPage> {
   // CLA_1:  }
   // CLA_1:}
 
-  /// 'LdModelObserver': Respon als canvis del model de dades.
   @override
   void onModelChanged(void Function() pfUpdate) {
     Debug.info("$tag.onModelChanged(): executant ...");
     
-    // Executar l'actualització i forçar una reconstrucció de la UI
+    // Executar l'actualització
+    pfUpdate();
+    
+    // Forçar una reconstrucció per assegurar que tots els widgets fills 
+    // (incloent-hi LdText) obtenen el valor actualitzat
     if (mounted) {
-      setState(pfUpdate);
-      Debug.info("$tag.onModelChanged(): ... executat amb reconstrucció");
+      setState(() {
+        Debug.info("$tag.onModelChanged(): ... executat amb reconstrucció");
+      });
     } else {
-      pfUpdate();
       Debug.info("$tag.onModelChanged(): ... executat sense reconstrucció");
     }
   }
+
+  // CLA_2: /// 'LdModelObserver': Respon als canvis del model de dades.
+  // CLA_2: @override
+  // CLA_2: void onModelChanged(void Function() pfUpdate) {
+  // CLA_2:   Debug.info("$tag.onModelChanged(): executant ...");
+  // CLA_2:  
+  // CLA_2:   // Executar l'actualització i forçar una reconstrucció de la UI
+  // CLA_2:   if (mounted) {
+  // CLA_2:     setState(pfUpdate);
+  // CLA_2:     Debug.info("$tag.onModelChanged(): ... executat amb reconstrucció");
+  // CLA_2:   } else {
+  // CLA_2:     pfUpdate();
+  // CLA_2:     Debug.info("$tag.onModelChanged(): ... executat sense reconstrucció");
+  // CLA_2:   }
+  // CLA_2: }
   
   /// Canvia l'idioma entre català i espanyol
   void changeLanguage() {
@@ -185,10 +204,27 @@ extends LdPageCtrl<TestPage> {
     
     Debug.info("$tag: Construint pàgina amb model: títol=${model.title}, subtítol=${model.subTitle}");
     
-    // Mostrar l'idioma actual
+    // Obtenir l'idioma actual cada vegada que es construeix
     String currentLanguage = L.getCurrentLocale().languageCode;
     Debug.info("$tag: Idioma actual: $currentLanguage");
-    
+
+    // Creem una referència al TextField (amb Key per evitar que es recreï)
+    final textField = LdTextField(
+      key: const ValueKey('my_text_field'),
+      initialText: "Z>",
+      label: L.sTextField,
+      helpText: L.sTextFieldHelp,
+    );
+
+    // Botó per afegir "A" al text
+    final addButton = ElevatedButton(
+      onPressed: () {
+        // Modifiquem directament el model del widget
+        textField.appendText("A");
+      },
+      child: Text("Afegir 'A'"),
+    );
+
     // Creem els botons i guardem referència als seus controladors mitjançant keys
     final themeButton = LdButton(
       key: _themeButtonKey,
@@ -241,10 +277,16 @@ extends LdPageCtrl<TestPage> {
             
             // Mostrar comptador
             LdText(
+              key:  ValueKey(model.counter), // Clau única que força reconstrucció
               text: L.sCounter,
               args: [model.counter],
               style: Theme.of(context).textTheme.bodyMedium,
             ),
+            // CLA_2.1: LdText(
+            // CLA_2.1:   text: L.sCounter,
+            // CLA_2.1:   args: [model.counter],
+            // CLA_2.1:   style: Theme.of(context).textTheme.bodyMedium,
+            // CLA_2.1: ),
             // CLA_2: Text(
             // CLA_2:   'Comptador: ${model.counter}',
             // CLA_2:   style: Theme.of(context).textTheme.bodyMedium,
@@ -313,6 +355,11 @@ extends LdPageCtrl<TestPage> {
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: textField,
+            ),
+            addButton,
           ],
         ),
       ),
