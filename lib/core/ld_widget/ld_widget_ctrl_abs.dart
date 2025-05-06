@@ -286,19 +286,34 @@ void _handleEvent(LdEvent event) {
     Debug.info("$tag: ... Recursos alliberats");
   }
   
-  /// 'LdModelObserverIntf': Notifica que el model ha canviat.
   @override
   void onModelChanged(void Function() updateFunction) {
     Debug.info("$tag: Model ha canviat");
     
+    // Executa la funció d'actualització sempre
+    updateFunction();
+    
+    // Però només reconstrueix si està muntat
     if (mounted) {
-      setState(updateFunction);
-      Debug.info("$tag: Model actualitzat amb reconstrucció");
-    } else {
-      updateFunction();
-      Debug.info("$tag: Model actualitzat sense reconstrucció");
+      setState(() {
+        Debug.info("$tag: Reconstruint després del canvi del model");
+      });
     }
   }
+  
+  // CLA_1:/// 'LdModelObserverIntf': Notifica que el model ha canviat.
+  // CLA_1:@override
+  // CLA_1:void onModelChanged(void Function() updateFunction) {
+  // CLA_1:  Debug.info("$tag: Model ha canviat");
+  // CLA_1:
+  // CLA_1:  if (mounted) {
+  // CLA_1:    setState(updateFunction);
+  // CLA_1:    Debug.info("$tag: Model actualitzat amb reconstrucció");
+  // CLA_1:  } else {
+  // CLA_1:    updateFunction();
+  // CLA_1:    Debug.info("$tag: Model actualitzat sense reconstrucció");
+  // CLA_1:  }
+  // CLA_1:}
   
   /// 'State': Construeix el widget.
   @override

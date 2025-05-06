@@ -7,6 +7,7 @@ import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/ui/app/sabina_app.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/utils/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
@@ -76,20 +77,60 @@ with  LdTaggableMixin {
     }
     
     Locale? oldLocale = s._currentLocale;
+    
+    // Verificar si l'idioma realment canvia
+    if (oldLocale?.languageCode == languageCode) {
+      Debug.info("${s.tag}: L'idioma ja és $languageCode, no cal canviar");
+      return;  // Sortir si l'idioma no canvia
+    }
+    
     s._currentLocale = Locale(languageCode);
     Debug.info("${s.tag}: Idioma canviat de ${oldLocale?.languageCode ?? 'null'} a $languageCode");
     
-    // Notifica del canvi d'idioma amb un sol event
-    // Aquest event hauria de ser suficient per actualitzar tota l'aplicació
-    EventBus.s.emit(LdEvent(
-      eType: EventType.languageChanged,
-      srcTag: s.tag,
-      eData: {
-        mfOldLocale: oldLocale?.languageCode,
-        mfNewLocale: s._currentLocale!.languageCode,
-      },
-    ));
+    // Obtenir la llista de components que mostren text
+    // En una aplicació real, podríem tenir un registre de components que utilitzen text
+    List<String> textComponents = [
+      SabinaApp.s.tag,
+      // Afegir aquí altres components que mostren text
+    ];
+    
+    // Notificar només als components que mostren text
+    EventBus.s.emitTargeted(
+      LdEvent(
+        eType: EventType.languageChanged,
+        srcTag: s.tag,
+        eData: {
+          mfOldLocale: oldLocale?.languageCode,
+          mfNewLocale: s._currentLocale!.languageCode,
+        },
+      ),
+      targets: textComponents
+    );
   }
+
+  // CAL_01:/// Estableix l'idioma actual
+  // CAL_01:static void setCurrentLocale(Locale locale) {
+  // CAL_01:  String languageCode = locale.languageCode;
+  // CAL_01:  if (!s._dictionaries.containsKey(languageCode)) {
+  // CAL_01:    languageCode = 'es'; // Fallback a espanyol si l'idioma no està disponible
+  // CAL_01:    Debug.info("${s.tag}: Idioma $languageCode no disponible, usant 'es' per defecte");
+  // CAL_01:  }
+  // CAL_01:
+  // CAL_01:  Locale? oldLocale = s._currentLocale;
+  // CAL_01:  s._currentLocale = Locale(languageCode);
+  // CAL_01:  Debug.info("${s.tag}: Idioma canviat de ${oldLocale?.languageCode ?? 'null'} a $languageCode");
+  // CAL_01:
+  // CAL_01:  // Notifica del canvi d'idioma amb un sol event
+  // CAL_01:  // Aquest event hauria de ser suficient per actualitzar tota l'aplicació
+  // CAL_01:  EventBus.s.emit(LdEvent(
+  // CAL_01:    eType: EventType.languageChanged,
+  // CAL_01:    srcTag: s.tag,
+  // CAL_01:    eData: {
+  // CAL_01:      mfOldLocale: oldLocale?.languageCode,
+  // CAL_01:      mfNewLocale: s._currentLocale!.languageCode,
+  // CAL_01:    },
+  // CAL_01:  ));
+  // CAL_01:}
   
   /// Carrega tots els diccionaris disponibles
   void _loadDictionaries() {

@@ -77,18 +77,35 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     EventBus.s.cancel(_subcEvent);
     super.dispose();
   }
-  
-  /// Implementació de ModelObserver
+
   @override
   void onModelChanged(void Function() pfUpdate) {
     Debug.info("$tag.onModelChanged(): executant ...");
+    
+    // Executar l'actualització sempre
+    pfUpdate();
+    
+    // Però només reconstruir si està muntat
     if (mounted) {
-      setState(pfUpdate);
-    } else {
-      pfUpdate();
+      setState(() {
+        Debug.info("$tag.onModelChanged(): Reconstruint widget");
+      });
     }
+    
     Debug.info("$tag.onModelChanged(): ... executat");
   }
+
+  // CLA_1: /// Implementació de ModelObserver
+  // CLA_1: @override
+  // CLA_1: void onModelChanged(void Function() pfUpdate) {
+  // CLA_1:   Debug.info("$tag.onModelChanged(): executant ...");
+  // CLA_1:   if (mounted) {
+  // CLA_1:     setState(pfUpdate);
+  // CLA_1:   } else {
+  // CLA_1:     pfUpdate();
+  // CLA_1:   }
+  // CLA_1:   Debug.info("$tag.onModelChanged(): ... executat");
+  // CLA_1: }
   
   /// Mètode que ha d'implementar cada pàgina per construir la seva UI
   Widget buildPage(BuildContext context);

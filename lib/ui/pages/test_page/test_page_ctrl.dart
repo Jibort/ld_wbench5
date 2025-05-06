@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
-import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
@@ -61,31 +60,48 @@ extends LdPageCtrl<TestPage> {
   void onEvent(LdEvent event) {
     Debug.info("$tag: Event rebut: ${event.eType.name}");
 
-    // Actualizar modelo cuando cambia el idioma
-    if (event.eType == EventType.languageChanged) {
-      String? newLocale = event.eData[mfNewLocale] as String?;
-      Debug.info("$tag: Idioma canviat a: $newLocale");
+    // Gestionar diferents tipus d'events
+    if (event.eType == EventType.languageChanged || 
+        event.eType == EventType.rebuildUI) {
       
-      // Actualizar los textos del modelo
-      // JAB_Q: No cal, oi? model.updateTexts();
-      
-      // Forzar reconstrucción de la UI
+      // Només reconstruir si està muntat
       if (mounted) {
         setState(() {
-          Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'idioma");
-        });
-      }
-    }
-
-    // Manejamos rebuildUI por separado
-    else if (event.eType == EventType.rebuildUI) {
-      if (mounted) {
-        setState(() {
-          Debug.info("$tag: Reconstruint completament");
+          Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'event ${event.eType.name}");
         });
       }
     }
   }
+
+  // CLA_1:@override
+  // CLA_1:void onEvent(LdEvent event) {
+  // CLA_1:  Debug.info("$tag: Event rebut: ${event.eType.name}");
+  // CLA_1:
+  // CLA_1:  // Actualizar modelo cuando cambia el idioma
+  // CLA_1:  if (event.eType == EventType.languageChanged) {
+  // CLA_1:    String? newLocale = event.eData[mfNewLocale] as String?;
+  // CLA_1:    Debug.info("$tag: Idioma canviat a: $newLocale");
+  // CLA_1: 
+  // CLA_1:    // Actualizar los textos del modelo
+  // CLA_1:    // JAB_Q: No cal, oi? model.updateTexts();
+  // CLA_1: 
+  // CLA_1:    // Forzar reconstrucción de la UI
+  // CLA_1:    if (mounted) {
+  // CLA_1:      setState(() {
+  // CLA_1:        Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'idioma");
+  // CLA_1:      });
+  // CLA_1:    }
+  // CLA_1:  }
+  // CLA_1:
+  // CLA_1:  // Manejamos rebuildUI por separado
+  // CLA_1:  else if (event.eType == EventType.rebuildUI) {
+  // CLA_1:    if (mounted) {
+  // CLA_1:      setState(() {
+  // CLA_1:        Debug.info("$tag: Reconstruint completament");
+  // CLA_1:      });
+  // CLA_1:    }
+  // CLA_1:  }
+  // CLA_1:}
 
   /// 'LdModelObserver': Respon als canvis del model de dades.
   @override

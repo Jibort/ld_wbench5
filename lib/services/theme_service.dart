@@ -10,6 +10,7 @@ import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/ui/app/sabina_app.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/utils/full_set.dart';
 
@@ -73,6 +74,12 @@ with  LdTaggableMixin {
   void changeThemeMode(ThemeMode mode) {
     Debug.info("$tag: Canviant mode de tema a ${mode.toString()}");
     
+    // Verificar si el mode realment canvia
+    if (_themeMode.get() == mode) {
+      Debug.info("$tag: El mode de tema ja és ${mode.toString()}, no cal canviar");
+      return;  // Sortir si el mode no canvia
+    }
+    
     _themeMode.set(mode);
     _isDarkMode = (mode == ThemeMode.system)
         ? PlatformDispatcher.instance.platformBrightness == Brightness.dark
@@ -84,6 +91,20 @@ with  LdTaggableMixin {
     // Notificar del canvi de tema
     _notifyThemeChanged(oldTheme, _currentTheme);
   }
+
+  // CLA_1 /// Canvia el mode del tema  
+  // CLA_1 void changeThemeMode(ThemeMode mode) 
+  // CLA_1   Debug.info("$tag: Canviant mode de tema a ${mode.toString()}");// CLA_1
+  // CLA_1  
+  // CLA_01   _themeMode.set(mode);
+  // CLA_01   _isDarkMode = (mode == ThemeMode.system)
+  // CLA_01       ? PlatformDispatcher.instance.platformBrightness == Brightness.dark
+  // CLA_01       : (mode == ThemeMode.dark);
+  // CLA_01   ThemeData oldTheme = _currentTheme;
+  // CLA_01   _currentTheme = _isDarkMode ? darkTheme : lightTheme;
+  // CLA_01   // Notificar del canvi de tema
+  // CLA_01   _notifyThemeChanged(oldTheme, _currentTheme);
+  // CLA_01 }
   
   /// Alterna entre els temes clar i fosc
   void toggleTheme() {
@@ -102,15 +123,40 @@ with  LdTaggableMixin {
   void _notifyThemeChanged(ThemeData? oldTheme, ThemeData newTheme) {
     Debug.info("$tag: Notificant canvi de tema");
     
-    EventBus().emit(LdEvent(
-      eType: EventType.themeChanged,
-      srcTag: tag,
-      eData: {
-        mfIsDarkMode: _isDarkMode,
-        mfThemeMode: _themeMode.toString(),
-      },
-    ));
+    // Obtenir la llista de components que tenen estil visual
+    // En una aplicació real, podríem tenir un registre de components que utilitzen temes
+    List<String> themedComponents = [
+      SabinaApp.s.tag,
+      // Afegir aquí altres components que utilitzen el tema
+    ];
+    
+    // Notificar només als components que utilitzen el tema
+    EventBus.s.emitTargeted(
+      LdEvent(
+        eType: EventType.themeChanged,
+        srcTag: tag,
+        eData: {
+          mfIsDarkMode: _isDarkMode,
+          mfThemeMode: _themeMode.toString(),
+        },
+      ),
+      targets: themedComponents
+    );
   }
+
+  // CLA_1: /// Notifica del canvi de tema
+  // CLA_1: void _notifyThemeChanged(ThemeData? oldTheme, ThemeData newTheme) {
+  // CLA_1:   Debug.info("$tag: Notificant canvi de tema");
+  // CLA_1:   
+  // CLA_1:   EventBus().emit(LdEvent(
+  // CLA_1:     eType: EventType.themeChanged,
+  // CLA_1:     srcTag: tag,
+  // CLA_1:     eData: {
+  // CLA_1:       mfIsDarkMode: _isDarkMode,
+  // CLA_1:       mfThemeMode: _themeMode.toString(),
+  // CLA_1:     },
+  // CLA_1:   ));
+  // CLA_1: }
   
   /// COLORS CONSTANTS DE REFERÈNCIA
   // Blau mitjà de la barra de navegació
