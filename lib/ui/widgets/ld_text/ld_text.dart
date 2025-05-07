@@ -45,4 +45,9 @@ class LdText extends LdWidgetAbs {
     
     Debug.info("$tag: LdText creat correctament");
   }
+
+  /// Estableix els arguments per format
+  set args(List<dynamic>? value) {
+    (wModel as LdTextModel).args = value;
+  }
 }

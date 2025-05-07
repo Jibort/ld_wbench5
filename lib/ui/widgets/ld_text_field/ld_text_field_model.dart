@@ -88,19 +88,6 @@ class LdTextFieldModel extends LdWidgetModelAbs<LdTextField> {
     _onTextChanged = value;
   }
   
-  // Mètodes per modificar el text
-  void appendText(String suffix) {
-    text = text + suffix;
-  }
-  
-  void prependText(String prefix) {
-    text = prefix + text;
-  }
-  
-  void clearText() {
-    text = "";
-  }
-  
   // Constructor
   LdTextFieldModel(
     super.pWidget, 

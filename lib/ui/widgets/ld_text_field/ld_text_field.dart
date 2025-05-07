@@ -55,20 +55,23 @@ class LdTextField extends LdWidgetAbs {
   /// Accelerador d'accés al model
   LdTextFieldModel get model => wModel as LdTextFieldModel;
   
+  /// Accelerador d'accés al controlador
+  LdTextFieldCtrl get controller => wCtrl as LdTextFieldCtrl;
+  
   /// Retorna el text actual
   String get text => model.text;
   
   /// Estableix el text
   set text(String value) => model.text = value;
   
-  /// Afegeix text al final
-  void appendText(String suffix) => model.appendText(suffix);
+  /// Afegeix text al final - ara delegada al controlador
+  void appendText(String suffix) => controller.addText(suffix);
   
-  /// Afegeix text al principi
-  void prependText(String prefix) => model.prependText(prefix);
+  /// Afegeix text al principi - ara delegada al controlador
+  void prependText(String prefix) => controller.prependText(prefix);
   
-  /// Neteja el text
-  void clearText() => model.clearText();
+  /// Neteja el text - ara delegada al controlador
+  void clearText() => controller.clearText();
   
   /// Estableix l'etiqueta
   set label(String value) => model.label = value;
@@ -82,4 +85,3 @@ class LdTextField extends LdWidgetAbs {
   /// Estableix el missatge d'error
   set errorMessage(String? value) => model.errorMessage = value;
 }
-

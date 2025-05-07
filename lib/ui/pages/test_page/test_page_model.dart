@@ -95,8 +95,8 @@ extends LdPageModelAbs {
   
   /// Incrementa el comptador
 void incrementCounter() {
+  _counter++;
   notifyListeners(() {
-    _counter++;
     Debug.info("$tag: Comptador incrementat a $_counter");
     
     // Emetre un event de reconstrucció global

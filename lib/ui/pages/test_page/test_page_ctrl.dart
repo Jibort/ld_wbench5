@@ -23,6 +23,9 @@ import 'package:ld_wbench5/utils/debug.dart';
 /// Controlador per a la pàgina de prova
 class   TestPageCtrl 
 extends LdPageCtrl<TestPage> {
+  // WIDGETS --------------------------
+  LdText? labCounter;
+
   /// Model de dades de la pàgina
   TestPageModel get model => cPage.vModel as TestPageModel;
 
@@ -197,16 +200,24 @@ extends LdPageCtrl<TestPage> {
 
   @override
   Widget buildPage(BuildContext context) {
-    // Inicialitzem per assegurar-nos que tenim els controladors
+    // Inicializamos para asegurarnos que tenemos los controladores
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateControllerReferences();
     });
     
     Debug.info("$tag: Construint pàgina amb model: títol=${model.title}, subtítol=${model.subTitle}");
     
-    // Obtenir l'idioma actual cada vegada que es construeix
+    // Obtener el idioma actual cada vez que se construye
     String currentLanguage = L.getCurrentLocale().languageCode;
     Debug.info("$tag: Idioma actual: $currentLanguage");
+
+    // Creem l'etiqueta amb el valor del comptador.
+    labCounter = LdText(
+      key: ValueKey(model.counter),
+      text: L.sCounter,
+      args: [model.counter],
+      style: Theme.of(context).textTheme.bodyMedium,
+    );
 
     // Creem una referència al TextField (amb Key per evitar que es recreï)
     final textField = LdTextField(
@@ -228,25 +239,24 @@ extends LdPageCtrl<TestPage> {
     // Creem els botons i guardem referència als seus controladors mitjançant keys
     final themeButton = LdButton(
       key: _themeButtonKey,
-      text: L.sChangeTheme, // JAB_Q: .tx, // Ya usa correctamente .tx
+      text: L.sChangeTheme,
       onPressed: changeTheme,
       backgroundColor: Theme.of(context).colorScheme.secondary,
     );
     
     final languageButton = LdButton(
       key: _languageButtonKey,
-      text: L.sChangeLanguage, // JAB_Q: .tx, // Ya usa correctamente .tx
+      text: L.sChangeLanguage,
       onPressed: changeLanguage,
     );
     
-    // Asegurarnos de que todos los textos estáticos usen la traducción correcta
     final toggleVisibilityButton = LdButton(
-      text: L.sToggleThemeButtonVisibility, // JAB_Q: .tx,
+      text: L.sToggleThemeButtonVisibility,
       onPressed: toggleThemeButtonVisibility,
     );
 
     final toggleEnabledButton = LdButton(
-      text: L.sToggleLanguageButtonEnabled, // JAB_Q: .tx,
+      text: L.sToggleLanguageButtonEnabled,
       onPressed: toggleLanguageButtonEnabled,
     );
     
@@ -254,134 +264,132 @@ extends LdPageCtrl<TestPage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: LdAppBar(
-          pTitleKey:    model.title,
+          pTitleKey: model.title,
           pSubTitleKey: model.subTitle,
         ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Subtítol
-            if (model.subTitle != null)
-            LdText(
-              text: model.subTitle!,
-              style: Theme.of(context).textTheme.bodyLarge,
+      body: SafeArea(
+        child: GestureDetector(
+          // Permite hacer tap fuera del campo para cerrar el teclado
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: Scaffold(
+            // Scaffold sin appBar dentro del body del LdScaffold principal
+            backgroundColor: Colors.transparent,
+            // Usar resizeToAvoidBottomInset para manejar el teclado
+            resizeToAvoidBottomInset: true,
+            body: SingleChildScrollView(
+              // SingleChildScrollView permite hacer scroll cuando aparece el teclado
+              child: Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Subtítol
+                    if (model.subTitle != null)
+                    LdText(
+                      text:  model.subTitle!,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Mostrar comptador
+                    labCounter!,
+                    
+                    // Mostrar idioma actual
+                    LdText(
+                      text: L.sCurrentLanguage,
+                      args: [currentLanguage],
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // Secció dels botons principals
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Column(
+                        children: [
+                          // Botó per canviar idioma
+                          languageButton,
+                          
+                          const SizedBox(height: 16),
+                          
+                          // Botó per canviar tema
+                          themeButton,
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 40),
+                    
+                    // Secció dels botons de demostració
+                    Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.setOpacity(0.1),
+                            blurRadius: 4.0,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          LdText(
+                            text: L.sFeaturesDemo,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 16),
+                          toggleVisibilityButton,
+                          const SizedBox(height: 12),
+                          toggleEnabledButton,
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: textField,
+                    ),
+                    addButton,
+                    // Añadir un espacio extra al final para asegurar que hay suficiente espacio
+                    // cuando el teclado está visible
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+                  ],
+                ),
+              ),
             ),
-            // CLA_2: Text(
-            // CLA_2:   model.subTitle!.tx,
-            // CLA_2:   style: Theme.of(context).textTheme.bodyLarge,
-            // CLA_2: ),
-            
-            const SizedBox(height: 16),
-            
-            // Mostrar comptador
-            LdText(
-              key:  ValueKey(model.counter), // Clau única que força reconstrucció
-              text: L.sCounter,
-              args: [model.counter],
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            // CLA_2.1: LdText(
-            // CLA_2.1:   text: L.sCounter,
-            // CLA_2.1:   args: [model.counter],
-            // CLA_2.1:   style: Theme.of(context).textTheme.bodyMedium,
-            // CLA_2.1: ),
-            // CLA_2: Text(
-            // CLA_2:   'Comptador: ${model.counter}',
-            // CLA_2:   style: Theme.of(context).textTheme.bodyMedium,
-            // CLA_2: ),
-            
-            // Mostrar idioma actual
-            LdText(
-              text: L.sCurrentLanguage,
-              args: [currentLanguage],
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            // CLA_2: Text(
-            // CLA_2:   'Idioma actual: $currentLanguage',
-            // CLA_2:   style: Theme.of(context).textTheme.bodyMedium,
-            // CLA_2: ),
-            
-            const SizedBox(height: 24),
-            
-            // Secció dels botons principals
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                children: [
-                  // Botó per canviar idioma
-                  languageButton,
+            floatingActionButton: FloatingActionButton(
+              onPressed: () {
+                Debug.info("$tag: Botó flotant premut");
+                // Incrementar el comptador
+                model.incrementCounter();
+                labCounter!.args = [model.counter];
+
+                // Demo: demanar focus al botó de tema quan el comptador és parell
+                if (model.counter % 2 == 0) {
+                  // Ens assegurem de tenir els controladors
+                  _updateControllerReferences();
                   
-                  const SizedBox(height: 16),
-                  
-                  // Botó per canviar tema
-                  themeButton,
-                ],
-              ),
+                  if (_themeButtonCtrl != null && _themeButtonCtrl!.isVisible) {
+                    _themeButtonCtrl!.requestFocus();
+                  }
+                }
+              },
+              child: const Icon(Icons.add),
             ),
-            
-            const SizedBox(height: 40),
-            
-            // Secció dels botons de demostració
-            Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(8.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.setOpacity(0.1),
-                    blurRadius: 4.0,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  LdText(
-                    text: L.sFeaturesDemo,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  // CLA_2: Text(
-                  // CLA_2:   'Demostració de característiques:',
-                  // CLA_2:   style: Theme.of(context).textTheme.titleMedium,
-                  // CLA_2: ),
-                  const SizedBox(height: 16),
-                  toggleVisibilityButton,
-                  const SizedBox(height: 12),
-                  toggleEnabledButton,
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: textField,
-            ),
-            addButton,
-          ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Debug.info("$tag: Botó flotant premut");
-          // Incrementar el comptador
-          model.incrementCounter();
-          
-          // Demo: demanar focus al botó de tema quan el comptador és parell
-          if (model.counter % 2 == 0) {
-            // Ens assegurem de tenir els controladors
-            _updateControllerReferences();
-            
-            if (_themeButtonCtrl != null && _themeButtonCtrl!.isVisible) {
-              _themeButtonCtrl!.requestFocus();
-            }
-          }
-        },
-        child: const Icon(Icons.add),
       ),
     );
   }
-
 }

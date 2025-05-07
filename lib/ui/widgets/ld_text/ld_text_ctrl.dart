@@ -51,8 +51,7 @@ class LdTextCtrl extends LdWidgetCtrlAbs<LdText> {
     // No cal fer res de moment
   }
   
-  @override
-  void onEvent(LdEvent event) {
+  @override onEvent(LdEvent event) {
     Debug.info("$tag: Rebut esdeveniment ${event.eType.name}");
     
     // Gestionar canvis d'idioma
@@ -76,6 +75,20 @@ class LdTextCtrl extends LdWidgetCtrlAbs<LdText> {
           Debug.info("$tag: Reconstruint el text");
         });
       }
+    }
+  }
+  
+  @override onModelChanged(void Function() updateFunction) {
+    Debug.info("$tag: Model ha canviat");
+    
+    // Executar la funció d'actualització
+    updateFunction();
+    
+    // Reconstruir si està muntat
+    if (mounted) {
+      setState(() {
+        Debug.info("$tag: Reconstruint després del canvi del model");
+      });
     }
   }
   
