@@ -212,25 +212,22 @@ abstract class LdWidgetCtrlAbs<T extends LdWidgetAbs>
   /// Vincula el controlador com a observador del model, si existeix
   void _attachToModel() {
     try {
-      // Utilitzar el nou getter hasModel per comprovar si el widget té model
       if (widget.hasModel) {
         try {
-          // El widget té model, intentem obtenir-lo i registrar-nos
           final model = widget.wModel;
           model.attachObserver(this);
           Debug.info("$tag: Registrat com a observador del model");
         } catch (e) {
-          // Pot fallar si el model no està correctament inicialitzat
           Debug.warn("$tag: Error en registrar-se com a observador: ${e.toString()}");
         }
       } else {
         Debug.info("$tag: Widget sense model, no cal registrar-se com a observador");
       }
     } catch (e) {
-      // Capturar qualsevol excepció durant l'intent de registre
       Debug.warn("$tag: No s'ha pogut registrar com a observador: ${e.toString()}");
     }
   }
+
   
   /// Processa un event rebut
 void _handleEvent(LdEvent event) {
@@ -332,6 +329,23 @@ void _handleEvent(LdEvent event) {
     return true;
   }
 
+  void _unregisterAsObserver() {
+    // Desregistrar-se com a observador del model, si existeix
+    try {
+      if (widget.hasModel) {
+        try {
+          final model = widget.wModel;
+          // No cal passar cap paràmetre, ja que ara el mètode pot desconnectar tots els observadors
+          model.detachObserver();
+          Debug.info("$tag: Desregistrat com a observador del model");
+        } catch (e) {
+          Debug.warn("$tag: Error en desregistrar-se com a observador: ${e.toString()}");
+        }
+      }
+    } catch (e) {
+      Debug.warn("$tag: No s'ha pogut desregistrar com a observador: ${e.toString()}");
+    }
+  }
   /// 'State': Allibera els recursos.
   @override
   void dispose() {
@@ -343,8 +357,9 @@ void _handleEvent(LdEvent event) {
       if (widget.hasModel) {
         try {
           // El widget té model, intentem obtenir-lo i desregistrar-nos
-          final model = widget.wModel;
-          model.detachObserver();
+          // CLA_4: final model = widget.wModel;
+          // CLA_4: model.detachObserver();
+          _unregisterAsObserver();
           Debug.info("$tag: Desregistrat com a observador del model");
         } catch (e) {
           // Pot fallar si el model no està correctament inicialitzat
@@ -363,11 +378,11 @@ void _handleEvent(LdEvent event) {
   }
   
   @override
-  void onModelChanged(void Function() updateFunction) {
+  void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
     Debug.info("$tag: Model ha canviat");
     
     // Executa la funció d'actualització sempre
-    updateFunction();
+    pfUpdate();
     
     // Però només reconstrueix si està muntat
     if (mounted) {
@@ -377,20 +392,6 @@ void _handleEvent(LdEvent event) {
     }
   }
 
-  // CLA_1:/// 'LdModelObserverIntf': Notifica que el model ha canviat.
-  // CLA_1:@override
-  // CLA_1:void onModelChanged(void Function() updateFunction) {
-  // CLA_1:  Debug.info("$tag: Model ha canviat");
-  // CLA_1:
-  // CLA_1:  if (mounted) {
-  // CLA_1:    setState(updateFunction);
-  // CLA_1:    Debug.info("$tag: Model actualitzat amb reconstrucció");
-  // CLA_1:  } else {
-  // CLA_1:    updateFunction();
-  // CLA_1:    Debug.info("$tag: Model actualitzat sense reconstrucció");
-  // CLA_1:  }
-  // CLA_1:}
-  
   /// 'State': Construeix el widget.
   @override
   Widget build(BuildContext context) {
@@ -422,4 +423,9 @@ void _handleEvent(LdEvent event) {
   /// Mètode que ha d'implementar cada widget per construir la seva UI
   /// Aquest mètode ha de gestionar el focus i l'estat del widget internament
   Widget buildContent(BuildContext context);
+
+  /// Passarel·la de pas per a la crida a setState().
+  @override setState(void Function() pFN) {
+    super.setState(pFN);
+   }
 }

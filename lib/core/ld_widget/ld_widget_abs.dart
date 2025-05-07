@@ -4,6 +4,7 @@
 // Updated: 2025/05/03 ds. CLA
 
 import 'package:flutter/material.dart';
+import 'package:ld_wbench5/core/ld_model_abs.dart';
 
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
@@ -14,9 +15,35 @@ export 'ld_widget_ctrl_abs.dart';
 export 'ld_widget_model_abs.dart';
 
 /// Widget base que proporciona funcionalitats comunes
-abstract class LdWidgetAbs
-extends  StatefulWidget 
-with     LdTaggableMixin {
+abstract   class LdWidgetAbs
+extends    StatefulWidget 
+with       LdTaggableMixin
+implements LdModelObserverIntf {
+  // Nova propietat per a callbacks d'actualització
+  final Map<Type, Function(LdModelAbs model)> _updateCallbacks = {};
+  
+  /// Registra un callback d'actualització per a un tipus específic de model
+  void registerModelCallback<T extends LdModelAbs>(T pModel, Function(T pModel) pCBack) {
+    _updateCallbacks[T] = (model) => pCBack(model as T);
+    pModel.attachObserver(this);
+  }
+
+  @override
+  void onModelChanged(LdModelAbs model, void Function() pfUpdate) {
+    wCtrl.onModelChanged(model, pfUpdate);
+
+    // Buscar si existeix un callback registrat per aquest tipus de model
+    final callback = _updateCallbacks[model.runtimeType];
+    if (callback != null) {
+      callback(model);
+    }
+    if (wCtrl.mounted) {
+      wCtrl.setState(() {
+        // Reconstrucció després d'actualitzar
+      });
+    }
+  }
+
   // CONTROLADOR ==============================================================
   /// Controlador del widget
   final OnceSet<LdWidgetCtrlAbs<LdWidgetAbs>> _ctrl = OnceSet<LdWidgetCtrlAbs<LdWidgetAbs>>();
@@ -44,7 +71,7 @@ with     LdTaggableMixin {
     bool isEnabled = true }) 
   { tag = (pTag != null) 
       ? pTag
-      : className;
+      : generateTag();
   }
 
   // 'StatefulWidget': Retorna el controlador de l'aplicació.

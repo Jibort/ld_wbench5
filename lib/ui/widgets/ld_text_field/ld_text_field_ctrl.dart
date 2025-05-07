@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
+import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
 import 'package:ld_wbench5/utils/debug.dart';
@@ -174,7 +175,7 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   }
   
   @override
-  void onModelChanged(void Function() updateFunction) {
+  void onModelChanged(LdModelAbs pModel, void Function() updateFunction) {
     Debug.info("$tag: Model ha canviat");
     
     // Executar la funció d'actualització

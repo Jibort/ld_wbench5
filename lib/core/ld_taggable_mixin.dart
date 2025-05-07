@@ -14,7 +14,7 @@ mixin LdTaggableMixin {
   String? _tag;
   
   /// Obté el tag d'aquesta instància, generant-ne un si no existeix
-  String get tag => _tag ?? _generateTag();
+  String get tag => _tag ?? generateTag();
   
   /// Estableix el tag com una propietat simple
   set tag(String pNewTag) {
@@ -23,7 +23,7 @@ mixin LdTaggableMixin {
   }
   
   /// Genera un tag únic basat en el tipus de classe i timestamp
-  String _generateTag() {
+  String generateTag() {
     final generatedTag = '${className}_${DateTime.now().millisecondsSinceEpoch}';
     _tag = generatedTag;
     return generatedTag;

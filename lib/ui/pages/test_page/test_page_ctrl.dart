@@ -8,6 +8,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
+import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/services/theme_service.dart';
@@ -15,7 +16,7 @@ import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
-import 'package:ld_wbench5/ui/widgets/ld_text/ld_text.dart';
+import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
 import 'package:ld_wbench5/utils/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
@@ -23,8 +24,9 @@ import 'package:ld_wbench5/utils/debug.dart';
 /// Controlador per a la pàgina de prova
 class   TestPageCtrl 
 extends LdPageCtrl<TestPage> {
-  // WIDGETS --------------------------
-  LdText? labCounter;
+  /// Etiqueta amb el valor del comptador.
+  LdLabel? labCounter;
+  LdLabel? labLocale;
 
   /// Model de dades de la pàgina
   TestPageModel get model => cPage.vModel as TestPageModel;
@@ -56,7 +58,7 @@ extends LdPageCtrl<TestPage> {
   @override
   void dispose() {
     Debug.info("$tag: Alliberant recursos");
-    model.detachObserver();
+    model.detachObserver(); // Aquest mètode continuarà funcionant amb la nova implementació
     model.dispose();
     super.dispose();
   }
@@ -78,38 +80,8 @@ extends LdPageCtrl<TestPage> {
     }
   }
 
-  // CLA_1:@override
-  // CLA_1:void onEvent(LdEvent event) {
-  // CLA_1:  Debug.info("$tag: Event rebut: ${event.eType.name}");
-  // CLA_1:
-  // CLA_1:  // Actualizar modelo cuando cambia el idioma
-  // CLA_1:  if (event.eType == EventType.languageChanged) {
-  // CLA_1:    String? newLocale = event.eData[mfNewLocale] as String?;
-  // CLA_1:    Debug.info("$tag: Idioma canviat a: $newLocale");
-  // CLA_1: 
-  // CLA_1:    // Actualizar los textos del modelo
-  // CLA_1:    // JAB_Q: No cal, oi? model.updateTexts();
-  // CLA_1: 
-  // CLA_1:    // Forzar reconstrucción de la UI
-  // CLA_1:    if (mounted) {
-  // CLA_1:      setState(() {
-  // CLA_1:        Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'idioma");
-  // CLA_1:      });
-  // CLA_1:    }
-  // CLA_1:  }
-  // CLA_1:
-  // CLA_1:  // Manejamos rebuildUI por separado
-  // CLA_1:  else if (event.eType == EventType.rebuildUI) {
-  // CLA_1:    if (mounted) {
-  // CLA_1:      setState(() {
-  // CLA_1:        Debug.info("$tag: Reconstruint completament");
-  // CLA_1:      });
-  // CLA_1:    }
-  // CLA_1:  }
-  // CLA_1:}
-
   @override
-  void onModelChanged(void Function() pfUpdate) {
+  void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
     Debug.info("$tag.onModelChanged(): executant ...");
     
     // Executar l'actualització
@@ -125,26 +97,12 @@ extends LdPageCtrl<TestPage> {
       Debug.info("$tag.onModelChanged(): ... executat sense reconstrucció");
     }
   }
-
-  // CLA_2: /// 'LdModelObserver': Respon als canvis del model de dades.
-  // CLA_2: @override
-  // CLA_2: void onModelChanged(void Function() pfUpdate) {
-  // CLA_2:   Debug.info("$tag.onModelChanged(): executant ...");
-  // CLA_2:  
-  // CLA_2:   // Executar l'actualització i forçar una reconstrucció de la UI
-  // CLA_2:   if (mounted) {
-  // CLA_2:     setState(pfUpdate);
-  // CLA_2:     Debug.info("$tag.onModelChanged(): ... executat amb reconstrucció");
-  // CLA_2:   } else {
-  // CLA_2:     pfUpdate();
-  // CLA_2:     Debug.info("$tag.onModelChanged(): ... executat sense reconstrucció");
-  // CLA_2:   }
-  // CLA_2: }
-  
+    
   /// Canvia l'idioma entre català i espanyol
   void changeLanguage() {
     Debug.info("$tag: Canviant idioma");
     L.toggleLanguage();
+    model.changeLocele();
   }
   
   /// Canvia el tema entre clar i fosc
@@ -200,24 +158,39 @@ extends LdPageCtrl<TestPage> {
 
   @override
   Widget buildPage(BuildContext context) {
-    // Inicializamos para asegurarnos que tenemos los controladores
+    // Inicialitzem per assegurar-nos que tenim els controladors
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateControllerReferences();
     });
     
     Debug.info("$tag: Construint pàgina amb model: títol=${model.title}, subtítol=${model.subTitle}");
     
-    // Obtener el idioma actual cada vez que se construye
+    // Obtenir l'idioma actual cada vegada que es construeix
     String currentLanguage = L.getCurrentLocale().languageCode;
     Debug.info("$tag: Idioma actual: $currentLanguage");
 
-    // Creem l'etiqueta amb el valor del comptador.
-    labCounter = LdText(
-      key: ValueKey(model.counter),
-      text: L.sCounter,
-      args: [model.counter],
-      style: Theme.of(context).textTheme.bodyMedium,
-    );
+    if (labCounter == null) {
+      labCounter = LdLabel(
+        key: ValueKey('counter_${model.counter}'),
+        text: L.sCounter,
+        args: [model.counter],
+        style: Theme.of(context).textTheme.bodyMedium,
+      );
+      labCounter!.registerModelCallback<TestPageModel>(model, (pModel) {
+        labCounter!.args = [pModel.counter];
+      });
+    }
+    if (labLocale == null) {
+      labLocale = LdLabel(
+        key: ValueKey('language_${L.sCurrentLanguage}'),
+        text: L.sCurrentLanguage,
+        args: [currentLanguage],
+        style: Theme.of(context).textTheme.bodyMedium,
+      );
+      labLocale!.registerModelCallback<TestPageModel>(model, (pModel) {
+        labLocale!.args = [L.getCurrentLocale().languageCode];
+      });
+    }
 
     // Creem una referència al TextField (amb Key per evitar que es recreï)
     final textField = LdTextField(
@@ -270,17 +243,17 @@ extends LdPageCtrl<TestPage> {
       ),
       body: SafeArea(
         child: GestureDetector(
-          // Permite hacer tap fuera del campo para cerrar el teclado
+          // Permet fer tap fora del camp per tancar el teclat
           onTap: () {
             FocusScope.of(context).unfocus();
           },
           child: Scaffold(
-            // Scaffold sin appBar dentro del body del LdScaffold principal
+            // Scaffold sense appBar dins del body del LdScaffold principal
             backgroundColor: Colors.transparent,
-            // Usar resizeToAvoidBottomInset para manejar el teclado
+            // Usar resizeToAvoidBottomInset per gestionar el teclat
             resizeToAvoidBottomInset: true,
             body: SingleChildScrollView(
-              // SingleChildScrollView permite hacer scroll cuando aparece el teclado
+              // SingleChildScrollView permet fer scroll quan apareix el teclat
               child: Padding(
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -291,22 +264,19 @@ extends LdPageCtrl<TestPage> {
                   children: [
                     // Subtítol
                     if (model.subTitle != null)
-                    LdText(
-                      text:  model.subTitle!,
+                    LdLabel(
+                      key: ValueKey('subtitle_${model.subTitle}'),
+                      text: model.subTitle!,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     
                     const SizedBox(height: 16),
                     
-                    // Mostrar comptador
+                    // Mostrar comptador - IMPORTANT: Usem el ValueKey amb el valor del comptador
                     labCounter!,
                     
-                    // Mostrar idioma actual
-                    LdText(
-                      text: L.sCurrentLanguage,
-                      args: [currentLanguage],
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
+                    // Mostrar idioma actual - IMPORTANT: Usem el ValueKey amb el codi d'idioma
+                    labLocale!,
                     
                     const SizedBox(height: 24),
                     
@@ -345,7 +315,8 @@ extends LdPageCtrl<TestPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          LdText(
+                          LdLabel(
+                            key: ValueKey('features_demo'),
                             text: L.sFeaturesDemo,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
@@ -361,8 +332,8 @@ extends LdPageCtrl<TestPage> {
                       child: textField,
                     ),
                     addButton,
-                    // Añadir un espacio extra al final para asegurar que hay suficiente espacio
-                    // cuando el teclado está visible
+                    // Afegir un espai extra al final per assegurar que hi ha suficient espai
+                    // quan el teclat està visible
                     SizedBox(height: MediaQuery.of(context).size.height * 0.2),
                   ],
                 ),
@@ -371,10 +342,10 @@ extends LdPageCtrl<TestPage> {
             floatingActionButton: FloatingActionButton(
               onPressed: () {
                 Debug.info("$tag: Botó flotant premut");
-                // Incrementar el comptador
+                
+                // NOMÉS modifiquem el model, mai manipulem directament els LdText
                 model.incrementCounter();
-                labCounter!.args = [model.counter];
-
+                
                 // Demo: demanar focus al botó de tema quan el comptador és parell
                 if (model.counter % 2 == 0) {
                   // Ens assegurem de tenir els controladors

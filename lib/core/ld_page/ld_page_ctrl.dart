@@ -79,7 +79,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   }
 
   @override
-  void onModelChanged(void Function() pfUpdate) {
+  void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
     Debug.info("$tag.onModelChanged(): executant ...");
     
     // Executar l'actualització sempre

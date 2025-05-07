@@ -11,47 +11,60 @@ import 'package:ld_wbench5/utils/map_extensions.dart';
 /// Interfície per a comunicar canvis en el model
 abstract class LdModelObserverIntf {
   /// Notifica que el model ha canviat
-  void onModelChanged(void Function() pfUpdate);
+  void onModelChanged(LdModelAbs pModel, void Function() pfUpdate);
 }
 
 /// Model base que proporciona funcionalitat de notificació de canvis
 abstract class LdModelAbs 
 with     LdTaggableMixin {
-  /// Observador opcional associat per actualitzar la UI
-  LdModelObserverIntf? _obs;
+  /// Conjunt d'observadors interessats en canvis del model
+  final Set<LdModelObserverIntf> _observers = {};
   
+  /// Retorna el nombre d'observadors actuals
+  int get observerCount => _observers.length;
+
+  /// Indica si el model té algun observador
+  bool get hasObservers => _observers.isNotEmpty;
+
   /// Vincula un observador a aquest model per a les actualitzacions d'UI
   void attachObserver(LdModelObserverIntf pObs) {
-    _obs = pObs;
-    Debug.info("$tag: Observador assignat");
+    _observers.add(pObs);
+    Debug.info("$tag: Observador assignat. Total: ${_observers.length}");
   }
   
-  /// Desvincula l'observador
-  void detachObserver() {
-    _obs = null;
-    Debug.info("$tag: Observador desvinculat");
+  /// Desvincula un observador específic
+  void detachObserver([LdModelObserverIntf? pObs]) {
+    if (pObs != null) {
+      _observers.remove(pObs);
+      Debug.info("$tag: Observador específic desvinculat. Restants: ${_observers.length}");
+    } else {
+      _observers.clear();
+      Debug.info("$tag: Tots els observadors desvinculats");
+    }
   }
   
   /// Notifica als observadors que el model ha canviat
   void notifyListeners(void Function() action) {
-    // Execute the action regardless of observer
+    // Executar l'acció independentment dels observadors
     action();
     
-    // If there's an observer, notify it of the change
-    if (_obs != null) {
-      Debug.info("$tag: Notifying observer of model change");
-      _obs!.onModelChanged(action);
+    // Si hi ha observadors, notificar-los del canvi
+    if (_observers.isNotEmpty) {
+      Debug.info("$tag: Notificant ${_observers.length} observador(s) del canvi");
+      for (final observer in _observers) {
+        observer.onModelChanged(this, action);
+      }
     } else {
-      Debug.warn("$tag: Model changed without an observer");
+      Debug.warn("$tag: Model canviat sense observadors");
     }
   }
   
   /// Allibera els recursos del model
   void dispose() {
-    _obs = null;
+    detachObserver(); // Ara desvincula tots els observadors
     Debug.info("$tag: Model alliberat");
   }
-  
+
   @override String toString() => 'LdModel(tag: $tag)';
 
   // DECLARACIONS ABSTRACTES ==================================================

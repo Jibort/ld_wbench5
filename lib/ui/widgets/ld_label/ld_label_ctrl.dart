@@ -1,17 +1,18 @@
-// lib/ui/widgets/ld_text/ld_text_ctrl.dart
+// lib/ui/widgets/ld_text/ld_label_ctrl.dart
 // Controlador del widget LdText.
 // Created: 2025/05/06 dt. CLA
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 
+import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
+import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
-import 'package:ld_wbench5/ui/widgets/ld_text/ld_text.dart';
+import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador del widget LdText.
-class LdTextCtrl extends LdWidgetCtrlAbs<LdText> {
+class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
   /// Estil del text
   final TextStyle? style;
   
@@ -25,16 +26,22 @@ class LdTextCtrl extends LdWidgetCtrlAbs<LdText> {
   final TextOverflow? overflow;
   
   /// Constructor
-  LdTextCtrl(
+  LdLabelCtrl(
     super.pWidget, {
     this.style,
     this.textAlign,
     this.maxLines,
     this.overflow,
   });
-  
+
+  @override
+  void dispose() {
+    widget.detachFromAllModels();
+    super.dispose();
+}
+
   /// Retorna el model del widget.
-  LdTextModel get model => cWidget.wModel as LdTextModel;
+  LdLabelModel get model => cWidget.wModel as LdLabelModel;
 
   @override
   void initialize() {
@@ -78,11 +85,11 @@ class LdTextCtrl extends LdWidgetCtrlAbs<LdText> {
     }
   }
   
-  @override onModelChanged(void Function() updateFunction) {
+  @override onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
     Debug.info("$tag: Model ha canviat");
     
     // Executar la funció d'actualització
-    updateFunction();
+    pfUpdate();
     
     // Reconstruir si està muntat
     if (mounted) {

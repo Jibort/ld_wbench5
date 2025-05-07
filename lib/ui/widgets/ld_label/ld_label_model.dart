@@ -1,19 +1,19 @@
-// lib/ui/widgets/ld_text/ld_text_model.dart
+// lib/ui/widgets/ld_text/ld_label_model.dart
 // Model de dades del widget LdText.
 // Created: 2025/05/06 dt. CLA
 
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
-import 'package:ld_wbench5/ui/widgets/ld_text/ld_text.dart';
+import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/utils/map_extensions.dart';
 import 'package:ld_wbench5/utils/string_extensions.dart';
 
 /// Model de dades del widget LdText.
-class LdTextModel extends LdWidgetModelAbs<LdText> {
+class LdLabelModel extends LdWidgetModelAbs<LdLabel> {
   /// Retorna el controlador del widget.
-  LdTextCtrl get wCtrl => cWidget.wCtrl as LdTextCtrl;
+  LdLabelCtrl get wCtrl => cWidget.wCtrl as LdLabelCtrl;
   
   /// Text o clau de traducció
   String _text = "";
@@ -45,14 +45,14 @@ class LdTextModel extends LdWidgetModelAbs<LdText> {
   }
 
   /// Constructor General
-  LdTextModel(super.pWidget, {required String text, List<dynamic>? args}) {
+  LdLabelModel(super.pWidget, {required String text, List<dynamic>? args}) {
     _text = text;
     _args = args;
     Debug.info("$tag: Model creat amb text '$text' i args '$args'");
   }
 
   /// Constructor des d'un mapa de valors.
-  LdTextModel.fromMap(super.pWidget, LdMap pMap) {
+  LdLabelModel.fromMap(super.pWidget, LdMap pMap) {
     fromMap(pMap);
   }
 
