@@ -3,7 +3,6 @@
 // Created: 2025/05/08 dj. CLA
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/utils/color_extensions.dart';
 
 /// Classe d'utilitats per a temes
 class ThemeUtils {

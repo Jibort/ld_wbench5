@@ -7,14 +7,20 @@ import 'package:flutter/material.dart';
 
 /// Extensions per a facilitar el treball amb colors
 extension ColorExtensions on Color {
+  int get value => toARGB32();
+  int get alpha => (0xff000000 & value) >> 24;
+  int get red => value >> 16 & 0xFF;
+  int get green => value >> 8 & 0xFF;
+  int get blue => value & 0xFF;
+
   /// Aplica un nivell d'alpha dins el rang {0, .., 1}.
   Color setOpacity(double pPercent) {
     pPercent = pPercent.clamp(0.0, 1.0);
     return Color.fromARGB(
-      ((pPercent * 255.0).round()),
-      (this >> 16) & 0xFF,
-      (this >> 8) & 0xFF,
-      this & 0xFF,
+      (pPercent * 255.0).round(),
+      red,
+      green,
+      blue,
     );
   }
   
@@ -23,9 +29,9 @@ extension ColorExtensions on Color {
     alpha = alpha.clamp(0, 255);
     return Color.fromARGB(
       alpha,
-      (this >> 16) & 0xFF,
-      (this >> 8) & 0xFF,
-      this & 0xFF,
+      red,
+      green,
+      blue,
     );
   }
   
@@ -72,17 +78,12 @@ extension ColorExtensions on Color {
     if (withPound) buffer.write('#');
     
     if (includeAlpha) {
-      final alphaValue = ((this >> 24) & 0xFF).toRadixString(16).padLeft(2, '0');
-      buffer.write(alphaValue);
+      buffer.write(alpha.toRadixString(16).padLeft(2, '0'));
     }
     
-    final redValue = ((this >> 16) & 0xFF).toRadixString(16).padLeft(2, '0');
-    final greenValue = ((this >> 8) & 0xFF).toRadixString(16).padLeft(2, '0');
-    final blueValue = (this & 0xFF).toRadixString(16).padLeft(2, '0');
-    
-    buffer.write(redValue);
-    buffer.write(greenValue);
-    buffer.write(blueValue);
+    buffer.write(red.toRadixString(16).padLeft(2, '0'));
+    buffer.write(green.toRadixString(16).padLeft(2, '0'));
+    buffer.write(blue.toRadixString(16).padLeft(2, '0'));
     
     return buffer.toString().toUpperCase();
   }
