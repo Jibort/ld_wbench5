@@ -68,14 +68,14 @@ implements LdModelObserverIntf {
     Debug.info("$tag: LdText creat correctament");
   }
 
+  /// Retorna els arguents per format actuals.
+  List<dynamic>? get args => (wModel as LdLabelModel).args;
+
   /// Estableix els arguments per format
   set args(List<dynamic>? value) {
     (wModel as LdLabelModel).args = value;
   }
+
+  bool needsUpdate(List<String> pList) => (args == pList);
   
-  // @override
-  // void onModelChanged(LdModelAbs pModel, Function() pfUpdate) {
-  //   Debug.info("$tag: Rebent notificació de canvi del model de la pàgina");
-  //   wCtrl.onModelChanged(pModel, pfUpdate);
-  // }
 }

@@ -24,7 +24,7 @@ extends LdWidgetModelAbs<LdAppBar> {
   /// Retorna el títol traduït de la barra d'aplicació.
   String get titleKey {
     if (_titleKey.t != null && _titleKey.isKey) {
-      String translated = _titleKey.tx!; // JAB_Q: L.tx(_titleKey.t!);
+      String translated = _titleKey.tx!;
       Debug.info("$tag: Títol traduït: '$translated' de clau '${_titleKey.tx}'");
       return translated;
     }
@@ -45,7 +45,7 @@ extends LdWidgetModelAbs<LdAppBar> {
   /// Retorna el subtítol traduït de la barra d'aplicació.
   String? get subTitleKey {
     if (_subTitleKey.t != null && _subTitleKey.isKey) {
-      String translated = _subTitleKey.tx!; // JAB_Q: L.tx(_subTitleKey.t!);
+      String translated = _subTitleKey.tx!;
       Debug.info("$tag: Subtítol traduït: '$translated' de clau '${_subTitleKey.tx}'");
       return translated;
     }

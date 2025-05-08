@@ -223,21 +223,6 @@ with  LdTaggableMixin {
     return translation;
   }
 
-  // CLA_2:static String tx(String key) {
-  // CLA_2:  Locale locale = getCurrentLocale();
-  // CLA_2:  Dictionary? dictionary = s._dictionaries[locale.languageCode];
-  // CLA_2:  String translation = dictionary?.getOr(key, errInText) ?? errInText;
-  // CLA_2:
-  // CLA_2:  if (translation == errInText) {
-  // CLA_2:    Debug.warn("L.tx: Translation key '$key' not found in '${locale.languageCode}' dictionary");
-  // CLA_2:  } else {
-  // CLA_2:    Debug.info("L.tx: Translated '$key' to '$translation' in '${locale.languageCode}'");
-  // CLA_2:  }
-  // CLA_2:
-  // CLA_2:  return translation;
-  // CLA_2:}
-
-
   // Afegir un nou mètode per format
   static String txFormat(String key, List<dynamic> args) {
     return tx(key).format(args);

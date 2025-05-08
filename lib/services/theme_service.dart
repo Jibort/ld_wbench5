@@ -91,20 +91,6 @@ with  LdTaggableMixin {
     // Notificar del canvi de tema
     _notifyThemeChanged(oldTheme, _currentTheme);
   }
-
-  // CLA_1 /// Canvia el mode del tema  
-  // CLA_1 void changeThemeMode(ThemeMode mode) 
-  // CLA_1   Debug.info("$tag: Canviant mode de tema a ${mode.toString()}");// CLA_1
-  // CLA_1  
-  // CLA_01   _themeMode.set(mode);
-  // CLA_01   _isDarkMode = (mode == ThemeMode.system)
-  // CLA_01       ? PlatformDispatcher.instance.platformBrightness == Brightness.dark
-  // CLA_01       : (mode == ThemeMode.dark);
-  // CLA_01   ThemeData oldTheme = _currentTheme;
-  // CLA_01   _currentTheme = _isDarkMode ? darkTheme : lightTheme;
-  // CLA_01   // Notificar del canvi de tema
-  // CLA_01   _notifyThemeChanged(oldTheme, _currentTheme);
-  // CLA_01 }
   
   /// Alterna entre els temes clar i fosc
   void toggleTheme() {
@@ -144,20 +130,6 @@ with  LdTaggableMixin {
     );
   }
 
-  // CLA_1: /// Notifica del canvi de tema
-  // CLA_1: void _notifyThemeChanged(ThemeData? oldTheme, ThemeData newTheme) {
-  // CLA_1:   Debug.info("$tag: Notificant canvi de tema");
-  // CLA_1:   
-  // CLA_1:   EventBus().emit(LdEvent(
-  // CLA_1:     eType: EventType.themeChanged,
-  // CLA_1:     srcTag: tag,
-  // CLA_1:     eData: {
-  // CLA_1:       mfIsDarkMode: _isDarkMode,
-  // CLA_1:       mfThemeMode: _themeMode.toString(),
-  // CLA_1:     },
-  // CLA_1:   ));
-  // CLA_1: }
-  
   /// COLORS CONSTANTS DE REFERÈNCIA
   // Blau mitjà de la barra de navegació
   static const Color primaryLight = Color(0xFF4B70A5);

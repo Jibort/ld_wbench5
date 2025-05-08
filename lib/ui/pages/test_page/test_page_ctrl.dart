@@ -20,13 +20,18 @@ import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
 import 'package:ld_wbench5/utils/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
+import 'package:ld_wbench5/services/time_service.dart';
 
 /// Controlador per a la pàgina de prova
-class   TestPageCtrl 
-extends LdPageCtrl<TestPage> {
+class TestPageCtrl extends LdPageCtrl<TestPage> {
   /// Etiqueta amb el valor del comptador.
   LdLabel? labCounter;
+  
+  /// Etiqueta amb el codi d'idioma.
   LdLabel? labLocale;
+  
+  /// Etiqueta amb l'hora actual del servidor.
+  LdLabel? labTime;
 
   /// Model de dades de la pàgina
   TestPageModel get model => cPage.vModel as TestPageModel;
@@ -43,7 +48,7 @@ extends LdPageCtrl<TestPage> {
 
   /// Constructor.
   TestPageCtrl({ super.pTag, required super.pPage });
-  
+
   @override
   void initialize() {
     Debug.info("$tag: Inicialitzant controlador");
@@ -58,7 +63,22 @@ extends LdPageCtrl<TestPage> {
   @override
   void dispose() {
     Debug.info("$tag: Alliberant recursos");
-    model.detachObserver(); // Aquest mètode continuarà funcionant amb la nova implementació
+    
+    // Desregistrar els widgets de tots els models externs
+    if (labCounter != null) {
+      model.detachObserver(labCounter!);
+    }
+    
+    if (labLocale != null) {
+      model.detachObserver(labLocale!);
+    }
+    
+    if (labTime != null) {
+      // Desregistrar del model d'hora
+      TimeService.s.model.detachObserver(labTime!);
+    }
+    
+    model.detachObserver(this);
     model.dispose();
     super.dispose();
   }
@@ -158,7 +178,7 @@ extends LdPageCtrl<TestPage> {
 
   @override
   Widget buildPage(BuildContext context) {
-    // Inicialitzem per assegurar-nos que tenim els controladors
+    // Inicialitzem per assegurar-nos que tenim els controladors dels botons
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateControllerReferences();
     });
@@ -169,6 +189,7 @@ extends LdPageCtrl<TestPage> {
     String currentLanguage = L.getCurrentLocale().languageCode;
     Debug.info("$tag: Idioma actual: $currentLanguage");
 
+    // Inicialitzem els widgets la primera vegada que es construeix la pàgina
     if (labCounter == null) {
       labCounter = LdLabel(
         key: ValueKey('counter_${model.counter}'),
@@ -180,15 +201,35 @@ extends LdPageCtrl<TestPage> {
         labCounter!.args = [pModel.counter];
       });
     }
+    
     if (labLocale == null) {
       labLocale = LdLabel(
-        key: ValueKey('language_${L.sCurrentLanguage}'),
+        key: ValueKey('language_${L.getCurrentLocale().languageCode}'),
         text: L.sCurrentLanguage,
-        args: [currentLanguage],
+        args: [L.getCurrentLocale().languageCode],
         style: Theme.of(context).textTheme.bodyMedium,
       );
       labLocale!.registerModelCallback<TestPageModel>(model, (pModel) {
         labLocale!.args = [L.getCurrentLocale().languageCode];
+      });
+    }
+    
+    // Crear l'etiqueta d'hora si encara no existeix
+    if (labTime == null) {
+      labTime = LdLabel(
+        key: const ValueKey('time_label'),
+        text: "Hora actual: {0}",  // Usem un placeholder {0} que serà substituït per l'hora
+        args: [TimeService.s.model.formattedTime],  // Inicialitzem amb l'hora actual
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      );
+      
+      // Registrar callback per quan canviï el model d'hora
+      labTime!.registerModelCallback<TimeModel>(TimeService.s.model, (pModel) {
+        // Actualitzar només l'argument amb l'hora actualitzada
+        labTime!.args = [pModel.formattedTime];
       });
     }
 
@@ -272,10 +313,30 @@ extends LdPageCtrl<TestPage> {
                     
                     const SizedBox(height: 16),
                     
-                    // Mostrar comptador - IMPORTANT: Usem el ValueKey amb el valor del comptador
+                    // Widget d'hora - Nova secció
+                    Container(
+                      padding: const EdgeInsets.all(16.0),
+                      margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.circular(8.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.setOpacity(0.1),
+                            blurRadius: 4.0,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: labTime!,
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Mostrar comptador
                     labCounter!,
                     
-                    // Mostrar idioma actual - IMPORTANT: Usem el ValueKey amb el codi d'idioma
+                    // Mostrar idioma actual
                     labLocale!,
                     
                     const SizedBox(height: 24),

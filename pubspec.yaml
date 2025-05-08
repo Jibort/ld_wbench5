@@ -18,7 +18,9 @@ dependencies:
 
   flutter_secure_storage: ^9.0.0
   flutter_screenutil: ^5.9.0
-  http: ^1.1.2
+  http: ^1.1.2 # http: ^0.13.5  # Afegir aquesta dependència per a crides HTTP
+  intl: ^0.19.0  # Afegir aquesta dependència per a formatació de dates
+  
 
   cupertino_icons: ^1.0.8
 

@@ -356,9 +356,6 @@ void _handleEvent(LdEvent event) {
       // Utilitzar el nou getter hasModel per comprovar si el widget té model
       if (widget.hasModel) {
         try {
-          // El widget té model, intentem obtenir-lo i desregistrar-nos
-          // CLA_4: final model = widget.wModel;
-          // CLA_4: model.detachObserver();
           _unregisterAsObserver();
           Debug.info("$tag: Desregistrat com a observador del model");
         } catch (e) {

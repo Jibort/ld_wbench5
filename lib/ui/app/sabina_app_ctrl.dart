@@ -37,9 +37,6 @@ with    WidgetsBindingObserver {
   /// Mode del tema actual
   ThemeMode _themeMode = ThemeMode.system;
   
-  // CLA_1: /// Indicador de reconstrucció per canvi d'idioma
-  // CLA_1: bool _languageChanged = false;
-  
   /// CONSTRUCTORS --------------------
   SabinaAppCtrl({ required SabinaApp pApp }) { app = pApp; }
 
@@ -84,26 +81,6 @@ with    WidgetsBindingObserver {
     }
   }
 
-  // CLA_1: Gestiona els events rebuts
-  // CLA_1: void _handleEvent(LdEvent event) {
-  // CLA_1:   Debug.info("SabinaApp: Received event ${event.eType.name}");
-  // CLA_1:  
-  // CLA_1:   if (event.eType == EventType.languageChanged || event.eType == EventType.rebuildUI) {
-  // CLA_1:     Debug.info("SabinaApp: Rebuilding app due to ${event.eType == EventType.languageChanged ? 'language change' : 'global event'}");
-  // CLA_1:     setState(() {
-  // CLA_1:       //  No need for the complex flag mechanism
-  // CLA_1:     });
-  // CLA_1:   }
-  // CLA_1:    
-  // CLA_1:   // Handle theme changes as before
-  // CLA_1:   if (event.eType == EventType.themeChanged) {
-  // CLA_1:     setState(() {
-  // CLA_1:       _themeMode = ThemeService.s.themeMode;
-  // CLA_1:       Debug.info("SabinaApp: Updating theme to $_themeMode");
-  // CLA_1:     });
-  // CLA_1:   }
-  // CLA_1: }
-
   /// Gestiona els canvis en l'estat del cicle de vida de l'aplicació
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -143,46 +120,4 @@ with    WidgetsBindingObserver {
       }
     );
   }
-  
-  // CLA_1: @override
-  // CLA_1: Widget build(BuildContext pBCtx) {
-  // CLA_1:   Debug.info("SabinaApp: Construint aplicació. Tema: $_themeMode, Idioma canviat: $_languageChanged");
-  // CLA_1: 
-  // CLA_1:   return ScreenUtilInit(
-  // CLA_1:     designSize: designSize,
-  // CLA_1:     minTextAdapt: true,
-  // CLA_1:     splitScreenMode: true,
-  // CLA_1:     builder: (context, child) {
-  // CLA_1:       // Ara ScreenUtil ja està preparat
-  // CLA_1:       _themeMode = ThemeService.s.themeMode;
-  // CLA_1: 
-  // CLA_1:       final app = MaterialApp(
-  // CLA_1:         title: L.sSabina, // Utilitzem la funció tx per a totes les traduccions
-  // CLA_1:         debugShowCheckedModeBanner: false,
-  // CLA_1:         theme: ThemeService.s.lightTheme,
-  // CLA_1:         darkTheme: ThemeService.s.darkTheme,
-  // CLA_1:         themeMode: _themeMode,
-  // CLA_1:         home: TestPage(pTitleKey: L.sAppSabina, pSubTitleKey: L.sWelcome), // JAB_Q: child ?? 
-  // CLA_1:       );
-  // CLA_1:    
-  // CLA_1:       // Reiniciar el flag només després que hagi passat un temps adequat
-  // CLA_1:       if (_languageChanged) {
-  // CLA_1:         // Incrementar el delay per assegurar que la UI es reconstrueix completament
-  // CLA_1:         WidgetsBinding.instance.addPostFrameCallback((_) {
-  // CLA_1:           // Utilitzar un timer per donar més temps
-  // CLA_1:           Future.delayed(const Duration(milliseconds: 500), () {
-  // CLA_1:             if (mounted) {
-  // CLA_1:               setState(() {
-  // CLA_1:                 _languageChanged = false;
-  // CLA_1:                 Debug.info("SabinaApp: Flag de canvi d'idioma reiniciat després de la reconstrucció");
-  // CLA_1:               });
-  // CLA_1:             }
-  // CLA_1:           });
-  // CLA_1:         });
-  // CLA_1:       }
-  // CLA_1:    
-  // CLA_1:       return app;
-  // CLA_1:     }
-  // CLA_1:   );
-  // CLA_1: }
 }

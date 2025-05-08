@@ -44,9 +44,10 @@ with     LdTaggableMixin {
   }
   
   /// Notifica als observadors que el model ha canviat
-  void notifyListeners(void Function() action) {
-    // Executar l'acció independentment dels observadors
-    action();
+  void notifyListeners(void Function() action, [bool pOnlyWithObs = false]) {
+    if (_observers.isNotEmpty || !pOnlyWithObs) {
+      action();
+     }
     
     // Si hi ha observadors, notificar-los del canvi
     if (_observers.isNotEmpty) {

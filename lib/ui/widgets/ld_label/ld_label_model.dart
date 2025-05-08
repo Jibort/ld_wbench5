@@ -36,6 +36,9 @@ class LdLabelModel extends LdWidgetModelAbs<LdLabel> {
     return _text;
   }
   
+  /// Retorna els arguents per format actuals.
+  List<dynamic>? get args => _args;
+
   /// Estableix els arguments per format
   set args(List<dynamic>? value) {
     notifyListeners(() {

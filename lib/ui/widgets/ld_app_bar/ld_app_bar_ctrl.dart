@@ -42,9 +42,6 @@ class LdAppBarCtrl extends LdWidgetCtrlAbs<LdAppBar> {
     if (event.eType == EventType.languageChanged) {
       Debug.info("$tag: Processant esdeveniment de canvi d'idioma");
       
-      // JAB_Q: Actualitzar les traduccions del model
-      // model.updateTranslations();
-      
       // Forçar una reconstrucció de l'AppBar
       if (mounted) {
         setState(() {
