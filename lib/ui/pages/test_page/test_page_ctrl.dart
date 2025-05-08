@@ -1,9 +1,7 @@
 // lib/ui/pages/test_page/test_page_ctrl.dart
-
 // Controlador de la pàgina de prova que mostra la implementació simplificada.
-// Exemple d'ús de les noves característiques del LdButton en una pàgina
 // Created: 2025/04/29 DT. CLA[JIQ]
-// Updated: 2025/05/03 ds. CLA
+// Updated: 2025/05/08 dj. CLA - Actualitzat per utilitzar LdTheme
 
 import 'package:flutter/material.dart';
 
@@ -11,7 +9,7 @@ import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
 import 'package:ld_wbench5/services/L.dart';
-import 'package:ld_wbench5/services/theme_service.dart';
+import 'package:ld_wbench5/services/ld_theme.dart'; // Importem el nou servei
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
@@ -128,7 +126,7 @@ class TestPageCtrl extends LdPageCtrl<TestPage> {
   /// Canvia el tema entre clar i fosc
   void changeTheme() {
     Debug.info("$tag: Canviant tema");
-    ThemeService.s.toggleTheme();
+    LdTheme.s.toggleTheme(); // Utilitzem LdTheme directament
   }
   
   /// Obté accés als controladors dels botons després que s'hagin creat

@@ -1,6 +1,7 @@
 // lib/services/ld_theme.dart
 // Servei unificat per a la gestió de temes de l'aplicació
 // CreatedAt: 2025/05/08 dj.
+// Updated: 2025/05/08 dj. CLA - Correcció d'APIs deprecades
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/utils/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Servei centralitzat per a la gestió de temes visuals
@@ -81,6 +83,10 @@ class LdTheme with LdTaggableMixin {
   // Rosa vermellós
   static const Color errorDark = Color(0xFFCF6679);
   
+  // Colors auxiliars
+  static final Color shadowColorLight = Colors.black.setOpacity(0.9);
+  static final Color shadowColorDark = Colors.black.setOpacity(0.7);
+  
   // Configuració comuna per als dos temes
   static final _buttonPadding = EdgeInsets.symmetric(horizontal: 2.0.w, vertical: 0.0.h);
   static final _buttonShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(8));
@@ -145,11 +151,15 @@ class LdTheme with LdTaggableMixin {
   
   /// Crea el tema clar
   ThemeData _createLightTheme() {
+    // Definim colors pels TextTheme
+    final headlineColor = Colors.white;
+    final bodyColor = Colors.black;
+    
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       primaryColor: primaryLight,
-      colorScheme: ColorScheme.light(
+      colorScheme: const ColorScheme.light(
         primary: primaryLight,
         onPrimary: Colors.white,
         secondary: secondaryLight,
@@ -157,51 +167,49 @@ class LdTheme with LdTaggableMixin {
         surface: surfaceLight,
         onSurface: Colors.black87,
         error: errorLight,
-        onError: Colors.white,
-        background: backgroundLight,
-        onBackground: Colors.black87,
+        onError: Colors.white, // No deprecat
       ),
       
       scaffoldBackgroundColor: backgroundLight,
       
       textTheme: TextTheme(
         headlineLarge: TextStyle(
-          color: Colors.white,
+          color: headlineColor,
           fontSize: 14.0.sp,
           fontWeight: FontWeight.bold,
         ),
         headlineMedium: TextStyle(
-          color: Colors.white,
+          color: headlineColor,
           fontSize: 10.0.sp,
           fontWeight: FontWeight.bold,
         ),
         headlineSmall: TextStyle(
-          color: Colors.white,
+          color: headlineColor,
           fontSize: 8.0.sp,
           fontWeight: FontWeight.bold,
         ),
         bodyLarge: TextStyle(
-          color: Colors.black,
+          color: bodyColor,
           fontSize: 12.0.sp,
           fontWeight: FontWeight.bold,
         ),
         bodyMedium: TextStyle(
-          color: Colors.black,
+          color: bodyColor,
           fontSize: 10.0.sp,
           fontWeight: FontWeight.bold,
         ),
         bodySmall: TextStyle(
-          color: Colors.black,
+          color: bodyColor,
           fontSize: 8.0.sp,
           fontWeight: FontWeight.bold,
         ),
-        titleLarge: TextStyle(color: Colors.white),
+        titleLarge: TextStyle(color: headlineColor),
       ),
       
-      cardTheme: CardTheme(
+      cardTheme: const CardTheme(
         color: surfaceLight,
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
       ),
       
       appBarTheme: AppBarTheme(
@@ -213,34 +221,42 @@ class LdTheme with LdTaggableMixin {
           fontSize: 20.0.sp,
           fontWeight: FontWeight.bold,
         ),
-        toolbarTextStyle: TextStyle(color: Colors.white),
+        toolbarTextStyle: const TextStyle(color: Colors.white),
       ),
       
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
+        style: ButtonStyle(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           visualDensity: _visualDensity,
-          padding: _buttonPadding,
-          backgroundColor: primaryLight,
-          foregroundColor: Colors.white,
-          elevation: 6,
-          shadowColor: Colors.black.withOpacity(0.9),
-          shape: _buttonShape,
+          padding: WidgetStateProperty.all<EdgeInsetsGeometry>(_buttonPadding),
+          backgroundColor: primaryLight.toBackgroundProperty(
+            disabled: primaryLight.lessVivid().setOpacity(0.6),
+          ),
+          foregroundColor: Colors.white.toForegroundProperty(
+            disabled: Colors.white.setOpacity(0.6),
+          ),
+          elevation: WidgetStateProperty.all<double>(6),
+          shadowColor: WidgetStateProperty.all<Color>(shadowColorLight),
+          shape: WidgetStateProperty.all<OutlinedBorder>(_buttonShape),
         ),
       ),
       
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
+        style: ButtonStyle(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           visualDensity: _visualDensity,
-          padding: _buttonPadding,
-          foregroundColor: Colors.black,
-          side: BorderSide(color: primaryLight, width: 1.5),
-          shape: _buttonShape,
+          padding: WidgetStateProperty.all<EdgeInsetsGeometry>(_buttonPadding),
+          foregroundColor: Colors.black.toForegroundProperty(
+            disabled: Colors.black.setOpacity(0.6),
+          ),
+          side: WidgetStateProperty.all<BorderSide>(
+            BorderSide(color: primaryLight, width: 1.5),
+          ),
+          shape: WidgetStateProperty.all<OutlinedBorder>(_buttonShape),
         ),
       ),
       
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryLight,
         foregroundColor: Colors.white,
       ),
@@ -251,27 +267,27 @@ class LdTheme with LdTaggableMixin {
         filled: true,
         border: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: primaryLight, width: 1.2),
+          borderSide: const BorderSide(color: primaryLight, width: 1.2),
         ),
         
         enabledBorder: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: primaryLight, width: 1.2),
+          borderSide: const BorderSide(color: primaryLight, width: 1.2),
         ),
         
         focusedBorder: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: primaryLight, width: 2.5),
+          borderSide: const BorderSide(color: primaryLight, width: 2.5),
         ),
         
         errorBorder: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: errorLight, width: 1.2),
+          borderSide: const BorderSide(color: errorLight, width: 1.2),
         ),
         
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: errorLight, width: 2.5),
+          borderSide: const BorderSide(color: errorLight, width: 2.5),
         ),
         
         isDense: true,
@@ -280,12 +296,12 @@ class LdTheme with LdTaggableMixin {
           color: primaryLight,
           fontWeight: FontWeight.normal,
         ),
-        floatingLabelStyle: TextStyle(
+        floatingLabelStyle: const TextStyle(
           color: primaryLight,
           fontWeight: FontWeight.bold,
         ),
         
-        hintStyle: TextStyle(color: Colors.grey.shade500),
+        hintStyle: TextStyle(color: Colors.grey[500]),
         helperStyle: TextStyle(
           fontFamily: 'Montserrat',
           fontSize: 10.0.sp,
@@ -294,91 +310,95 @@ class LdTheme with LdTaggableMixin {
           color: Colors.white30,
           letterSpacing: 0.2,
         ),
-        errorStyle: TextStyle(color: errorLight, fontSize: 12.0),
+        errorStyle: const TextStyle(color: errorLight, fontSize: 12.0),
         
         prefixIconColor: primaryLight,
         suffixIconColor: primaryLight,
       ),
       
       checkboxTheme: CheckboxThemeData(
-        // Utilitzem MaterialStateProperty en comptes de MaterialStateColor
-        fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-          if (states.contains(MaterialState.selected)) {
-            return primaryLight;
-          }
-          return Colors.grey.shade400;
-        }),
-        checkColor: MaterialStateProperty.all<Color>(Colors.white),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-        side: BorderSide(color: Colors.grey.shade400, width: 1.5),
+        // Utilitzem les extensions per crear WidgetStateProperty
+        fillColor: primaryLight.toBackgroundProperty(
+          selected: primaryLight,
+          unselected: Colors.grey[400],
+        ),
+        checkColor: WidgetStateProperty.all<Color>(Colors.white),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(3)),
+        ),
+        side: BorderSide(color: Colors.grey[400]!, width: 1.5),
       ),
       
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: primaryLight,
-        linearTrackColor: Colors.grey.shade200,
+        linearTrackColor: Colors.grey[200],
       ),
     );
   }
   
   /// Crea el tema fosc
   ThemeData _createDarkTheme() {
+    // Definim colors pels TextTheme
+    final textColor = Colors.white;
+    
+    // Color personalitzat per botó en tema fosc
+    final buttonColorDark = const Color.fromARGB(255, 89, 124, 172);
+    
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       primaryColor: primaryDark,
-      colorScheme: ColorScheme.dark(
+      colorScheme: const ColorScheme.dark(
         primary: primaryDark,
         onPrimary: Colors.white,
         secondary: secondaryDark,
         onSecondary: Colors.white,
-        surface: surfaceDark,
+        surface: surfaceDark, 
         onSurface: Colors.white,
         error: errorDark,
-        onError: Colors.black,
-        background: backgroundDark,
-        onBackground: Colors.white,
+        onError: Colors.black, // No deprecat
       ),
       
-      scaffoldBackgroundColor: Color(0xFF1E2433),
+      scaffoldBackgroundColor: const Color(0xFF1E2433),
       
       textTheme: TextTheme(
         headlineLarge: TextStyle(
-          color: Colors.white,
+          color: textColor,
           fontSize: 14.0.sp,
           fontWeight: FontWeight.bold,
         ),
         headlineMedium: TextStyle(
-          color: Colors.white,
+          color: textColor,
           fontSize: 10.0.sp,
           fontWeight: FontWeight.bold,
         ),
         headlineSmall: TextStyle(
-          color: Colors.white,
+          color: textColor,
           fontSize: 8.0.sp,
           fontWeight: FontWeight.bold,
         ),
         bodyLarge: TextStyle(
-          color: Colors.white,
+          color: textColor,
           fontSize: 12.0.sp,
           fontWeight: FontWeight.bold,
         ),
         bodyMedium: TextStyle(
-          color: Colors.white,
+          color: textColor,
           fontSize: 10.0.sp,
           fontWeight: FontWeight.bold,
         ),
         bodySmall: TextStyle(
-          color: Colors.white,
+          color: textColor,
           fontSize: 8.0.sp,
           fontWeight: FontWeight.bold,
         ),
-        titleLarge: TextStyle(color: Colors.white),
+        titleLarge: TextStyle(color: textColor),
       ),
       
-      cardTheme: CardTheme(
+      cardTheme: const CardTheme(
         color: surfaceDark,
         elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
       ),
       
       appBarTheme: AppBarTheme(
@@ -390,66 +410,74 @@ class LdTheme with LdTaggableMixin {
           fontSize: 20.0.sp,
           fontWeight: FontWeight.bold,
         ),
-        toolbarTextStyle: TextStyle(color: Colors.white),
+        toolbarTextStyle: const TextStyle(color: Colors.white),
       ),
       
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
+        style: ButtonStyle(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           visualDensity: _visualDensity,
-          padding: _buttonPadding,
-          backgroundColor: Color.fromARGB(255, 89, 124, 172),
-          foregroundColor: Colors.white,
-          elevation: 8,
-          shadowColor: Colors.black.withOpacity(0.7),
-          shape: _buttonShape,
+          padding: WidgetStateProperty.all<EdgeInsetsGeometry>(_buttonPadding),
+          backgroundColor: buttonColorDark.toBackgroundProperty(
+            disabled: buttonColorDark.lessVivid().setOpacity(0.6),
+          ),
+          foregroundColor: Colors.white.toForegroundProperty(
+            disabled: Colors.white.setOpacity(0.6),
+          ),
+          elevation: WidgetStateProperty.all<double>(8),
+          shadowColor: WidgetStateProperty.all<Color>(shadowColorDark),
+          shape: WidgetStateProperty.all<OutlinedBorder>(_buttonShape),
         ),
       ),
       
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
+        style: ButtonStyle(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           visualDensity: _visualDensity,
-          padding: _buttonPadding,
-          foregroundColor: Colors.white,
-          side: BorderSide(color: Colors.lightBlueAccent, width: 1.5),
-          shape: _buttonShape,
+          padding: WidgetStateProperty.all<EdgeInsetsGeometry>(_buttonPadding),
+          foregroundColor: Colors.white.toForegroundProperty(
+            disabled: Colors.white.setOpacity(0.6),
+          ),
+          side: WidgetStateProperty.all<BorderSide>(
+            const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+          ),
+          shape: WidgetStateProperty.all<OutlinedBorder>(_buttonShape),
         ),
       ),
       
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryDark,
         foregroundColor: Colors.white,
       ),
       
       inputDecorationTheme: InputDecorationTheme(
-        contentPadding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
+        contentPadding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20.0),
         fillColor: Colors.transparent,
         filled: true,
         
         border: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: Colors.lightBlueAccent, width: 1.2),
+          borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.2),
         ),
         
         enabledBorder: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: Colors.lightBlueAccent, width: 1.2),
+          borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.2),
         ),
         
         focusedBorder: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: Colors.lightBlueAccent, width: 2.5),
+          borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 2.5),
         ),
         
         errorBorder: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: errorDark, width: 1.2),
+          borderSide: const BorderSide(color: errorDark, width: 1.2),
         ),
         
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: _inputBorderRadius,
-          borderSide: BorderSide(color: errorDark, width: 2.5),
+          borderSide: const BorderSide(color: errorDark, width: 2.5),
         ),
         
         isDense: true,
@@ -464,7 +492,7 @@ class LdTheme with LdTaggableMixin {
           fontWeight: FontWeight.bold,
         ),
         
-        hintStyle: TextStyle(color: Colors.grey.shade400),
+        hintStyle: TextStyle(color: Colors.grey[400]),
         helperStyle: TextStyle(
           fontFamily: 'Montserrat',
           fontSize: 10.sp,
@@ -473,28 +501,28 @@ class LdTheme with LdTaggableMixin {
           color: Colors.white70,
           letterSpacing: 0.2,
         ),
-        errorStyle: TextStyle(color: errorDark, fontSize: 12.0),
+        errorStyle: const TextStyle(color: errorDark, fontSize: 12.0),
         
         prefixIconColor: Colors.lightBlueAccent,
         suffixIconColor: Colors.lightBlueAccent,
       ),
       
       checkboxTheme: CheckboxThemeData(
-        // Utilitzem MaterialStateProperty en comptes de MaterialStateColor
-        fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-          if (states.contains(MaterialState.selected)) {
-            return primaryDark;
-          }
-          return Colors.grey.shade700;
-        }),
-        checkColor: MaterialStateProperty.all<Color>(Colors.white),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(3)),
-        side: BorderSide(color: Colors.grey.shade700, width: 1.5),
+        // Utilitzem les extensions per crear WidgetStateProperty
+        fillColor: primaryDark.toBackgroundProperty(
+          selected: primaryDark,
+          unselected: Colors.grey[700],
+        ),
+        checkColor: WidgetStateProperty.all<Color>(Colors.white),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(3)),
+        ),
+        side: BorderSide(color: Colors.grey[700]!, width: 1.5),
       ),
       
       progressIndicatorTheme: ProgressIndicatorThemeData(
         color: primaryDark,
-        linearTrackColor: Colors.grey.shade800,
+        linearTrackColor: Colors.grey[800],
       ),
     );
   }
