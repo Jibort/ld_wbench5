@@ -5,7 +5,7 @@
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/utils/map_extensions.dart';
+import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/str_full_set.dart';
 
 /// Model de dades del widget LdTextField

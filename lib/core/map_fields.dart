@@ -1,49 +1,54 @@
 // map_fields.dart
-// Constants per als noms dels camps utilitzats en mapes
-// Created: 2025/04/29
+// Constants per als noms dels camps utilitzats en mapes.
+// Created: 2025/04/29 dt. JIQ
+// Updated: 2025/05/09 dv. CLA - Ampliació de camps i millora de nomenclatura.
 
 //============================================================
-// CAMPS PER A EVENTS RELACIONATS AMB L'IDIOMA
+// CAMPS PER A EVENTS (ef = Event Field)
+// Per a les dades que es transmeten amb events
 //============================================================
 
 /// Codi de l'idioma antic
-const String mfOldLocale = 'mfOldLocale';
+const String efOldLocale = 'efOldLocale';
 
 /// Codi de l'idioma nou
-const String mfNewLocale = 'mfNewLocale';
-
-//============================================================
-// CAMPS PER A EVENTS RELACIONATS AMB EL TEMA
-//============================================================
+const String efNewLocale = 'efNewLocale';
 
 /// Flag que indica si el tema és fosc
-const String mfIsDarkMode = 'mfIsDarkMode';
+const String efIsDarkMode = 'efIsDarkMode';
 
 /// Mode del tema (system, light, dark)
-const String mfThemeMode = 'mfThemeMode';
-
-//============================================================
-// CAMPS PER A EVENTS RELACIONATS AMB L'ESTAT DE L'APLICACIÓ
-//============================================================
+const String efThemeMode = 'efThemeMode';
 
 /// Estat del cicle de vida de l'aplicació
-const String mfLifecycleState = 'mfLifecycleState';
+const String efLifecycleState = 'efLifecycleState';
+
+/// Nom del tema (per a events de canvi de tema)
+const String efThemeName = 'efThemeName';
 
 //============================================================
-// CAMPS PER A EVENTS RELACIONATS AMB L'ESTAT DE L'APLICACIÓ
+// CAMPS DE CONTROLADOR (cf = Controller Field)
+// Per a propietats que controlen el comportament del widget
 //============================================================
 
-// Nous camps per als mapes de models
 /// Camp per a l'estat de visibilitat d'un widget
-const String mfIsVisible = "mfIsVisible";
-/// Camp per a l'estat de focus d'un widget
-const String mfCanFocus = "mfCanFocus";
-/// Camp per a l'estat d'activació d'un widget
-const String mfIsEnabled = "mfIsEnabled";
+const String cfIsVisible = "cfIsVisible";
 
+/// Camp per a l'estat de focus d'un widget
+const String cfCanFocus = "cfCanFocus";
+
+/// Camp per a l'estat d'activació d'un widget
+const String cfIsEnabled = "cfIsEnabled";
+
+/// Camp per al callback quan canvia el text en un camp d'edició
+const String cfOnTextChanged = "cfOnTextChanged";
+
+/// Camp per al tag d'identificació d'un component
+const String cfTag = "cfTag";
 
 //============================================================
-// CAMPS PER A MODELS
+// CAMPS DE MODEL (mf = Model Field)
+// Per a dades que representen l'estat d'un model
 //============================================================
 
 /// Camp per al tag d'un model
@@ -63,3 +68,21 @@ const String mfIconData = "mfIconData";
 
 /// Camp per a un comptador
 const String mfCounter = "mfCounter";
+
+/// Camp per al text inicial d'un camp d'edició
+const String mfInitialText = 'mfInitialText';
+
+/// Camp per a l'etiqueta d'un camp d'edició
+const String mfLabel = 'mfLabel';
+
+/// Camp per al text d'ajuda d'un camp d'edició
+const String mfHelpText = 'mfHelpText';
+
+/// Camp per al missatge d'error d'un camp d'edició
+const String mfErrorMessage = 'mfErrorMessage';
+
+/// Camp per a l'estat d'error d'un camp d'edició
+const String mfHasError = 'mfHasError';
+
+/// Camp per indicar si un camp pot ser nul
+const String mfAllowNull = 'mfAllowNull';

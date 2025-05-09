@@ -9,7 +9,7 @@ import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/utils/full_set.dart';
-import 'package:ld_wbench5/utils/map_extensions.dart';
+import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/str_full_set.dart';
 
 class   LdButtonModel

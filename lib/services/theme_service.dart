@@ -1,7 +1,7 @@
-// theme_service.dart
+// lib/services/theme_service.dart
 // Servei de gestió de temes simplificat
 // Created: 2025/04/29 dt. CLA[JIQ]
-// Updated: 2025/05/08 dj. CLA - Adaptador per LdTheme
+// Updated: 2025/05/09 dv. CLA - Adaptador complet per LdTheme
 
 import 'package:flutter/material.dart';
 
@@ -36,7 +36,8 @@ class ThemeService with LdTaggableMixin {
   
   /// Retorna el mode de tema actual
   ThemeMode get themeMode => LdTheme.s.themeMode;
-  /// Retorna si el tema actual és fosc
+  
+  /// Estableix el mode de tema
   set themeMode(ThemeMode pMode) => LdTheme.s.themeMode = pMode;
   
   /// Canvia el mode del tema
@@ -44,4 +45,13 @@ class ThemeService with LdTaggableMixin {
   
   /// Alterna entre els temes clar i fosc
   void toggleTheme() => LdTheme.s.toggleTheme();
+
+  /// Canvia al tema següent en la llista de temes disponibles
+  void nextTheme() => LdTheme.s.nextTheme();
+  
+  /// Retorna el nom del tema actual
+  ThemeName get currentThemeName => LdTheme.s.currentThemeName;
+  
+  /// Estableix el tema actual per nom
+  set currentThemeName(ThemeName pName) => LdTheme.s.currentThemeName = pName;
 }

@@ -4,7 +4,7 @@
 // Updated: 2025/05/03 ds. CLA
 
 import 'package:ld_wbench5/utils/full_set.dart';
-import 'package:ld_wbench5/utils/map_extensions.dart';
+import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 
 /// Tipus d'events de l'aplicació
 enum EventType {

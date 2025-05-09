@@ -3,7 +3,7 @@
 // Created: 2025/04/29 dt. CLA[JIQ]
 
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/utils/type_extensions.dart';
+import 'package:ld_wbench5/ui/extensions/type_extensions.dart';
 
 /// Mixin que proporciona capacitats d'identificació mitjançant tags únics
 mixin LdTaggableMixin {

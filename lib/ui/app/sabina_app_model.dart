@@ -5,7 +5,7 @@
 
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/ui/app/sabina_app.dart';
-import 'package:ld_wbench5/utils/map_extensions.dart';
+import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/once_set.dart';
 
 /// Model del widget principal de l'aplicació.

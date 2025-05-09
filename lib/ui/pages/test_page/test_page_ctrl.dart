@@ -16,12 +16,15 @@ import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
-import 'package:ld_wbench5/utils/color_extensions.dart';
+import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector.dart';
+import 'package:ld_wbench5/ui/widgets/ld_theme_viewer/ld_theme_viewer.dart';
+import 'package:ld_wbench5/ui/extensions/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/services/time_service.dart';
 
 /// Controlador per a la pàgina de prova
-class TestPageCtrl extends LdPageCtrl<TestPage> {
+class   TestPageCtrl 
+extends LdPageCtrl<TestPage> {
   /// Etiqueta amb el valor del comptador.
   LdLabel? labCounter;
   
@@ -355,8 +358,57 @@ class TestPageCtrl extends LdPageCtrl<TestPage> {
                       ),
                     ),
                     
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 24),
                     
+                    // NOU: Selector de temes complet
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: LdThemeSelector(
+                        pTag: "ThemeSelector_TestPage",
+                        onModeChanged: (mode) {
+                          Debug.info("$tag: Canvi de mode de tema des del selector: ${mode.toString()}");
+                        },
+                        onThemeChanged: (theme) {
+                          Debug.info("$tag: Canvi de tema des del selector: ${LdTheme.s.getThemeNameString(theme)}");
+                        },
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 24),
+                    
+                    // NOU: Selector de temes complet
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: LdThemeSelector(
+                        pTag: "ThemeSelector_TestPage",
+                        onModeChanged: (mode) {
+                          Debug.info("$tag: Canvi de mode de tema des del selector: ${mode.toString()}");
+                        },
+                        onThemeChanged: (theme) {
+                          Debug.info("$tag: Canvi de tema des del selector: ${LdTheme.s.getThemeNameString(theme)}");
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // NOU: Visualitzador de temes
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ExpansionTile(
+                        title: Text(
+                          "Visualitzador de tema actual",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        children: [
+                          LdThemeViewer(
+                            pTag: "ThemeViewer_TestPage",
+                            // Mostrar en mode compacte per estalviar espai
+                            compact: true,
+                          ),
+                        ],
+                      ),
+                    ),
                     // Secció dels botons de demostració
                     Container(
                       padding: const EdgeInsets.all(16.0),

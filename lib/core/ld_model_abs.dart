@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/utils/map_extensions.dart';
+import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 
 /// Interfície per a comunicar canvis en el model
 abstract class LdModelObserverIntf {
@@ -61,6 +61,7 @@ with     LdTaggableMixin {
   }
   
   /// Allibera els recursos del model
+  @mustCallSuper
   void dispose() {
     detachObserver(); // Ara desvincula tots els observadors
     Debug.info("$tag: Model alliberat");

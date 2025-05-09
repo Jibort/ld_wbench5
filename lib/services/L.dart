@@ -9,9 +9,9 @@ import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/app/sabina_app.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
-import 'package:ld_wbench5/utils/map_extensions.dart';
+import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/utils/string_extensions.dart';
+import 'package:ld_wbench5/ui/extensions/string_extensions.dart';
 
 /// Servei centralitzat per a la gestió d'idiomes
 class L 
@@ -106,8 +106,8 @@ with  LdTaggableMixin {
         eType: EventType.languageChanged,
         srcTag: s.tag,
         eData: {
-          mfOldLocale: oldLocale?.languageCode,
-          mfNewLocale: s._currentLocale!.languageCode,
+          efOldLocale: oldLocale?.languageCode,
+          efNewLocale: s._currentLocale!.languageCode,
         },
       ),
       targets: textComponents
@@ -132,8 +132,8 @@ with  LdTaggableMixin {
   // CAL_01:    eType: EventType.languageChanged,
   // CAL_01:    srcTag: s.tag,
   // CAL_01:    eData: {
-  // CAL_01:      mfOldLocale: oldLocale?.languageCode,
-  // CAL_01:      mfNewLocale: s._currentLocale!.languageCode,
+  // CAL_01:      efOldLocacle: oldLocale?.languageCode,
+  // CAL_01:      efNewLocale: s._currentLocale!.languageCode,
   // CAL_01:    },
   // CAL_01:  ));
   // CAL_01:}

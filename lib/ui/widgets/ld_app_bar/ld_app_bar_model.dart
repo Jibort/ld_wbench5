@@ -9,7 +9,7 @@ import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/utils/map_extensions.dart';
+import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/str_full_set.dart';
 
 /// Model de dades del widget LdAppBar.

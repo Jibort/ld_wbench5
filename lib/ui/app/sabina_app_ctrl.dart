@@ -90,7 +90,7 @@ with    WidgetsBindingObserver {
       eType: EventType.applicationStateChanged,
       srcTag: widget.tag,
       eData: {
-        mfLifecycleState: state.toString(),
+        efLifecycleState: state.toString(),
       },
     ));
   }

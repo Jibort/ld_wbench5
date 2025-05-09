@@ -16,10 +16,10 @@ import 'package:ld_wbench5/core/lifecycle_interface.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador base pels widgets.
-abstract class LdWidgetCtrlAbs<T extends LdWidgetAbs>
-    extends State<T>
-    with LdTaggableMixin
-    implements LdLifecycleIntf, LdModelObserverIntf {
+abstract   class LdWidgetCtrlAbs<T extends LdWidgetAbs>
+extends    State<T>
+with       LdTaggableMixin
+implements LdLifecycleIntf, LdModelObserverIntf {
   /// Retorna el widget associat al controlador amb el tipus correcte.
   T get cWidget => widget;
   
