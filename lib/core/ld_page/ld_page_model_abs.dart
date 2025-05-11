@@ -1,19 +1,20 @@
-// ld_widget_model_abs.dart
-// Model base pels widgets.
-// Created: 2025/05/02 dj. JIQ
+// ld_page_model_abs.dart
+// Model base per a les pàgines. 
+// Created: 2025/05/03 ds. JIQ
+// Updated: 2025/05/11 ds. CLA - Optimització per mapes i arquitectura simplificada
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
-import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
-/// Model base pels widgets.
-abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
+/// Model base per a les pàgines.
+abstract class LdPageModelAbs<T extends LdPageAbs> extends LdModelAbs {
   
   /// Construeix un model a partir d'un mapa de propietats
-  LdWidgetModelAbs.fromMap(LdMap<dynamic> pMap) {
+  LdPageModelAbs.fromMap(LdMap<dynamic> pMap) {
     // Filtrar només les propietats que comencen amb 'mf'
     LdMap<dynamic> modelProperties = {};
     for (var entry in pMap.entries) {
@@ -25,18 +26,18 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
     // Establir el tag des del mapa (prioritzant mfTag, després cfTag)
     tag = pMap[mfTag] as String? ?? 
           pMap[cfTag] as String? ?? 
-          "Model_${DateTime.now().millisecondsSinceEpoch}";
+          "PageModel_${DateTime.now().millisecondsSinceEpoch}";
     
     // Carregar les propietats filtrades
     fromMap(modelProperties);
     
-    Debug.info("$tag: Model creat a partir de mapa");
+    Debug.info("$tag: Model de pàgina creat a partir de mapa");
   }
   
-  /// Constructor alternatiu amb widget específic
-  /// Utilitzat quan el widget específic necessita configuració especial
+  /// Constructor alternatiu amb pàgina específica
+  /// Utilitzat quan la pàgina específica necessita configuració especial
   @protected
-  LdWidgetModelAbs.forWidget(T pWidget, LdMap<dynamic> pMap) {
+  LdPageModelAbs.forPage(T pPage, LdMap<dynamic> pMap) {
     // Filtrar propietats del model (mf*)
     LdMap<dynamic> modelProperties = {};
     for (var entry in pMap.entries) {
@@ -45,22 +46,22 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
       }
     }
     
-    // Establir el tag basat en el widget
-    tag = "${pWidget.tag}_Model";
+    // Establir el tag basat en la pàgina
+    tag = "${pPage.tag}_Model";
     
     // Carregar les propietats
     if (modelProperties.isNotEmpty) {
       fromMap(modelProperties);
     }
     
-    Debug.info("$tag: Model creat per al widget ${pWidget.tag}");
+    Debug.info("$tag: Model creat per a la pàgina ${pPage.tag}");
   }
   
   /// Constructor obsolet
-  @Deprecated("Fes servir els constructors 'fromMap' o 'forWidget' enlloc d'aquest antic.")
-  LdWidgetModelAbs(T pWidget) {
+  @Deprecated("Fes servir els constructors 'fromMap' o 'forPage' enlloc d'aquest antic.")
+  LdPageModelAbs({ required T pPage }) {
     Debug.warn("$tag: Utilitzant constructor obsolet. Canvieu al constructor amb mapa de propietats.");
-    tag = "${pWidget.tag}_Model";
+    tag = "${pPage.tag}_Model";
   }
   
   /// Converteix el model a un mapa de propietats
@@ -93,7 +94,7 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
       notifyListeners(() {
         fromMap(modelProperties);
       });
-      Debug.info("$tag: Model actualitzat amb noves propietats");
+      Debug.info("$tag: Model de pàgina actualitzat amb noves propietats");
     }
   }
   
@@ -183,5 +184,30 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
     }
     
     return false;
+  }
+  
+  /// Valida el model abans de persistir-lo
+  bool validate() {
+    // Implementació base - pot ser sobreescrit per validacions específiques
+    return true;
+  }
+  
+  /// Mètode per persistir el model (pot connectar amb backend)
+  Future<bool> save() async {
+    if (!validate()) {
+      Debug.warn("$tag: Validació fallida, no es pot guardar el model");
+      return false;
+    }
+    
+    // Implementació base - pot ser sobreescrit per lògica de persistència específica
+    Debug.info("$tag: Model de pàgina guardat");
+    return true;
+  }
+  
+  /// Mètode per restaurar el model des de persistència
+  Future<bool> load(String identifier) async {
+    // Implementació base - pot ser sobreescrit per lògica de càrrega específica
+    Debug.info("$tag: Model de pàgina carregat amb identificador: $identifier");
+    return true;
   }
 }

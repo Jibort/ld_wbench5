@@ -3,6 +3,8 @@
 // Amb gestió de visibilitat, focus i estat actiu.
 // Created: 2025/04/29 dt. CLA[JIQ]
 // Updated: 2025/05/03 ds. CLA
+// Updated: 2025/05/11 ds. CLA - Afegit getter públic per al model
+// Updated: 2025/05/11 ds. CLA - Optimització amb gestió de model i GlobalKey
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/lifecycle_interface.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador base pels widgets.
@@ -20,6 +23,34 @@ abstract   class LdWidgetCtrlAbs<T extends LdWidgetAbs>
 extends    State<T>
 with       LdTaggableMixin
 implements LdLifecycleIntf, LdModelObserverIntf {
+  
+  /// Model del widget
+  LdWidgetModelAbs? _model;
+  
+  /// Getter públic per accedir al model
+  LdWidgetModelAbs? get model => _model;
+  
+  /// Setter per assignar el model
+  @protected
+  set model(LdWidgetModelAbs? newModel) {
+    if (_model != newModel) {
+      // Desregistrar-se de l'antic model si existeix
+      if (_model != null) {
+        _model!.detachObserver(this);
+      }
+      
+      // Assignar el nou model
+      _model = newModel;
+      
+      // Registrar-se com a observador del nou model
+      if (_model != null) {
+        _model!.attachObserver(this);
+      }
+      
+      Debug.info("$tag: Model actualitzat");
+    }
+  }
+  
   /// Retorna el widget associat al controlador amb el tipus correcte.
   T get cWidget => widget;
   
@@ -29,8 +60,10 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   /// PROPIETATS DE VISUALITZACIÓ I INTERACCIÓ ===================================
   /// Flag de visibilitat del widget
   bool _isVisible = true;
+  
   /// Retorna si el widget és visible
   bool get isVisible => _isVisible;
+  
   /// Estableix si el widget és visible i reconstrueix la UI si és necessari
   set isVisible(bool value) {
     if (_isVisible != value && mounted) {
@@ -39,7 +72,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
         Debug.info("$tag: Visibilitat canviada a $value");
       });
     } else if (_isVisible != value) {
-      // Si no està muntat (durant la inicialització), només canviem el valor
+      // Si no està muntat, només canviem el valor
       _isVisible = value;
       Debug.info("$tag: Visibilitat canviada a $value (sense reconstrucció)");
     }
@@ -47,15 +80,19 @@ implements LdLifecycleIntf, LdModelObserverIntf {
 
   /// Node de focus pel widget
   final FocusNode _focusNode = FocusNode();
+  
   /// Retorna el node de focus del widget
   FocusNode get focusNode => _focusNode;
+  
   /// Indica si el widget té el focus
   bool get hasFocus => _focusNode.hasFocus;
   
   /// Flag que indica si el widget pot rebre focus
   bool _canFocus = true;
+  
   /// Retorna si el widget pot rebre focus
   bool get canFocus => _canFocus;
+  
   /// Estableix si el widget pot rebre focus i reconstrueix la UI si és necessari
   set canFocus(bool value) {
     if (_canFocus != value && mounted) {
@@ -67,7 +104,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
         Debug.info("$tag: Capacitat de focus canviada a $value");
       });
     } else if (_canFocus != value) {
-      // Si no està muntat (durant la inicialització), només canviem el valor
+      // Si no està muntat, només canviem el valor
       _canFocus = value;
       if (!value && hasFocus) {
         _focusNode.unfocus();
@@ -78,8 +115,10 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   
   /// Flag que indica si el widget està actiu (enabled)
   bool _isEnabled = true;
+  
   /// Retorna si el widget està actiu
   bool get isEnabled => _isEnabled;
+  
   /// Estableix si el widget està actiu i reconstrueix la UI si és necessari
   set isEnabled(bool value) {
     if (_isEnabled != value && mounted) {
@@ -91,7 +130,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
         Debug.info("$tag: Estat d'activació canviat a $value");
       });
     } else if (_isEnabled != value) {
-      // Si no està muntat (durant la inicialització), només canviem el valor
+      // Si no està muntat, només canviem el valor
       _isEnabled = value;
       if (!value && hasFocus) {
         _focusNode.unfocus();
@@ -202,50 +241,52 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     tag = '${widget.tag}_Ctrl';
     _subcEvent = EventBus.s.listen(_handleEvent);
     
-    // Registrar-se com a observador del model si existeix
-    _attachToModel();
+    // Carregar configuració del widget
+    _loadConfigFromWidget();
+    
+    // Crear el model si el widget ho requereix
+    _createModelIfNeeded();
     
     initialize();
     Debug.info("$tag: Controlador inicialitzat");
   }
   
-  /// Vincula el controlador com a observador del model, si existeix
-  void _attachToModel() {
-    try {
-      if (widget.hasModel) {
-        try {
-          final model = widget.wModel;
-          model.attachObserver(this);
-          Debug.info("$tag: Registrat com a observador del model");
-        } catch (e) {
-          Debug.warn("$tag: Error en registrar-se com a observador: ${e.toString()}");
-        }
-      } else {
-        Debug.info("$tag: Widget sense model, no cal registrar-se com a observador");
-      }
-    } catch (e) {
-      Debug.warn("$tag: No s'ha pogut registrar com a observador: ${e.toString()}");
-    }
+  /// Carrega la configuració des del widget
+  void _loadConfigFromWidget() {
+    final config = widget.config;
+    
+    // Carregar propietats del controlador
+    _isVisible = config[cfIsVisible] as bool? ?? true;
+    _canFocus = config[cfCanFocus] as bool? ?? true;
+    _isEnabled = config[cfIsEnabled] as bool? ?? true;
+    
+    Debug.info("$tag: Configuració carregada: visible=$_isVisible, canFocus=$_canFocus, enabled=$_isEnabled");
   }
-
+  
+  /// Crea el model del widget si és necessari
+  /// Aquest mètode ha de ser sobreescrit per les subclasses per crear un model específic
+  @protected
+  void _createModelIfNeeded() {
+    // Implementació base buida
+    // Les subclasses haurien de sobreescriure aquest mètode per crear el seu model específic
+  }
   
   /// Processa un event rebut
-void _handleEvent(LdEvent event) {
-  // Eliminar el filtratge per tag en events globals importants
-  // i assegurar que tots els widgets rebin aquests events
-  if (event.eType == EventType.languageChanged || 
-      event.eType == EventType.themeChanged || 
-      event.eType == EventType.rebuildUI || 
-      event.isTargetedAt(tag)) {
-    Debug.info("$tag: Processant event ${event.eType.name}");
-    onEvent(event);
+  void _handleEvent(LdEvent event) {
+    // Processar events globals o dirigits a aquest controlador
+    if (event.eType == EventType.languageChanged || 
+        event.eType == EventType.themeChanged || 
+        event.eType == EventType.rebuildUI || 
+        event.isTargetedAt(tag)) {
+      Debug.info("$tag: Processant event ${event.eType.name}");
+      onEvent(event);
+    }
   }
-}
   
   /// Mètode a sobreescriure per gestionar events
   void onEvent(LdEvent event);
   
-  /// 'State': Actualitza el controlador quan canvien les dependències.
+  /// Actualitza el controlador quan canvien les dependències
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -253,143 +294,85 @@ void _handleEvent(LdEvent event) {
     update();
   }
   
-  /// 'State': Gestiona l'actualització del widget quan canvien les propietats
+  /// Gestiona l'actualització del widget quan canvien les propietats
   @override
   void didUpdateWidget(covariant T oldWidget) {
     super.didUpdateWidget(oldWidget);
     
-    // Obtenir els models antic i actual
-    if (widget.hasModel && oldWidget.hasModel) {
-      LdWidgetModelAbs oldModel = oldWidget.wModel;
-      LdWidgetModelAbs newModel = widget.wModel;
+    // Verificar si la configuració ha canviat
+    if (_hasConfigChanged(oldWidget)) {
+      Debug.info("$tag: Configuració actualitzada, recarregant");
+      _loadConfigFromWidget();
       
-      // Verificar si els models són diferents
-      if (_shouldUpdateModel(oldModel, newModel)) {
-        Debug.info("$tag: Model actualitzat, forçant reconstrucció");
-        setState(() {
-          // Forçar reconstrucció
-        });
-      }
+      // Forçar reconstrucció si és necessari
+      setState(() {
+        // Reconstruir la UI
+      });
     }
-  }
-
-  /// Determina si cal actualitzar el model basant-se en els canvis
-  bool _shouldUpdateModel(LdWidgetModelAbs oldModel, LdWidgetModelAbs newModel) {
-    // Implementació per defecte que compara els mapes dels models
-    return !_areMapEqual(oldModel.toMap(), newModel.toMap());
-  }
-
-  /// Compara dos mapes recursivament
-  bool _areMapEqual(Map<String, dynamic> map1, Map<String, dynamic> map2) {
-    if (map1.length != map2.length) return false;
-    
-    for (final key in map1.keys) {
-      if (!map2.containsKey(key)) return false;
-      
-      final value1 = map1[key];
-      final value2 = map2[key];
-      
-      if (value1 is Map && value2 is Map) {
-        if (!_areMapEqual(value1 as Map<String, dynamic>, value2 as Map<String, dynamic>)) {
-          return false;
-        }
-      } else if (value1 is List && value2 is List) {
-        if (!_areListEqual(value1, value2)) {
-          return false;
-        }
-      } else if (value1 != value2) {
-        return false;
-      }
-    }
-    
-    return true;
-  }
-
-  /// Compara dues llistes recursivament
-  bool _areListEqual(List list1, List list2) {
-    if (list1.length != list2.length) return false;
-    
-    for (int i = 0; i < list1.length; i++) {
-      final value1 = list1[i];
-      final value2 = list2[i];
-      
-      if (value1 is Map && value2 is Map) {
-        if (!_areMapEqual(value1 as Map<String, dynamic>, value2 as Map<String, dynamic>)) {
-          return false;
-        }
-      } else if (value1 is List && value2 is List) {
-        if (!_areListEqual(value1, value2)) {
-          return false;
-        }
-      } else if (value1 != value2) {
-        return false;
-      }
-    }
-    
-    return true;
-  }
-
-  void _unregisterAsObserver() {
-    // Desregistrar-se com a observador del model, si existeix
-    try {
-      if (widget.hasModel) {
-        try {
-          final model = widget.wModel;
-          // No cal passar cap paràmetre, ja que ara el mètode pot desconnectar tots els observadors
-          model.detachObserver();
-          Debug.info("$tag: Desregistrat com a observador del model");
-        } catch (e) {
-          Debug.warn("$tag: Error en desregistrar-se com a observador: ${e.toString()}");
-        }
-      }
-    } catch (e) {
-      Debug.warn("$tag: No s'ha pogut desregistrar com a observador: ${e.toString()}");
-    }
-  }
-  /// 'State': Allibera els recursos.
-  @override
-  void dispose() {
-    Debug.info("$tag: Alliberant recursos ...");
-    
-    // Desregistrar-se com a observador del model, si existeix
-    try {
-      // Utilitzar el nou getter hasModel per comprovar si el widget té model
-      if (widget.hasModel) {
-        try {
-          _unregisterAsObserver();
-          Debug.info("$tag: Desregistrat com a observador del model");
-        } catch (e) {
-          // Pot fallar si el model no està correctament inicialitzat
-          Debug.warn("$tag: Error en desregistrar-se com a observador: ${e.toString()}");
-        }
-      }
-    } catch (e) {
-      // Capturar qualsevol excepció durant l'intent de desregistre
-      Debug.warn("$tag: No s'ha pogut desregistrar com a observador: ${e.toString()}");
-    }
-    
-    EventBus.s.cancel(_subcEvent);
-    _focusNode.dispose();
-    super.dispose();
-    Debug.info("$tag: ... Recursos alliberats");
   }
   
+  /// Comprova si la configuració ha canviat
+  bool _hasConfigChanged(T oldWidget) {
+    // Comparar només les propietats del controlador (cf*)
+    final oldConfig = oldWidget.config;
+    final newConfig = widget.config;
+    
+    // Filtrar i comparar només les propietats de controlador (cf*)
+    bool hasChanged = false;
+    for (final key in newConfig.keys) {
+      if (key.startsWith('cf') && key != cfTag) {
+        if (oldConfig[key] != newConfig[key]) {
+          Debug.info("$tag: Canvi detectat en propietat $key: ${oldConfig[key]} -> ${newConfig[key]}");
+          hasChanged = true;
+          break;
+        }
+      }
+    }
+    
+    return hasChanged;
+  }
+  
+  /// Allibera els recursos
+  @override
+  void dispose() {
+    Debug.info("$tag: Alliberant recursos del controlador...");
+    
+    // Cridar cleanup del widget per alliberar el mapa
+    widget.cleanup();
+    
+    // Cancelar subscripció a events
+    EventBus.s.cancel(_subcEvent);
+    
+    // Alliberar recursos del node de focus
+    _focusNode.dispose();
+    
+    // Desregistrar-se del model
+    if (_model != null) {
+      _model!.detachObserver(this);
+      _model = null;
+    }
+    
+    super.dispose();
+    Debug.info("$tag: Recursos del controlador alliberats");
+  }
+  
+  /// Notificació de canvi en un model
   @override
   void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
     Debug.info("$tag: Model ha canviat");
     
-    // Executa la funció d'actualització sempre
+    // Executar la funció d'actualització
     pfUpdate();
     
-    // Però només reconstrueix si està muntat
+    // Reconstruir si està muntat
     if (mounted) {
       setState(() {
         Debug.info("$tag: Reconstruint després del canvi del model");
       });
     }
   }
-
-  /// 'State': Construeix el widget.
+  
+  /// Construeix el widget
   @override
   Widget build(BuildContext context) {
     Debug.info("$tag: Construint widget. isVisible=$_isVisible");
@@ -415,14 +398,12 @@ void _handleEvent(LdEvent event) {
     
     return content;
   }
-
-  // FUNCIONALITAT ABSTRACTA ----------
+  
   /// Mètode que ha d'implementar cada widget per construir la seva UI
-  /// Aquest mètode ha de gestionar el focus i l'estat del widget internament
   Widget buildContent(BuildContext context);
-
+  
   /// Passarel·la de pas per a la crida a setState().
   @override setState(void Function() pFN) {
     super.setState(pFN);
-   }
+  }
 }

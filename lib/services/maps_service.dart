@@ -1,15 +1,16 @@
-// lib/core/services/model_service.dart
+// lib/core/services/maps_service.dart
 // Servei centralitzat d'instàncies de models de dades.
 // Created: 2025/05/09 dv. CLA[JIQ]
+// Updated: 2025/05/11 ds. CLA - Canvi de nom de ModelService a MapsService
 
 import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
-/// Servei centralitzat d'instàncies de models de dades.
-class ModelService {
+/// Servei centralitzat de gestió de mapes de dades.
+class MapsService {
   /// Instància singleton
-  static final ModelService _inst = ModelService._();
-  static ModelService get s => _inst;
+  static final MapsService _inst = MapsService._();
+  static MapsService get s => _inst;
   
   // Membres de la instància ----------
   /// Map de mapes indexat per ID
@@ -23,8 +24,8 @@ class ModelService {
   
   // Constructors ---------------------
   /// Constructor privat
-  ModelService._() {
-    Debug.info("MapManager: Inicialitzant gestor de mapes");
+  MapsService._() {
+    Debug.info("MapsService: Inicialitzant gestor de mapes");
   }
 
   // Registre, Consulta i Liberació ---
@@ -49,7 +50,7 @@ class ModelService {
       if (_mapTypes[entry.key] == pType && _areMapEqual(entry.value, pMap)) {
         // Incrementar el comptador de referències
         _refCounts[entry.key] = (_refCounts[entry.key] ?? 0) + 1;
-        Debug.info("MapManager: Reutilitzant mapa existent (ID: ${entry.key}, Tipus: $pType, Refs: ${_refCounts[entry.key]})");
+        Debug.info("MapsService: Reutilitzant mapa existent (ID: ${entry.key}, Tipus: $pType, Refs: ${_refCounts[entry.key]})");
         return entry.key;
       }
     }
@@ -59,7 +60,7 @@ class ModelService {
     _refCounts[mapId] = 1;
     _mapTypes[mapId] = pType;
     
-    Debug.info("MapManager: Nou mapa registrat (ID: $mapId, Tipus: $pType)");
+    Debug.info("MapsService: Nou mapa registrat (ID: $mapId, Tipus: $pType)");
     return mapId;
   }
   
@@ -73,7 +74,7 @@ class ModelService {
   /// Si no hi ha més referències, elimina el mapa
   void releaseMap(String mapId) {
     if (!_maps.containsKey(mapId)) {
-      Debug.warn("MapManager: Intent d'alliberar un mapa inexistent: $mapId");
+      Debug.warn("MapsService: Intent d'alliberar un mapa inexistent: $mapId");
       return;
     }
     
@@ -85,9 +86,9 @@ class ModelService {
       _maps.remove(mapId);
       _refCounts.remove(mapId);
       _mapTypes.remove(mapId);
-      Debug.info("MapManager: Mapa eliminat (ID: $mapId)");
+      Debug.info("MapsService: Mapa eliminat (ID: $mapId)");
     } else {
-      Debug.info("MapManager: Mapa alliberat (ID: $mapId, Refs restants: ${_refCounts[mapId]})");
+      Debug.info("MapsService: Mapa alliberat (ID: $mapId, Refs restants: ${_refCounts[mapId]})");
     }
   }
   
@@ -183,7 +184,7 @@ class ModelService {
       _mapTypes.remove(key);
     }
     
-    Debug.info("MapManager: Neteja completada. ${keysToRemove.length} mapes eliminats.");
+    Debug.info("MapsService: Neteja completada. ${keysToRemove.length} mapes eliminats.");
     return keysToRemove.length;
   }
   
@@ -229,5 +230,37 @@ class ModelService {
       _maps[pMapId]!.addAll(pUpdates);
       return pMapId;
     }
+  }
+  
+  /// Compara dos mapes i retorna les diferències
+  LdMap<dynamic> getDifferences(String mapId1, String mapId2) {
+    assert(_maps.containsKey(mapId1), "Primer mapa no trobat: $mapId1");
+    assert(_maps.containsKey(mapId2), "Segon mapa no trobat: $mapId2");
+    
+    final map1 = _maps[mapId1]!;
+    final map2 = _maps[mapId2]!;
+    LdMap<dynamic> differences = {};
+    
+    // Buscar diferències en map1
+    for (var entry in map1.entries) {
+      if (!map2.containsKey(entry.key) || map2[entry.key] != entry.value) {
+        differences[entry.key] = {
+          'value1': entry.value,
+          'value2': map2[entry.key],
+        };
+      }
+    }
+    
+    // Buscar claus que només existeixen en map2
+    for (var key in map2.keys) {
+      if (!map1.containsKey(key)) {
+        differences[key] = {
+          'value1': null,
+          'value2': map2[key],
+        };
+      }
+    }
+    
+    return differences;
   }
 }

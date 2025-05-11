@@ -24,7 +24,7 @@ import 'package:ld_wbench5/services/time_service.dart';
 
 /// Controlador per a la pàgina de prova
 class   TestPageCtrl 
-extends LdPageCtrl<TestPage> {
+extends LdPageCtrlAbs<TestPage> {
   /// Etiqueta amb el valor del comptador.
   LdLabel? labCounter;
   
