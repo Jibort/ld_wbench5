@@ -2,35 +2,21 @@
 // Controlador del widget LdScaffold.
 // Created: 2025/05/03 ds. JIQ
 // Updated: 2025/05/03 ds. CLA
+// Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
-import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
-/// Controlador per al SabinaScaffold
+/// Controlador per al LdScaffold
 class LdScaffoldCtrl extends LdWidgetCtrlAbs<LdScaffold> {
-  /// Barra superior
-  final PreferredSizeWidget? appBar;
-  
-  /// Contingut principal
-  final Widget body;
-  
-  /// Botó flotant
-  final Widget? floatingActionButton;
-  
-  /// Menú lateral
-  final Widget? drawer;
-  
   /// Constructor
-  LdScaffoldCtrl(super.pWidget, {
-    this.appBar,
-    required this.body,
-    this.floatingActionButton,
-    this.drawer,
-  });
+  LdScaffoldCtrl(super.pWidget);
   
   @override
   void initialize() {
@@ -74,11 +60,29 @@ class LdScaffoldCtrl extends LdWidgetCtrlAbs<LdScaffold> {
   Widget buildContent(BuildContext context) {
     Debug.info("$tag: Construint Scaffold");
     
+    // Obtenir configuració del widget
+    final config = widget.config;
+    
     return Scaffold(
-      appBar: appBar,
-      body: body,
-      floatingActionButton: floatingActionButton,
-      drawer: drawer,
+      appBar: config[cfAppBar] as PreferredSizeWidget?,
+      body: config[cfBody] as Widget?,
+      floatingActionButton: config[cfFloatingActionButton] as Widget?,
+      floatingActionButtonLocation: config[cfFloatingActionButtonLocation] as FloatingActionButtonLocation?,
+      floatingActionButtonAnimator: config[cfFloatingActionButtonAnimator] as FloatingActionButtonAnimator?,
+      persistentFooterButtons: config[cfPersistentFooterButtons] as List<Widget>?,
+      drawer: config[cfDrawer] as Widget?,
+      endDrawer: config[cfEndDrawer] as Widget?,
+      bottomNavigationBar: config[cfBottomNavigationBar] as Widget?,
+      bottomSheet: config[cfBottomSheet] as Widget?,
+      backgroundColor: config[cfBackgroundColor] as Color?,
+      drawerDragStartBehavior: config[cfDrawerDragStartBehavior] as DragStartBehavior? ?? DragStartBehavior.start,
+      extendBody: config[cfExtendBody] as bool? ?? false,
+      extendBodyBehindAppBar: config[cfExtendBodyBehindAppBar] as bool? ?? false,
+      drawerScrimColor: config[cfDrawerScrimColor] as Color?,
+      drawerEdgeDragWidth: config[cfDrawerEdgeDragWidth] as double?,
+      drawerEnableOpenDragGesture: config[cfDrawerEnableOpenDragGesture] as bool? ?? true,
+      endDrawerEnableOpenDragGesture: config[cfEndDrawerEnableOpenDragGesture] as bool? ?? true,
+      resizeToAvoidBottomInset: config[cfResizeToAvoidBottomInset] as bool?,
     );
   }
 }

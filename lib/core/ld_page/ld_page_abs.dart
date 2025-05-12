@@ -2,6 +2,7 @@
 // Pàgina base simplificada per a l'aplicació
 // Created: 2025/04/29 dt. CLA[JIQ]
 // Updated: 2025/05/11 ds. CLA - Optimització amb GlobalKey transparent
+// Updated: 2025/05/12 dt. CLA - Correcció de l'arquitectura per evitar assignacions directes
 
 import 'package:flutter/material.dart';
 
@@ -29,11 +30,11 @@ implements LdModelObserverIntf {
   // CONSTRUCTORS/DESTRUCTORS =============================
   /// Constructor principal amb mapa de configuració
   LdPageAbs({
+    Key? pKey,
     String? pTag,
     LdMap<dynamic>? pConfig,
-    Key? pKey }) 
-  : super(key: pKey) {
-    tag = pTag ?? generateTag(); // JAB_6: "LdPage_${DateTime.now().millisecondsSinceEpoch}";
+  }) : super(key: pKey) {
+    tag = pTag ?? generateTag();
     final fullConfig = _buildFullConfig(tag, pConfig ?? LdMap<dynamic>());
     _mapId = MapsService.s.registerMap(tag, fullConfig, kMapTypeWidget);
     
@@ -55,14 +56,6 @@ implements LdModelObserverIntf {
 
   /// Obté el mapa de configuració
   LdMap<dynamic> get config => MapsService.getMap(_mapId);
-  
-  // JAB_6: /// Constructor
-  // LdPageAbs({
-  //   String? pTag,
-  // }) : super(key: null) {
-  //   tag = pTag ?? className;
-  //   Debug.info("$tag: Creant pàgina");
-  // }
   
   // ACCÉS AL CONTROLADOR ===================================================
   /// Retorna el controlador de la pàgina utilitzant la GlobalKey

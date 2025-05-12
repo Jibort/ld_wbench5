@@ -1,8 +1,9 @@
-// lib/ui/widgets/ld_text/ld_label_model.dart
-// Model de dades del widget LdText.
+// lib/ui/widgets/ld_label/ld_label_model.dart
+// Model de dades del widget LdLabel.
 // Created: 2025/05/06 dt. CLA
+// Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
 
-import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
@@ -10,11 +11,8 @@ import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/ui/extensions/string_extensions.dart';
 
-/// Model de dades del widget LdText.
+/// Model de dades del widget LdLabel.
 class LdLabelModel extends LdWidgetModelAbs<LdLabel> {
-  /// Retorna el controlador del widget.
-  LdLabelCtrl get wCtrl => cWidget.wCtrl as LdLabelCtrl;
-  
   /// Text o clau de traducció
   String _text = "";
   
@@ -36,7 +34,20 @@ class LdLabelModel extends LdWidgetModelAbs<LdLabel> {
     return _text;
   }
   
-  /// Retorna els arguents per format actuals.
+  /// Retorna el text intern sense traduir
+  String get text => _text;
+  
+  /// Estableix el text intern
+  set text(String value) {
+    if (_text != value) {
+      notifyListeners(() {
+        _text = value;
+        Debug.info("$tag: Text canviat a '$value'");
+      });
+    }
+  }
+  
+  /// Retorna els arguments per format actuals.
   List<dynamic>? get args => _args;
 
   /// Estableix els arguments per format
@@ -48,23 +59,26 @@ class LdLabelModel extends LdWidgetModelAbs<LdLabel> {
   }
 
   /// Constructor General
-  LdLabelModel(super.pWidget, {required String text, List<dynamic>? args}) {
+  LdLabelModel(LdLabel widget, {required String text, List<dynamic>? args}) 
+    : super.forWidget(widget, {}) {
     _text = text;
     _args = args;
     Debug.info("$tag: Model creat amb text '$text' i args '$args'");
   }
 
   /// Constructor des d'un mapa de valors.
-  LdLabelModel.fromMap(super.pWidget, LdMap pMap) {
+  LdLabelModel.fromMap(LdLabel widget, LdMap<dynamic> pMap) 
+    : super.forWidget(widget, pMap) {
     fromMap(pMap);
   }
 
   /// 'LdModelAbs': Assigna els valors dels membres del model a partir d'un mapa.
   @override
-  void fromMap(LdMap pMap) {
+  void fromMap(LdMap<dynamic> pMap) {
     super.fromMap(pMap);
-    _text = pMap[mfText] as String;
-    _args = pMap['args'] as List<dynamic>?;
+    _text = pMap[mfText] as String? ?? "";
+    _args = pMap[mfArgs] as List<dynamic>?;
+    Debug.info("$tag: Model carregat des de mapa amb text='$_text', args='$_args'");
   }
 
   /// Retorna un mapa amb els membres del model.
@@ -74,43 +88,54 @@ class LdLabelModel extends LdWidgetModelAbs<LdLabel> {
     map.addAll({
       mfTag: tag,
       mfText: _text,
-      'args': _args,
+      mfArgs: _args,
     });
     return map;
   }
 
   /// 'LdModelAbs': Retorna el valor d'un membre del model.
   @override
-  getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) {
-    if (pKey == mfText) {
-      return _text;
-    } else if (pKey == 'args') {
-      return _args;
-    } else {
-      return super.getField(
-        pKey: pKey, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
+  dynamic getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) {
+    switch (pKey) {
+      case mfText: return _text;
+      case mfArgs: return _args;
+      default: return super.getField(
+        pKey: pKey, 
+        pCouldBeNull: pCouldBeNull, 
+        pErrorMsg: pErrorMsg
+      );
     }
   }
 
   /// 'LdModelAbs': Estableix el valor d'un membre del model.
   @override
-  void setField({
+  bool setField({
     required String pKey, 
     dynamic pValue, 
     bool pCouldBeNull = true, 
     String? pErrorMsg
   }) {
-    if (pKey == mfText && pValue is String) {
-      _text = pValue;
-    } else if (pKey == 'args' && (pValue == null || pValue is List<dynamic>)) {
-      args = pValue;
-    } else {
-      super.setField(
-        pKey: pKey, 
-        pValue: pValue, 
-        pCouldBeNull: pCouldBeNull, 
-        pErrorMsg: pErrorMsg
-      );
+    switch (pKey) {
+      case mfText:
+        if (pValue is String) {
+          text = pValue;
+          return true;
+        }
+        break;
+      case mfArgs:
+        if (pValue == null || pValue is List<dynamic>) {
+          args = pValue;
+          return true;
+        }
+        break;
+      default:
+        return super.setField(
+          pKey: pKey, 
+          pValue: pValue, 
+          pCouldBeNull: pCouldBeNull, 
+          pErrorMsg: pErrorMsg
+        );
     }
+    return false;
   }
 }

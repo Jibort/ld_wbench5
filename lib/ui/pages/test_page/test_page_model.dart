@@ -1,9 +1,9 @@
 // test_page_model.dart
 // Model de dades per a la pàgina de prova
 // Created: 2025/04/29 dt. CLA[JIQ]
+// Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
 
-import 'package:ld_wbench5/core/L10n/string_tx.dart';
-import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
+import 'package:ld_wbench5/core/ld_page/ld_page_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
@@ -13,10 +13,7 @@ import 'package:ld_wbench5/utils/str_full_set.dart';
 
 /// Model de dades per a la pàgina de prova
 class   TestPageModel
-extends LdPageModelAbs {
-  /// Model de dades de la pàgina
-  TestPageCtrl get ctrl => cPage.vCtrl as TestPageCtrl;
-
+extends LdPageModelAbs<TestPage> {
   /// Títol de la pàgina.
   final StrFullSet _title = StrFullSet();
   
@@ -28,18 +25,25 @@ extends LdPageModelAbs {
   
   /// CONSTRUCTORS --------------------
   TestPageModel({
-    required super.pPage,
+    required TestPage pPage,
     required String pTitleKey,
-    String? pSubTitleKey }) 
-  { tag = className;
+    String? pSubTitleKey,
+  }) : super.forPage(pPage, {}) {
+    tag = className;
     // Carreguem els textos directament des del constructor
     updateTexts(pTitleKey, pSubTitleKey); 
+  }
+
+  /// Constructor des d'un mapa
+  TestPageModel.fromMap(TestPage pPage, LdMap<dynamic> pMap) 
+    : super.forPage(pPage, pMap) {
+    fromMap(pMap);
   }
 
   /// Actualitza els textos segons l'idioma actual
   void updateTexts(String pTitleKey, String? pSubTitleKey) {
     _title.t = pTitleKey;
-    _subTitle.t = pSubTitleKey?? L.sAppSabina;
+    _subTitle.t = pSubTitleKey ?? L.sAppSabina;
     Debug.info("$tag: Textos actualitzats amb l'idioma actual: ${L.getCurrentLocale().languageCode}");
   }
 
@@ -52,7 +56,7 @@ extends LdPageModelAbs {
     if (_title.t != pTitleKey) {
       notifyListeners(() {
         _title.t = pTitleKey;
-        Debug.info("$tag: Títol actualitzat a '$_title'");
+        Debug.info("$tag: Títol actualitzat a '$pTitleKey'");
       });
     }
   }
@@ -65,35 +69,16 @@ extends LdPageModelAbs {
     if (_subTitle.t != pSubTitleKey) {
       notifyListeners(() {
         _subTitle.t = pSubTitleKey;
-        Debug.info("$tag: Títol actualitzat a '$_title'");
-      });
-    }
-    if (_subTitle.t != pSubTitleKey) {
-      notifyListeners(() {
-        _subTitle.t = pSubTitleKey;
-        Debug.info("$tag: Subtítol actualitzat a '$subTitle'");
+        Debug.info("$tag: Subtítol actualitzat a '$pSubTitleKey'");
       });
     }
   }
   
-  /// Estableix el títol i el subtítol de la pàgina.
-  setTitles({ required StringTx pTitle, StringTx? pSubTitle }) {
-    if (_subTitle.get() != pSubTitle) {
-      notifyListeners(() {
-        _title.set(pTitle);
-        _subTitle.set(pSubTitle);
-        Debug.info("$tag: Títol actualitzat a    '$title'");
-        Debug.info("$tag: Subtítol actualitzat a '$subTitle'");
-      });
-    }
-  }
-
   /// Obté el comptador
   int get counter => _counter;
   
   /// Incrementa el comptador
   void incrementCounter() {
-    // Incrementar directament
     _counter++;
     
     // Notificar als observadors
@@ -105,8 +90,8 @@ extends LdPageModelAbs {
     });
   }
 
-  /// Incrementa el comptador
-  void changeLocele() {
+  /// Notifica que ha canviat l'idioma
+  void changeLocale() {
     // Notificar als observadors
     Debug.info("$tag: Idioma canviat a ${L.getCurrentLocale()}");
     
@@ -117,42 +102,74 @@ extends LdPageModelAbs {
   }
 
   // 'LdPageModelAbs' -----------------
-  @override // Arrel
-  void fromMap(LdMap pMap) {
+  @override
+  void fromMap(LdMap<dynamic> pMap) {
     super.fromMap(pMap);
-    title    = pMap[mfTitle] as String;
-    subTitle = pMap[mfSubTitle] as String?;
-    _counter = pMap[mfCounter] as int;
+    
+    // Carregar des de configuració (cf) o model (mf)
+    title = pMap[mfTitle] as String? ?? pMap[cfTitleKey] as String? ?? L.sAppSabina;
+    subTitle = pMap[mfSubTitle] as String? ?? pMap[cfSubTitleKey] as String?;
+    _counter = pMap[mfCounter] as int? ?? 0;
+    
+    Debug.info("$tag: Model carregat des de mapa amb títol='$title', comptador=$_counter");
   }
 
   /// Retorna un mapa amb els membres del model.
-  @override // Arrel
+  @override
   LdMap<dynamic> toMap() {
     LdMap<dynamic> map = super.toMap();
     map.addAll({
-      mfTag:      tag,
-      mfTitle:    title,
+      mfTag: tag,
+      mfTitle: title,
       mfSubTitle: subTitle,
-      mfCounter:  _counter,
+      mfCounter: _counter,
     });
     return map;
   }
 
-  @override getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) 
-  => (pKey == mfTitle)
-    ? title
-    : (pKey == mfSubTitle)
-      ? subTitle 
-      : (pKey == mfCounter)
-          ? counter
-          : super.getField(pKey: pKey, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
+  @override
+  dynamic getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) {
+    switch (pKey) {
+      case mfTitle: return title;
+      case mfSubTitle: return subTitle;
+      case mfCounter: return counter;
+      default: return super.getField(
+        pKey: pKey, 
+        pCouldBeNull: pCouldBeNull, 
+        pErrorMsg: pErrorMsg
+      );
+    }
+  }
 
-  @override setField({required String pKey, dynamic pValue, bool pCouldBeNull = true, String? pErrorMsg})
-  => (pKey == mfTitle && pValue is StringTx)
-    ? _title.t = pValue.text
-    : (pKey == mfSubTitle && pValue is StringTx?)
-      ? _subTitle.t = pValue?.text
-      : (pKey == mfCounter && pValue is int)
-          ? _counter = pValue
-          : super.setField(pKey: pKey, pValue: pValue, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
+  @override
+  bool setField({required String pKey, dynamic pValue, bool pCouldBeNull = true, String? pErrorMsg}) {
+    switch (pKey) {
+      case mfTitle:
+        if (pValue is String) {
+          title = pValue;
+          return true;
+        }
+        break;
+      case mfSubTitle:
+        if (pValue is String? || pValue == null) {
+          subTitle = pValue;
+          return true;
+        }
+        break;
+      case mfCounter:
+        if (pValue is int) {
+          _counter = pValue;
+          return true;
+        }
+        break;
+      default:
+        return super.setField(
+          pKey: pKey, 
+          pValue: pValue, 
+          pCouldBeNull: pCouldBeNull, 
+          pErrorMsg: pErrorMsg
+        );
+    }
+    return false;
+  }
 }

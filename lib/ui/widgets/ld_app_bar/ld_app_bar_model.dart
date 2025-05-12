@@ -2,9 +2,9 @@
 // Model de dades del widget LdAppBar.
 // Created: 2025-05-01 dc. JIQ
 // Updated: 2025-05-05 dl. CLA - Millora del suport d'internacionalització
+// Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
 
-import 'package:ld_wbench5/core/L10n/string_tx.dart';
-import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
@@ -15,9 +15,6 @@ import 'package:ld_wbench5/utils/str_full_set.dart';
 /// Model de dades del widget LdAppBar.
 class   LdAppBarModel 
 extends LdWidgetModelAbs<LdAppBar> {
-  /// Retorna el controlador del widget.
-  LdAppBarCtrl get wCtrl => cWidget.wCtrl as LdAppBarCtrl;
-  
   /// Clau de traducció o text literal pel títol de la barra d'aplicació.
   final StrFullSet _titleKey = StrFullSet();
   
@@ -25,7 +22,7 @@ extends LdWidgetModelAbs<LdAppBar> {
   String get titleKey {
     if (_titleKey.t != null && _titleKey.isKey) {
       String translated = _titleKey.tx!;
-      Debug.info("$tag: Títol traduït: '$translated' de clau '${_titleKey.tx}'");
+      Debug.info("$tag: Títol traduït: '$translated' de clau '${_titleKey.t}'");
       return translated;
     }
     return _titleKey.t ?? errInText;
@@ -46,7 +43,7 @@ extends LdWidgetModelAbs<LdAppBar> {
   String? get subTitleKey {
     if (_subTitleKey.t != null && _subTitleKey.isKey) {
       String translated = _subTitleKey.tx!;
-      Debug.info("$tag: Subtítol traduït: '$translated' de clau '${_subTitleKey.tx}'");
+      Debug.info("$tag: Subtítol traduït: '$translated' de clau '${_subTitleKey.t}'");
       return translated;
     }
     return _subTitleKey.t;
@@ -74,32 +71,37 @@ extends LdWidgetModelAbs<LdAppBar> {
     notifyListeners(() {
       Debug.info("$tag: Textos actualitzats per canvi d'idioma");
       Debug.info("$tag: Títol actualitzat: '$titleKey'");
-      Debug.info("$tag: Subtítol actualitzat: '$subTitleKey'");
+      if (subTitleKey != null) {
+        Debug.info("$tag: Subtítol actualitzat: '$subTitleKey'");
+      }
     });
   }
 
   /// Constructor General
-  LdAppBarModel(super.pWidget, { required String pTitleKey, String? pSubTitleKey }) {
+  LdAppBarModel(LdAppBar widget, { required String pTitleKey, String? pSubTitleKey }) 
+    : super.forWidget(widget, {}) {
     _titleKey.t = pTitleKey;
     _subTitleKey.t = pSubTitleKey;
     Debug.info("$tag: Model creat amb títol '$pTitleKey' i subtítol '$pSubTitleKey'");
   }
 
   /// Constructor des d'un mapa de valors.
-  LdAppBarModel.fromMap(super.pWidget, LdMap pMap) {
+  LdAppBarModel.fromMap(LdAppBar widget, LdMap<dynamic> pMap) 
+    : super.forWidget(widget, pMap) {
     fromMap(pMap);
   }
 
   /// 'LdModelAbs': Assigna els valors dels membres del model a partir d'un mapa.
   @override
-  void fromMap(LdMap pMap) {
+  void fromMap(LdMap<dynamic> pMap) {
     super.fromMap(pMap);
-    titleKey = pMap[mfTitle] as String;
-    subTitleKey = pMap[mfSubTitle] as String?;
+    titleKey = pMap[mfTitle] as String? ?? pMap[cfTitleKey] as String? ?? "";
+    subTitleKey = pMap[mfSubTitle] as String? ?? pMap[cfSubTitleKey] as String?;
+    Debug.info("$tag: Model carregat des de mapa amb títol='$titleKey'");
   }
 
   /// Retorna un mapa amb els membres del model.
-  @override // Arrel
+  @override
   LdMap<dynamic> toMap() {
     LdMap<dynamic> map = super.toMap();
     map.addAll({
@@ -112,43 +114,57 @@ extends LdWidgetModelAbs<LdAppBar> {
 
   /// 'LdModelAbs': Retorna el valor d'un membre del model.
   @override
-  getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) {
-    if (pKey == mfTitle) {
-      return titleKey;
-    } else if (pKey == mfSubTitle) {
-      return subTitleKey;
-    } else {
-      return super.getField(
-        pKey: pKey, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
+  dynamic getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) {
+    switch (pKey) {
+      case mfTitle: return titleKey;
+      case mfSubTitle: return subTitleKey;
+      default: return super.getField(
+        pKey: pKey, 
+        pCouldBeNull: pCouldBeNull, 
+        pErrorMsg: pErrorMsg
+      );
     }
   }
 
   /// 'LdModelAbs': Estableix el valor d'un membre del model.
   @override
-  void setField({
+  bool setField({
     required String pKey, 
     dynamic pValue, 
     bool pCouldBeNull = true, 
     String? pErrorMsg
   }) {
-    if (pKey == mfTitle && (pValue is String || pValue is StringTx)) {
-      titleKey = (pValue is StringTx) ? pValue.key ?? pValue.literalText ?? "" : pValue;
-    } else if (pKey == mfSubTitle && (pValue is String? || pValue is StringTx?)) {
-      subTitleKey = (pValue is StringTx) 
-        ? pValue.key ?? pValue.literalText 
-        : pValue as String?;
-    } else if (pKey == "$mfTitle|$mfSubTitle" && pValue is String) {
-      setTitles(
-        pTitleKey: pValue.split(r"|").first,
-        pSubTitleKey: pValue.split(r"|").last
-      );
-    } else {
-      super.setField(
-        pKey: pKey, 
-        pValue: pValue, 
-        pCouldBeNull: pCouldBeNull, 
-        pErrorMsg: pErrorMsg
-      );
+    switch (pKey) {
+      case mfTitle:
+        if (pValue is String) {
+          titleKey = pValue;
+          return true;
+        }
+        break;
+      case mfSubTitle:
+        if (pValue is String? || pValue == null) {
+          subTitleKey = pValue;
+          return true;
+        }
+        break;
+      case "$mfTitle|$mfSubTitle":
+        if (pValue is String) {
+          final parts = pValue.split("|");
+          setTitles(
+            pTitleKey: parts.first,
+            pSubTitleKey: parts.length > 1 ? parts.last : null
+          );
+          return true;
+        }
+        break;
+      default:
+        return super.setField(
+          pKey: pKey, 
+          pValue: pValue, 
+          pCouldBeNull: pCouldBeNull, 
+          pErrorMsg: pErrorMsg
+        );
     }
+    return false;
   }
 }

@@ -2,11 +2,14 @@
 // Scaffold personalitzat de Sabina
 // Created: 2025/04/29 DT. CLA[JIQ]
 // Updated: 2025/05/03 ds. CLA
+// Updated: 2025/05/12 dt. CLA - Correcció del mètode createCtrl
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/services/maps_service.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold_ctrl.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 
 /// Widget Scaffold personalitzat
 /// 
@@ -17,7 +20,8 @@ import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold_ctrl.dart';
 class   LdScaffold 
 extends LdWidgetAbs {
   LdScaffold({
-    String? pTag,
+    Key? key, 
+    super.pTag,
     Color? backgroundColor,
     PreferredSizeWidget? appBar,
     Widget? body,
@@ -37,7 +41,7 @@ extends LdWidgetAbs {
     bool drawerEnableOpenDragGesture = true,
     bool endDrawerEnableOpenDragGesture = true,
     bool? resizeToAvoidBottomInset,
-  }) : super(pTag: pTag) {
+  }): super(pKey: key) {
     // Configurar tots els camps
     final map = <String, dynamic>{
       cfBackgroundColor: backgroundColor,
@@ -61,12 +65,9 @@ extends LdWidgetAbs {
       cfResizeToAvoidBottomInset: resizeToAvoidBottomInset,
     };
     
-    mapsService.updateMap(mTag, map);
+    MapsService.s.updateMap(tag, map);
   }
 
   @override
-  LdScaffoldCtrl createController() => LdScaffoldCtrl(pTag: mTag);
-  
-  @override
-  LdWidgetCtrlAbs<LdWidgetAbs> createCtrl() => LdScaffoldCtrl(this);
+  LdScaffoldCtrl createCtrl() => LdScaffoldCtrl(this);
 }

@@ -2,6 +2,7 @@
 // Model de dades del widget 'LdTextField'.
 // Created: 2025/05/06 dt. CLA
 // Updated: 2025/05/11 ds. CLA - Adaptació completa a la nova arquitectura
+// Updated: 2025/05/12 dt. CLA - Correcció del tipus de retorn de setField
 
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
@@ -25,7 +26,7 @@ extends LdWidgetModelAbs<LdTextField> {
   }
 
   // Constructor des d'un mapa
-  LdTextFieldModel.fromMap(LdMap<dynamic> pMap) : super.fromMap(pMap) {
+  LdTextFieldModel.fromMap(super.pMap) : super.fromMap() {
     // Les propietats es carregaran a fromMap
   }
 
@@ -62,19 +63,23 @@ extends LdWidgetModelAbs<LdTextField> {
   }
 
   @override
-  void setField({required String pKey, dynamic pValue, bool pCouldBeNull = true, String? pErrorMsg}) {
+  bool setField({required String pKey, dynamic pValue, bool pCouldBeNull = true, String? pErrorMsg}) {
     switch (pKey) {
       case mfText:
-        if (pValue is String) text = pValue;
+        if (pValue is String) {
+          text = pValue;
+          return true;
+        }
         break;
       default:
-        super.setField(
+        return super.setField(
           pKey: pKey,
           pValue: pValue,
           pCouldBeNull: pCouldBeNull,
           pErrorMsg: pErrorMsg
         );
     }
+    return false;
   }
 
   // Netejar el text

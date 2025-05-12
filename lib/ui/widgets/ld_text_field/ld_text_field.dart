@@ -4,7 +4,9 @@
 // Updated: 2025/05/09 dv. CLA - distinció entre camps de models (mf), controladors (cf) i events (ef).
 // Updated: 2025/05/10 ds. CLA - Adaptació completa a la nova arquitectura
 // Updated: 2025/05/11 dg. CLA - Actualització de constants per diferenciar correctament mf/cf/ef
+// Updated: 2025/05/12 dt. CLA - Afegit suport per al paràmetre key
 
+import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field_ctrl.dart';
@@ -20,6 +22,7 @@ class   LdTextField
 extends LdWidgetAbs {
   /// Constructor principal
   LdTextField({
+    Key? key,
     String? pTag,
     String initialText = "",
     String? label,
@@ -30,8 +33,9 @@ extends LdWidgetAbs {
     Function(String)? onTextChanged,
     bool canFocus = true,
     bool isEnabled = true,
-    bool isVisible = true }) 
-  : super(
+    bool isVisible = true,
+  }) : super(
+    pKey: key,
     pTag: pTag ?? "LdTextField_${DateTime.now().millisecondsSinceEpoch}", 
     pConfig: {
     // Propietats d'identificació

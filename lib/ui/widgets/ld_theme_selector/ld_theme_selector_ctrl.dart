@@ -1,12 +1,14 @@
 // lib/ui/widgets/ld_theme_selector/ld_theme_selector_ctrl.dart
 // Controlador per al selector de temes
 // Created: 2025/05/09 dv. 
+// Updated: 2025/05/12 dt. CLA - Correcció del bucle infinit al getter model
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/services/ld_theme.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector.dart';
+import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/ui/extensions/color_extensions.dart';
 
@@ -24,9 +26,6 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   /// Callback quan canvia el tema
   final Function(ThemeName)? onThemeChanged;
   
-  /// Retorna el model del widget
-  LdThemeSelectorModel get model => cWidget.wModel as LdThemeSelectorModel;
-  
   /// Constructor
   LdThemeSelectorCtrl(
     super.pWidget, {
@@ -40,8 +39,16 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   void initialize() {
     Debug.info("$tag: Inicialitzant controlador");
     
-    // Subscriure's a canvis en el model
-    model.attachObserver(this);
+    // Crear el model amb la configuració del widget
+    final config = widget.config;
+    final initialMode = config['mfInitialMode'] as ThemeMode? ?? LdTheme.s.themeMode;
+    final initialTheme = config['mfInitialTheme'] as ThemeName? ?? LdTheme.s.currentThemeName;
+    
+    model = LdThemeSelectorModel(
+      widget,
+      initialMode: initialMode,
+      initialTheme: initialTheme,
+    );
   }
   
   @override
@@ -60,15 +67,15 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
       
       // Comprovar si ha canviat el mode
       final currentMode = LdTheme.s.themeMode;
-      if (model.themeMode != currentMode) {
-        model.themeMode = currentMode;
+      if ((model as LdThemeSelectorModel).themeMode != currentMode) {
+        (model as LdThemeSelectorModel).themeMode = currentMode;
         needsUpdate = true;
       }
       
       // Comprovar si ha canviat el tema
       final currentTheme = LdTheme.s.currentThemeName;
-      if (model.themeName != currentTheme) {
-        model.themeName = currentTheme;
+      if ((model as LdThemeSelectorModel).themeName != currentTheme) {
+        (model as LdThemeSelectorModel).themeName = currentTheme;
         needsUpdate = true;
       }
       
@@ -86,7 +93,7 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
     Debug.info("$tag: Canviant mode de tema a ${mode.toString()}");
     
     // Actualitzar primer el model
-    model.themeMode = mode;
+    (model as LdThemeSelectorModel).themeMode = mode;
     
     // Després actualitzar el tema global
     LdTheme.s.changeThemeMode(mode);
@@ -102,7 +109,7 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
     Debug.info("$tag: Canviant tema a ${LdTheme.s.getThemeNameString(name)}");
     
     // Actualitzar primer el model
-    model.themeName = name;
+    (model as LdThemeSelectorModel).themeName = name;
     
     // Després actualitzar el tema global
     LdTheme.s.currentThemeName = name;
@@ -193,7 +200,8 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
     required String label,
     required String tooltip,
   }) {
-    final isSelected = model.themeMode == mode;
+    final selectorModel = model as LdThemeSelectorModel?;
+    final isSelected = selectorModel?.themeMode == mode;
     final theme = Theme.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
@@ -289,7 +297,8 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   
   /// Construeix un item del selector de temes
   Widget _buildThemeItem(BuildContext context, ThemeName themeName) {
-    final isSelected = model.themeName == themeName;
+    final selectorModel = model as LdThemeSelectorModel?;
+    final isSelected = selectorModel?.themeName == themeName;
     final theme = Theme.of(context);
     
     // Obtenim colors representatius del tema

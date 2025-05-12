@@ -2,14 +2,16 @@
 // Controlador de la pàgina de prova que mostra la implementació simplificada.
 // Created: 2025/04/29 DT. CLA[JIQ]
 // Updated: 2025/05/08 dj. CLA - Actualitzat per utilitzar LdTheme
+// Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
 
 import 'package:flutter/material.dart';
 
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
-import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
+import 'package:ld_wbench5/core/ld_page/ld_page_ctrl_abs.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
-import 'package:ld_wbench5/services/ld_theme.dart'; // Importem el nou servei
+import 'package:ld_wbench5/services/ld_theme.dart';
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
@@ -35,9 +37,6 @@ extends LdPageCtrlAbs<TestPage> {
   /// Etiqueta amb l'hora actual del servidor.
   LdLabel? labTime;
 
-  /// Model de dades de la pàgina
-  TestPageModel get model => cPage.vModel as TestPageModel;
-
   /// Referències als controladors dels botons
   LdButtonCtrl? _themeButtonCtrl;
   LdButtonCtrl? _languageButtonCtrl;
@@ -54,7 +53,19 @@ extends LdPageCtrlAbs<TestPage> {
   @override
   void initialize() {
     Debug.info("$tag: Inicialitzant controlador");
-    model.attachObserver(this);
+    
+    // Crear el model de la pàgina
+    final config = cPage.config;
+    final titleKey = config[cfTitleKey] as String? ?? config[mfTitle] as String? ?? L.sAppSabina;
+    final subTitleKey = config[cfSubTitleKey] as String? ?? config[mfSubTitle] as String?;
+    
+    model = TestPageModel(
+      pPage: cPage,
+      pTitleKey: titleKey,
+      pSubTitleKey: subTitleKey,
+    );
+    
+    Debug.info("$tag: Model de la pàgina creat");
   }
   
   @override
@@ -68,11 +79,11 @@ extends LdPageCtrlAbs<TestPage> {
     
     // Desregistrar els widgets de tots els models externs
     if (labCounter != null) {
-      model.detachObserver(labCounter!);
+      (model as TestPageModel?)?.detachObserver(labCounter!);
     }
     
     if (labLocale != null) {
-      model.detachObserver(labLocale!);
+      (model as TestPageModel?)?.detachObserver(labLocale!);
     }
     
     if (labTime != null) {
@@ -80,8 +91,6 @@ extends LdPageCtrlAbs<TestPage> {
       TimeService.s.model.detachObserver(labTime!);
     }
     
-    model.detachObserver(this);
-    model.dispose();
     super.dispose();
   }
 
@@ -124,13 +133,13 @@ extends LdPageCtrlAbs<TestPage> {
   void changeLanguage() {
     Debug.info("$tag: Canviant idioma");
     L.toggleLanguage();
-    model.changeLocele();
+    (model as TestPageModel?)?.changeLocale();
   }
   
   /// Canvia el tema entre clar i fosc
   void changeTheme() {
     Debug.info("$tag: Canviant tema");
-    LdTheme.s.toggleTheme(); // Utilitzem LdTheme directament
+    LdTheme.s.toggleTheme();
   }
   
   /// Obté accés als controladors dels botons després que s'hagin creat
@@ -185,32 +194,33 @@ extends LdPageCtrlAbs<TestPage> {
       _updateControllerReferences();
     });
     
-    Debug.info("$tag: Construint pàgina amb model: títol=${model.title}, subtítol=${model.subTitle}");
+    final pageModel = model as TestPageModel?;
+    Debug.info("$tag: Construint pàgina amb model: títol=${pageModel?.title}, subtítol=${pageModel?.subTitle}");
     
     // Obtenir l'idioma actual cada vegada que es construeix
     String currentLanguage = L.getCurrentLocale().languageCode;
     Debug.info("$tag: Idioma actual: $currentLanguage");
 
     // Inicialitzem els widgets la primera vegada que es construeix la pàgina
-    if (labCounter == null) {
+    if (labCounter == null && pageModel != null) {
       labCounter = LdLabel(
         text: L.sCounter,
-        args: [model.counter],
+        args: [pageModel.counter],
         style: Theme.of(context).textTheme.bodyMedium,
       );
-      labCounter!.registerModelCallback<TestPageModel>(model, (pModel) {
+      labCounter!.registerModelCallback<TestPageModel>(pageModel, (pModel) {
         labCounter!.args = [pModel.counter];
       });
     }
     
-    if (labLocale == null) {
+    if (labLocale == null && pageModel != null) {
       labLocale = LdLabel(
         key: ValueKey('language_${L.getCurrentLocale().languageCode}'),
         text: L.sCurrentLanguage,
         args: [L.getCurrentLocale().languageCode],
         style: Theme.of(context).textTheme.bodyMedium,
       );
-      labLocale!.registerModelCallback<TestPageModel>(model, (pModel) {
+      labLocale!.registerModelCallback<TestPageModel>(pageModel, (pModel) {
         labLocale!.args = [L.getCurrentLocale().languageCode];
       });
     }
@@ -256,7 +266,7 @@ extends LdPageCtrlAbs<TestPage> {
       key: _themeButtonKey,
       text: L.sChangeTheme,
       onPressed: changeTheme,
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      // backgroundColor: Theme.of(context).colorScheme.secondary,
     );
     
     final languageButton = LdButton(
@@ -279,8 +289,8 @@ extends LdPageCtrlAbs<TestPage> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: LdAppBar(
-          pTitleKey: model.title,
-          pSubTitleKey: model.subTitle,
+          pTitleKey: pageModel?.title ?? L.sAppSabina,
+          pSubTitleKey: pageModel?.subTitle,
         ),
       ),
       body: SafeArea(
@@ -305,10 +315,10 @@ extends LdPageCtrlAbs<TestPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Subtítol
-                    if (model.subTitle != null)
+                    if (pageModel?.subTitle != null)
                     LdLabel(
-                      key: ValueKey('subtitle_${model.subTitle}'),
-                      text: model.subTitle!,
+                      key: ValueKey('subtitle_${pageModel!.subTitle}'),
+                      text: pageModel.subTitle!,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     
@@ -376,16 +386,16 @@ extends LdPageCtrlAbs<TestPage> {
                     
                     const SizedBox(height: 24),
                     
-                    // NOU: Selector de temes complet
+                    // Segona instància del selector de temes (per demostració)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: LdThemeSelector(
-                        pTag: "ThemeSelector_TestPage",
+                        pTag: "ThemeSelector_TestPage2",
                         onModeChanged: (mode) {
-                          Debug.info("$tag: Canvi de mode de tema des del selector: ${mode.toString()}");
+                          Debug.info("$tag: Canvi de mode de tema des del selector2: ${mode.toString()}");
                         },
                         onThemeChanged: (theme) {
-                          Debug.info("$tag: Canvi de tema des del selector: ${LdTheme.s.getThemeNameString(theme)}");
+                          Debug.info("$tag: Canvi de tema des del selector2: ${LdTheme.s.getThemeNameString(theme)}");
                         },
                       ),
                     ),
@@ -455,10 +465,10 @@ extends LdPageCtrlAbs<TestPage> {
                 Debug.info("$tag: Botó flotant premut");
                 
                 // NOMÉS modifiquem el model, mai manipulem directament els LdText
-                model.incrementCounter();
+                (model as TestPageModel?)?.incrementCounter();
                 
                 // Demo: demanar focus al botó de tema quan el comptador és parell
-                if (model.counter % 2 == 0) {
+                if ((pageModel?.counter ?? 0) % 2 == 0) {
                   // Ens assegurem de tenir els controladors
                   _updateControllerReferences();
                   

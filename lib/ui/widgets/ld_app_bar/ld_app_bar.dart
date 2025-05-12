@@ -2,12 +2,14 @@
 // Widget de la barra d'aplicació personalitzada
 // Created: 2025/04/29 dt. CLA[JIQ]
 // Updated: 2025/05/05 dl. CLA - Millora del suport d'internacionalització
+// Updated: 2025/05/12 dt. CLA - Correccions d'arquitectura i imports
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
-import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar_ctrl.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/services/maps_service.dart';
+import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar_ctrl.dart';
 
 /// Widget AppBar personalitzat
 /// 
@@ -21,8 +23,10 @@ implements PreferredSizeWidget {
   final Size preferredSize;
   
   LdAppBar({
-    String? pTag,
     Key? key,
+    super.pTag,
+    String? pTitleKey,
+    String? pSubTitleKey,
     Widget? title,
     Widget? leading,
     List<Widget>? actions,
@@ -54,11 +58,13 @@ implements PreferredSizeWidget {
          toolbarHeight ?? kToolbarHeight,
          bottom?.preferredSize.height ?? 0.0,
        ),
-       super(pTag: pTag, key: key) {
+       super(pKey: key) {
     
     // Configurar tots els camps
     final map = <String, dynamic>{
       cfTitle: title,
+      cfTitleKey: pTitleKey,
+      cfSubTitleKey: pSubTitleKey,
       cfLeading: leading,
       cfActions: actions,
       cfFlexibleSpace: flexibleSpace,
@@ -87,16 +93,11 @@ implements PreferredSizeWidget {
       cfClipBehavior: clipBehavior,
     };
     
-    mapsService.updateMap(mTag, map);
+    MapsService.s.updateMap(tag, map);
   }
 
   @override
-  LdAppBarCtrl createCtrl() => LdAppBarCtrl(pTag: mTag);
-
-  @override
-  Widget build(BuildContext context) {
-    return wCtrl.buildWidget(context);
-  }
+  LdAppBarCtrl createCtrl() => LdAppBarCtrl(this);
 }
 
 /// Implementació privada per PreferredSize

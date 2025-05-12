@@ -1,6 +1,7 @@
 // lib/ui/widgets/ld_button.dart
 // Botó personalitzat de Sabina
 // Created: 2025/04/29 DT. CLA[JIQ]
+// Updated: 2025/05/12 dt. CLA - Afegit suport per al paràmetre key
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
@@ -14,14 +15,15 @@ class   LdButton
 extends LdWidgetAbs {
   /// Constructor principal
   LdButton({
-    String? pTag,
+    Key? key,
+    super.pTag,
     String text = "",
     IconData? icon,
     VoidCallback? onPressed,
     ButtonStyle? style,
     bool isEnabled = true,
     bool isVisible = true,
-  }) : super(pConfig: {
+  }) : super(pKey: key, pConfig: {
     // Propietats d'identificació
     cfTag: pTag ?? "LdButton_${DateTime.now().millisecondsSinceEpoch}",
     
