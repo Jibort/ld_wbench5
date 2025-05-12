@@ -3,79 +3,95 @@
 // Created: 2025/05/06 dt. CLA
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/core/ld_model_abs.dart';
-
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/services/maps_service.dart';
+import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label_ctrl.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
-export 'ld_label_ctrl.dart';
-export 'ld_label_model.dart';
-
-/// Widget de text que suporta internacionalització automàtica
-class      LdLabel 
-extends    LdWidgetAbs
-implements LdModelObserverIntf {
-  /// Models externs dels quals aquest text és observador
-  final Set<LdModelAbs> _externalModels = {};
-
-  /// Registra aquest text com a observador d'un model extern
-  void observeModel(LdModelAbs model) {
-    _externalModels.add(model);
-    model.attachObserver(this);
-    Debug.info("$tag: Registrat com a observador d'un model extern");
-  }
-
-  /// Desregistra aquest text de tots els models externs
-  void detachFromAllModels() {
-    for (var model in _externalModels) {
-      model.detachObserver(this);
-    }
-    _externalModels.clear();
-    Debug.info("$tag: Desconnectat de tots els models externs");
-  }
-
-  /// Constructor
+/// Widget Label personalitzat
+/// 
+/// Hereta de [LdWidgetAbs] per utilitzar l'arquitectura unificada
+/// amb GlobalKey i LdTaggableMixin.
+/// 
+/// Tota la lògica està al [LdLabelCtrl].
+class   LdLabel 
+extends LdWidgetAbs {
   LdLabel({
-    super.key,
+    Key? key,  
     super.pTag,
-    required String text,
-    List<dynamic>? args,
+    String text = '',
     TextStyle? style,
+    StrutStyle? strutStyle,
     TextAlign? textAlign,
-    int? maxLines,
+    TextDirection? textDirection,
+    Locale? locale,
+    bool? softWrap,
     TextOverflow? overflow,
-  }) {
-    Debug.info("$tag: Creant LdText amb text '$text'");
+    double? textScaleFactor,
+    TextScaler? textScaler,
+    int? maxLines,
+    String? semanticsLabel,
+    TextWidthBasis? textWidthBasis,
+    TextHeightBehavior? textHeightBehavior,
+    Color? selectionColor,
+  })
+  : super(pKey: key) 
+  { // Configurar tots els camps
+    final map = <String, dynamic>{
+      cfTextStyle: style,
+      cfTextAlign: textAlign,
+      cfTextDirection: textDirection,
+      cfLocale: locale,
+      cfSoftWrap: softWrap,
+      cfOverflow: overflow,
+      cfTextWidthBasis: textWidthBasis,
+      cfTextHeightBehavior: textHeightBehavior,
+      cfSemanticLabel: semanticsLabel,
+      cfSelectionColor: selectionColor,
+      
+      // Camps adicionals
+      if (strutStyle != null) 'cf_strut_style': strutStyle,
+      if (textScaleFactor != null) 'cf_text_scale_factor': textScaleFactor,
+      if (textScaler != null) 'cf_text_scaler': textScaler,
+      if (maxLines != null) 'cf_max_lines': maxLines,
+      
+      // Dada del model
+      mfText: text,
+    };
     
-    // Crear primer el model amb el text i els arguments
-    wModel = LdLabelModel(
-      this,
-      text: text, 
-      args: args
-    );
-    
-    // Després el controlador amb les propietats d'estil
-    wCtrl = LdLabelCtrl(
-      this,
-      style: style,
-      textAlign: textAlign,
-      maxLines: maxLines,
-      overflow: overflow
-    );
-    
-    Debug.info("$tag: LdText creat correctament");
+    MapsService.s.updateMap(tag, map);
   }
 
-  /// Retorna els arguents per format actuals.
-  List<dynamic>? get args => (wModel as LdLabelModel).args;
-
-  /// Estableix els arguments per format
-  set args(List<dynamic>? value) {
-    (wModel as LdLabelModel).args = value;
+  /// Constructor alternatiu a partir d'un mapa
+  LdLabel.fromMap(LdMap<dynamic> pConfig)
+  : super(pConfig: pConfig) {
+    Debug.info("$tag: LdTextField creat des d'un mapa");
   }
 
-  bool needsUpdate(List<String> pList) => (args == pList);
-  
+  @override
+  LdLabelCtrl createCtrl() => LdLabelCtrl(this);
+
+  // ACCESSORS PER A COMPATIBILITAT
+  LdLabelModel? get model {
+    final ctrl = wCtrl;
+    if (ctrl is LdLabelCtrl) {
+      return ctrl.model as LdLabelModel?;
+    }
+    return null;
+  }
+
+  LdLabelCtrl? get controller =>
+    (wCtrl is LdLabelCtrl)
+      ? wCtrl as LdLabelCtrl
+      : null;
+
+  // PROPIETATS DEL MODEL
+  String get text => model?.text ?? "";
+  set text(String value) {
+    model?.updateField(mfText, value);
+  }
+
 }

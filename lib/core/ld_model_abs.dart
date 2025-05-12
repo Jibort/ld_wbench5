@@ -17,15 +17,19 @@ abstract class LdModelObserverIntf {
 /// Model base que proporciona funcionalitat de notificació de canvis
 abstract class LdModelAbs 
 with     LdTaggableMixin {
+  // MEMBRES LOCALS =======================================
   /// Conjunt d'observadors interessats en canvis del model
   final Set<LdModelObserverIntf> _observers = {};
   
+  // GETTERS/SETTERS ======================================
   /// Retorna el nombre d'observadors actuals
   int get observerCount => _observers.length;
 
   /// Indica si el model té algun observador
   bool get hasObservers => _observers.isNotEmpty;
 
+
+  // FUNCIONALITAT OBSERVADORS ============================
   /// Vincula un observador a aquest model per a les actualitzacions d'UI
   void attachObserver(LdModelObserverIntf pObs) {
     _observers.add(pObs);
@@ -60,6 +64,7 @@ with     LdTaggableMixin {
     }
   }
   
+  // CONSTRUCTORS/DESTRUCTORS =============================
   /// Allibera els recursos del model
   @mustCallSuper
   void dispose() {
@@ -69,31 +74,39 @@ with     LdTaggableMixin {
 
   @override String toString() => 'LdModel(tag: $tag)';
 
-  // DECLARACIONS ABSTRACTES ==================================================
+  // DECLARACIONS ABSTRACTES ==============================
   /// Retorna un mapa amb els membres del model.
   @mustCallSuper
   LdMap<dynamic> toMap() {
     LdMap<dynamic> map = LdMap();
-    map[mfTag] = tag;
+    map[cfTag] = tag;
     return map;
   }
   /// Estableix els valor del model a partir del contingut del mapa.
   @mustCallSuper
   void fromMap(LdMap<dynamic> pMap) {
-    tag = pMap[mfTag];
+    tag = pMap[cfTag];
   }
 
   /// Retorna el valor associat amb un membre del model.
   @mustCallSuper
   dynamic getField({ required String pKey, bool pCouldBeNull = true, String? pErrorMsg })
-  => (pKey == mfTag)
+  => (pKey == cfTag)
     ? tag
     : Debug.fatal("$tag.getField('$pKey'): cap camp té la clau '$pKey'!");
 
   /// Estableix el valor associat amb un membre del model.
   @mustCallSuper
-  void setField({ required String pKey, dynamic pValue, bool pCouldBeNull = true, String? pErrorMsg })
-  => (pKey == mfTag && pValue is String)
-    ? tag = pValue
-    : Debug.fatal("$tag.setField('$pKey', '$pValue'): cap camp té la clau '$pKey' o el tipus és incorrecte!");
+  bool setField({ 
+    required String pKey, 
+    dynamic pValue, 
+    bool pCouldBeNull = true, 
+    String? pErrorMsg }) {
+    if (pKey == cfTag && pValue is String) {
+      tag = pValue;
+      return true;
+    }
+    Debug.fatal("$tag.setField('$pKey', '$pValue'): cap camp té la clau '$pKey' o el tipus és incorrecte!");
+    return false;
+  }
 }

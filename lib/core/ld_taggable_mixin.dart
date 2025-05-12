@@ -1,15 +1,16 @@
 // ld_taggable_mixin.dart
 // Mixin simplificat per a la identificació d'elements mitjançant tags
 // Created: 2025/04/29 dt. CLA[JIQ]
-// Updated: 2025/05/11 ds. CLA - Optimització amb GlobalKey i navegació
+// Updated: 2025/05/11 dg. CLA - Optimització amb GlobalKey i navegació
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/ui/extensions/type_extensions.dart';
 
 /// Mixin que proporciona capacitats d'identificació mitjançant tags únics
-/// i GlobalKey transparent per a widgets
+/// i GlobalKey transparent per a widgets i pàgines.
 mixin LdTaggableMixin {
+  // MEMBRES LOCALS =======================================
   /// Nom base de la classe.
   String get className => runtimeType.cleanClassName;
 
@@ -19,6 +20,7 @@ mixin LdTaggableMixin {
   /// GlobalKey gestionada internament
   GlobalKey? _globalKey;
   
+  // GETTERS/SETTERS ======================================
   /// Obté el tag d'aquesta instància, generant-ne un si no existeix
   String get tag => _tag ?? generateTag();
   
@@ -28,6 +30,7 @@ mixin LdTaggableMixin {
     Debug.info("Tag assignat: $_tag");
   }
   
+  // FUNCIONALITAT TAG'S ==================================
   /// Genera un tag únic basat en el tipus de classe i timestamp
   String generateTag() {
     final generatedTag = '${className}_${DateTime.now().millisecondsSinceEpoch}';
@@ -35,6 +38,7 @@ mixin LdTaggableMixin {
     return generatedTag;
   }
   
+  // FUNCIONALITAT GLOBALKEY'S ============================
   /// Inicialitza i retorna la GlobalKey per a widgets
   /// Només crear quan realment necessitem la key
   GlobalKey<T> _ensureGlobalKey<T extends State>() {
@@ -76,8 +80,7 @@ mixin LdTaggableMixin {
     return _ensureGlobalKey<T>();
   }
   
-  // NAVEGACIÓ I UTILITATS DE CONTEXT =====================================
-  
+  // NAVEGACIÓ I UTILITATS DE CONTEXT =====================
   /// Navega a una nova ruta des d'aquest widget
   void navigateTo(
     Widget destination, {
@@ -113,6 +116,7 @@ mixin LdTaggableMixin {
     }
   }
   
+  // SNACKBAR'S I DIÀLOGS =================================
   /// Mostra un SnackBar des d'aquest widget
   void showSnackBar(String message, {Duration? duration}) {
     final context = widgetContext;

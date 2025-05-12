@@ -3,6 +3,7 @@
 // Updated: 2025/05/11 ds. CLA - Eliminació de tots els camps redundants
 
 import 'package:flutter/material.dart';
+
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
@@ -16,38 +17,33 @@ export 'ld_widget_ctrl_abs.dart';
 export 'ld_widget_model_abs.dart';
 
 /// Widget base que proporciona funcionalitats comunes
-abstract class LdWidgetAbs extends StatefulWidget 
-    with LdTaggableMixin 
-    implements LdModelObserverIntf {
-  
+abstract   class LdWidgetAbs 
+extends    StatefulWidget 
+with       LdTaggableMixin 
+implements LdModelObserverIntf {
+  // MEMBRES ==============================================
   /// ID del mapa de configuració
-  final String _mapId;
+  late final String _mapId;
   
+  // CONSTRUCTORS/DESTRUCTORS =============================
   /// Constructor principal amb mapa de configuració
   LdWidgetAbs({
-    required LdMap<dynamic> config,
-  }) : _mapId = MapsService.s.registerMap(
-         config, 
-         pType: "widget",
-         pIdent: config[cfTag] as String?,
-       ),
-       super(key: null) {
-    
-    // Assignar el tag des del mapa de configuració
-    tag = config[cfTag] as String? ?? 
-          "LdWidget_${DateTime.now().millisecondsSinceEpoch}";
+    Key? pKey,
+    String? pTag,
+    LdMap<dynamic>? pConfig, }) 
+  : super(key: pKey) {
+    tag = pTag ?? generateTag(); // JAB_6: "LdWidget_${DateTime.now().millisecondsSinceEpoch}";
+    final fullConfig = _buildFullConfig(tag, pConfig ?? LdMap<dynamic>());
+    _mapId = MapsService.s.registerMap(tag, fullConfig, kMapTypeWidget);
     
     Debug.info("$tag: Creant widget amb mapa (ID: $_mapId)");
   }
-  
-  /// Sobreescrivim key per retornar la GlobalKey sota demanda
-  @override
-  Key? get key {
-    if (globalKey == null) {
-      // Crear la GlobalKey amb el tipus genèric adequat
-      forceGlobalKey<LdWidgetCtrlAbs>();
-    }
-    return globalKey;
+
+  static LdMap<dynamic> _buildFullConfig(String tag, LdMap<dynamic> config) {
+    final map = LdMap<dynamic>.from(config);
+    // Assegurar que el tag està al mapa
+    map[cfTag] = tag;
+    return map;
   }
   
   /// Allibera recursos quan el widget és eliminat
@@ -57,7 +53,7 @@ abstract class LdWidgetAbs extends StatefulWidget
   }
   
   /// Obté el mapa de configuració
-  LdMap<dynamic> get config => MapsService.s.getMap(_mapId);
+  LdMap<dynamic> get config => MapsService.getMap(_mapId);
   
   // ACCÉS AL CONTROLADOR ===================================================
   /// Retorna el controlador del widget utilitzant la GlobalKey
@@ -74,6 +70,16 @@ abstract class LdWidgetAbs extends StatefulWidget
     final ctrl = wCtrl;
     assert(ctrl != null, "$tag: Controlador no disponible encara");
     return ctrl!;
+  }
+
+  /// Sobreescrivim key per retornar la GlobalKey sota demanda
+  @override
+  Key? get key {
+    if (globalKey == null) {
+      // Crear la GlobalKey amb el tipus genèric adequat
+      forceGlobalKey<LdWidgetCtrlAbs>();
+    }
+    return globalKey;
   }
   
   // ACCÉS AL MODEL (delegat al controlador) ================================
@@ -108,9 +114,9 @@ abstract class LdWidgetAbs extends StatefulWidget
   /// CREACIÓ DE CONTROLADOR ================================================
   /// Mètode que cada widget ha d'implementar per crear el seu controlador
   @protected
-  LdWidgetCtrlAbs createController();
+  LdWidgetCtrlAbs createCtrl();
   
   /// Retorna el controlador del widget
   @override
-  State<LdWidgetAbs> createState() => createController();
+  State<LdWidgetAbs> createState() => createCtrl();
 }

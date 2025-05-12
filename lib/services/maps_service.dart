@@ -3,264 +3,160 @@
 // Created: 2025/05/09 dv. CLA[JIQ]
 // Updated: 2025/05/11 ds. CLA - Canvi de nom de ModelService a MapsService
 
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
-/// Servei centralitzat de gestió de mapes de dades.
+/// Enum per als tipus de mapes amb valors de constant
+enum MapType {
+  widget(kMapTypeWidget),
+  entity(kMapTypeEntity),
+  config(kMapTypeConfig);
+  
+  final String value;
+  const MapType(this.value);
+}
+
 class MapsService {
-  /// Instància singleton
-  static final MapsService _inst = MapsService._();
-  static MapsService get s => _inst;
-  
-  // Membres de la instància ----------
-  /// Map de mapes indexat per ID
-  final LdMap<LdMap<dynamic>> _maps = {};
-  
-  /// Comptador de referències per cada mapa
-  final LdMap<int> _refCounts = {};
-  
-  /// Informació addicional per cada mapa
-  final LdMap<String> _mapTypes = {};
-  
-  // Constructors ---------------------
-  /// Constructor privat
-  MapsService._() {
-    Debug.info("MapsService: Inicialitzant gestor de mapes");
+  // Variables estàtiques 
+  static final Map<String, Map<String, dynamic>> _maps = {};
+  static final Map<String, int> _referenceCounts = {};
+  static final Map<String, String> _mapTypes = {};
+
+  // Singleton
+  static final MapsService s = MapsService._internal();
+  factory MapsService() => s;
+  MapsService._internal();
+
+  /// Registra un mapa amb un tag i tipus específics
+  /// Retorna el tag del mapa registrat
+  String registerMap(String tag, Map<String, dynamic> map, String type) {
+    _maps[tag] = Map<String, dynamic>.from(map);
+    _referenceCounts[tag] = (_referenceCounts[tag] ?? 0) + 1;
+    _mapTypes[tag] = type;
+    
+    // Processar segons el tipus
+    if (type == kMapTypeWidget) {
+      _processWidgetMap(tag, map);
+    } else if (type == kMapTypeEntity) {
+      _processEntityMap(tag, map);
+    } else if (type == kMapTypeConfig) {
+      _processConfigMap(tag, map);
+    }
+    
+    return tag;
   }
 
-  // Registre, Consulta i Liberació ---
-  /// Registra un nou mapa i retorna el seu ID
-  /// Si ja existeix un mapa idèntic, retorna l'ID d'aquest
-  /// 
-  /// [pMap] - El mapa a registrar
-  /// [pType] - Tipus del mapa (e.g., "widget", "entity", "config")
-  /// [pIdent] - Identificador opcional per ajudar a generar l'ID
-  String registerMap(
-    LdMap<dynamic> pMap, {
-    String pType = "generic",
-    String? pIdent,
-  }) {
-    // Generar un ID per al mapa
-    final String mapId = pIdent != null 
-        ? "${pType}_${pIdent}_${DateTime.now().millisecondsSinceEpoch}"
-        : "${pType}_${DateTime.now().millisecondsSinceEpoch}_${_maps.length}";
-    
-    // Comprovar si ja existeix un mapa idèntic del mateix tipus
-    for (var entry in _maps.entries) {
-      if (_mapTypes[entry.key] == pType && _areMapEqual(entry.value, pMap)) {
-        // Incrementar el comptador de referències
-        _refCounts[entry.key] = (_refCounts[entry.key] ?? 0) + 1;
-        Debug.info("MapsService: Reutilitzant mapa existent (ID: ${entry.key}, Tipus: $pType, Refs: ${_refCounts[entry.key]})");
-        return entry.key;
-      }
-    }
-    
-    // Si no existeix, guardar el mapa
-    _maps[mapId] = Map<String, dynamic>.from(pMap);
-    _refCounts[mapId] = 1;
-    _mapTypes[mapId] = pType;
-    
-    Debug.info("MapsService: Nou mapa registrat (ID: $mapId, Tipus: $pType)");
-    return mapId;
+  /// Registra un mapa de widget
+  String registerWidgetMap(String tag, Map<String, dynamic> map) {
+    return registerMap(tag, map, kMapTypeWidget);
   }
   
-  /// Obté el mapa per un ID
-  LdMap<dynamic> getMap(String pMapId) {
-    assert(_maps.containsKey(pMapId), "Mapa no trobat: $pMapId");
-    return _maps[pMapId]!;
+  /// Registra un mapa d'entitat
+  String registerEntityMap(String tag, Map<String, dynamic> map) {
+    return registerMap(tag, map, kMapTypeEntity);
   }
   
-  /// Allibera una referència a un mapa
-  /// Si no hi ha més referències, elimina el mapa
-  void releaseMap(String mapId) {
-    if (!_maps.containsKey(mapId)) {
-      Debug.warn("MapsService: Intent d'alliberar un mapa inexistent: $mapId");
-      return;
-    }
-    
-    // Decrementar el comptador de referències
-    _refCounts[mapId] = (_refCounts[mapId] ?? 1) - 1;
-    
-    // Si no hi ha més referències, eliminar el mapa
-    if (_refCounts[mapId]! <= 0) {
-      _maps.remove(mapId);
-      _refCounts.remove(mapId);
-      _mapTypes.remove(mapId);
-      Debug.info("MapsService: Mapa eliminat (ID: $mapId)");
-    } else {
-      Debug.info("MapsService: Mapa alliberat (ID: $mapId, Refs restants: ${_refCounts[mapId]})");
-    }
-  }
-  
-  // Funcionalitat interna ------------
-  /// Comprova si dos mapes són iguals (recursivament)
-  bool _areMapEqual(Map<String, dynamic> pMap1, Map<String, dynamic> pMap2) {
-    if (pMap1.length != pMap2.length) return false;
-    
-    for (final key in pMap1.keys) {
-      if (!pMap2.containsKey(key)) return false;
-      
-      final value1 = pMap1[key];
-      final value2 = pMap2[key];
-      
-      // Ignorar callbacks (no es poden comparar)
-      if (value1 is Function && value2 is Function) {
-        continue;
-      }
-      
-      if (value1 is Map && value2 is Map) {
-        if (!_areMapEqual(value1 as Map<String, dynamic>, value2 as Map<String, dynamic>)) {
-          return false;
-        }
-      } else if (value1 is List && value2 is List) {
-        if (!_areListEqual(value1, value2)) {
-          return false;
-        }
-      } else if (value1 != value2) {
-        return false;
-      }
-    }
-    
-    return true;
-  }
-  
-  /// Comprova si dues llistes són iguals (recursivament)
-  bool _areListEqual(List pList1, List pList2) {
-    if (pList1.length != pList2.length) return false;
-    
-    for (int i = 0; i < pList1.length; i++) {
-      final value1 = pList1[i];
-      final value2 = pList2[i];
-      
-      if (value1 is Map && value2 is Map) {
-        if (!_areMapEqual(value1 as Map<String, dynamic>, value2 as Map<String, dynamic>)) {
-          return false;
-        }
-      } else if (value1 is List && value2 is List) {
-        if (!_areListEqual(value1, value2)) {
-          return false;
-        }
-      } else if (value1 != value2) {
-        return false;
-      }
-    }
-    
-    return true;
+  /// Registra un mapa de configuració
+  String registerConfigMap(String tag, Map<String, dynamic> map) {
+    return registerMap(tag, map, kMapTypeConfig);
   }
 
-  // Altra funcionalitat --------------
-  /// Obté estadístiques sobre l'ús de mapes
-  LdMap<dynamic> getStats() {
-    final stats = <String, dynamic>{
-      'totalMaps': _maps.length,
-      'totalReferences': _refCounts.values.fold<int>(0, (sum, count) => sum + count),
-      'mapsByType': <String, int>{},
-    };
-    
-    // Comptar mapes per tipus
-    for (var mapId in _maps.keys) {
-      final type = _mapTypes[mapId] ?? "unknown";
-      stats['mapsByType'][type] = (stats['mapsByType'][type] ?? 0) + 1;
+  /// Obté un mapa per tag
+  static Map<String, dynamic> getMap(String tag) {
+    return _maps[tag] ?? {};
+  }
+
+  /// Obté un model d'un tipus específic
+  static T getModel<T>(String type, String tag) {
+    final mapType = _mapTypes[tag];
+    if (mapType != type) {
+      throw Exception('Type mismatch: expected $type but found $mapType for tag $tag');
     }
     
-    return stats;
-  }
-  
-  /// Neteja mapes que ja no tenen referències
-  int cleanup() {
-    final keysToRemove = <String>[];
-    
-    // Trobar claus per eliminar
-    for (var entry in _refCounts.entries) {
-      if (entry.value <= 0) {
-        keysToRemove.add(entry.key);
-      }
+    final model = _maps[tag]?['model'];
+    if (model == null) {
+      throw Exception('Model not found for tag: $tag');
     }
     
-    // Eliminar els mapes
-    for (var key in keysToRemove) {
-      _maps.remove(key);
-      _refCounts.remove(key);
-      _mapTypes.remove(key);
+    if (model is! T) {
+      throw Exception('Type mismatch: expected $T but found ${model.runtimeType} for tag $tag');
     }
     
-    Debug.info("MapsService: Neteja completada. ${keysToRemove.length} mapes eliminats.");
-    return keysToRemove.length;
+    return model;
+  }
+
+  /// Obté un model de widget
+  static T getWidgetModel<T>(String tag) {
+    return getModel<T>(kMapTypeWidget, tag);
   }
   
-  /// Crea una còpia d'un mapa existent
-  String duplicateMap(String pMapId, {String? pNewIdent}) {
-    assert(_maps.containsKey(pMapId), "Mapa no trobat: $pMapId");
-    
-    final originalMap = _maps[pMapId]!;
-    final type = _mapTypes[pMapId] ?? "generic";
-    
-    // Registrar una còpia del mapa
-    return registerMap(
-      Map<String, dynamic>.from(originalMap),
-      pType: type,
-      pIdent: pNewIdent,
-    );
+  /// Obté un model d'entitat
+  static T getEntityModel<T>(String tag) {
+    return getModel<T>(kMapTypeEntity, tag);
   }
   
-  /// Modifica un mapa existent
-  /// Retorna el nou ID si es crea un nou mapa (perquè hi ha més referències)
-  String updateMap(String pMapId, LdMap<dynamic> pUpdates) {
-    assert(_maps.containsKey(pMapId), "Mapa no trobat: $pMapId");
+  /// Obté un model de configuració
+  static T getConfigModel<T>(String tag) {
+    return getModel<T>(kMapTypeConfig, tag);
+  }
+
+  /// Actualitza un mapa existent
+  void updateMap(String tag, Map<String, dynamic> updates) {
+    if (!_maps.containsKey(tag)) {
+      throw Exception('Map not found: $tag');
+    }
     
-    // Si hi ha més d'una referència, hem de crear un nou mapa
-    if (_refCounts[pMapId]! > 1) {
-      // Reduir la referència al mapa original
-      _refCounts[pMapId] = _refCounts[pMapId]! - 1;
-      
-      // Crear una còpia i aplicar les actualitzacions
-      final originalMap = Map<String, dynamic>.from(_maps[pMapId]!);
-      final type = _mapTypes[pMapId] ?? "generic";
-      
-      // Aplicar les actualitzacions
-      originalMap.addAll(pUpdates);
-      
-      // Registrar el nou mapa
-      return registerMap(
-        originalMap,
-        pType: type,
-      );
+    _maps[tag]!.addAll(updates);
+  }
+
+  /// Allibera un mapa
+  void releaseMap(String tag) {
+    if (!_maps.containsKey(tag)) return;
+    
+    final count = _referenceCounts[tag]! - 1;
+    if (count <= 0) {
+      _maps.remove(tag);
+      _referenceCounts.remove(tag);
+      _mapTypes.remove(tag);
     } else {
-      // Si només hi ha una referència, podem modificar el mapa directament
-      _maps[pMapId]!.addAll(pUpdates);
-      return pMapId;
+      _referenceCounts[tag] = count;
     }
   }
-  
-  /// Compara dos mapes i retorna les diferències
-  LdMap<dynamic> getDifferences(String mapId1, String mapId2) {
-    assert(_maps.containsKey(mapId1), "Primer mapa no trobat: $mapId1");
-    assert(_maps.containsKey(mapId2), "Segon mapa no trobat: $mapId2");
-    
-    final map1 = _maps[mapId1]!;
-    final map2 = _maps[mapId2]!;
-    LdMap<dynamic> differences = {};
-    
-    // Buscar diferències en map1
-    for (var entry in map1.entries) {
-      if (!map2.containsKey(entry.key) || map2[entry.key] != entry.value) {
-        differences[entry.key] = {
-          'value1': entry.value,
-          'value2': map2[entry.key],
-        };
-      }
+
+  /// Processa un mapa de widget
+  void _processWidgetMap(String tag, Map<String, dynamic> map) {
+    // Lògica específica per widgets
+    if (tag.startsWith('$kMapTypeWidget.')) {
+      // Auto-expiration per widgets temporals
+      // TODO: implementar si cal
     }
-    
-    // Buscar claus que només existeixen en map2
-    for (var key in map2.keys) {
-      if (!map1.containsKey(key)) {
-        differences[key] = {
-          'value1': null,
-          'value2': map2[key],
-        };
-      }
+  }
+
+  /// Processa un mapa d'entitat
+  void _processEntityMap(String tag, Map<String, dynamic> map) {
+    // Lògica específica per entitats
+    // Pot incloure validació, normalització, etc.
+  }
+
+  /// Processa un mapa de configuració
+  void _processConfigMap(String tag, Map<String, dynamic> map) {
+    // Lògica específica per configuració
+    // Pot incloure persistència, observers, etc.
+  }
+
+  /// Neteja tots els mapes
+  void clear() {
+    _maps.clear();
+    _referenceCounts.clear();
+    _mapTypes.clear();
+  }
+
+  /// Debug: mostra l'estat actual dels mapes
+  void debug() {
+    Debug.info('=== MapsService Debug ===');
+    Debug.info('Total maps: ${_maps.length}');
+    for (var tag in _maps.keys) {
+      Debug.info('Tag: $tag, Type: ${_mapTypes[tag]}, Refs: ${_referenceCounts[tag]}');
     }
-    
-    return differences;
   }
 }

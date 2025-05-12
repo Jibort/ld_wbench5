@@ -10,8 +10,9 @@ import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Model base pels widgets.
-abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
-  
+abstract class LdWidgetModelAbs<T extends LdWidgetAbs>
+extends  LdModelAbs {
+  // CONSTRUCTORS/DESTRUCTORS =============================
   /// Construeix un model a partir d'un mapa de propietats
   LdWidgetModelAbs.fromMap(LdMap<dynamic> pMap) {
     // Filtrar només les propietats que comencen amb 'mf'
@@ -25,11 +26,11 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
     // Establir el tag des del mapa (prioritzant mfTag, després cfTag)
     tag = pMap[mfTag] as String? ?? 
           pMap[cfTag] as String? ?? 
-          "Model_${DateTime.now().millisecondsSinceEpoch}";
+          generateTag();
+          // JAB_6: "WidgetModel_${DateTime.now().millisecondsSinceEpoch}";
     
     // Carregar les propietats filtrades
     fromMap(modelProperties);
-    
     Debug.info("$tag: Model creat a partir de mapa");
   }
   
@@ -46,7 +47,7 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
     }
     
     // Establir el tag basat en el widget
-    tag = "${pWidget.tag}_Model";
+    tag = generateTag(); // JAB_6: "${pWidget.tag}_Model";
     
     // Carregar les propietats
     if (modelProperties.isNotEmpty) {
@@ -63,6 +64,7 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
     tag = "${pWidget.tag}_Model";
   }
   
+  // GESTIÓ DE MAPA DE PROPIETATS =========================
   /// Converteix el model a un mapa de propietats
   @override
   LdMap<dynamic> toMap() {
@@ -97,6 +99,13 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
     }
   }
   
+  // GESTIÓ DE CAMPS ======================================
+  /// Retorna el valor associat amb un membre del model.
+  @override
+  @mustCallSuper
+  dynamic getField({ required String pKey, bool pCouldBeNull = true, String? pErrorMsg })
+  => super.getField(pKey: pKey, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
+  
   /// Actualitza una propietat específica del model
   void updateField(String fieldKey, dynamic value) {
     // Verificar que la clau comença amb 'mf'
@@ -129,6 +138,16 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
     return result;
   }
   
+  /// Estableix el valor associat amb un membre del model.
+  @override
+  @mustCallSuper
+  bool setField({ 
+    required String pKey, 
+    dynamic pValue, 
+    bool pCouldBeNull = true, 
+    String? pErrorMsg })
+  => super.setField(pKey: pKey);
+
   /// Actualitza múltiples camps del model alhora
   void setFields(LdMap<dynamic> fields) {
     // Filtrar només camps del model
@@ -148,6 +167,32 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs> extends LdModelAbs {
       
       Debug.info("$tag: Múltiples camps actualitzats: ${modelFields.keys.toList()}");
     }
+  }
+  
+  
+  /// Valida el model abans de persistir-lo
+  bool validate() {
+    // Implementació base - pot ser sobreescrit per validacions específiques
+    return true;
+  }
+  
+  /// Mètode per persistir el model (pot connectar amb backend)
+  Future<bool> save() async {
+    if (!validate()) {
+      Debug.warn("$tag: Validació fallida, no es pot guardar el model");
+      return false;
+    }
+    
+    // Implementació base - pot ser sobreescrit per lògica de persistència específica
+    Debug.info("$tag: Model de pàgina guardat");
+    return true;
+  }
+  
+  /// Mètode per restaurar el model des de persistència
+  Future<bool> load(String identifier) async {
+    // Implementació base - pot ser sobreescrit per lògica de càrrega específica
+    Debug.info("$tag: Model de pàgina carregat amb identificador: $identifier");
+    return true;
   }
   
   /// Copia el model a un nou mapa amb només les propietats de model

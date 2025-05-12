@@ -13,6 +13,7 @@ import 'package:ld_wbench5/services/ld_theme.dart'; // Importem el nou servei
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
+import 'package:ld_wbench5/ui/widgets/ld_button/ld_button_ctrl.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
@@ -193,7 +194,6 @@ extends LdPageCtrlAbs<TestPage> {
     // Inicialitzem els widgets la primera vegada que es construeix la pàgina
     if (labCounter == null) {
       labCounter = LdLabel(
-        key: ValueKey('counter_${model.counter}'),
         text: L.sCounter,
         args: [model.counter],
         style: Theme.of(context).textTheme.bodyMedium,

@@ -2,7 +2,8 @@
 // Widget per a l'edició de text amb suport per a internacionalització.
 // Created: 2025/05/06 dt. CLA
 // Updated: 2025/05/09 dv. CLA - distinció entre camps de models (mf), controladors (cf) i events (ef).
-// Updated: 2025/05/11 ds. CLA - Adaptació completa a la nova arquitectura
+// Updated: 2025/05/10 ds. CLA - Adaptació completa a la nova arquitectura
+// Updated: 2025/05/11 dg. CLA - Actualització de constants per diferenciar correctament mf/cf/ef
 
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
@@ -29,41 +30,43 @@ extends LdWidgetAbs {
     Function(String)? onTextChanged,
     bool canFocus = true,
     bool isEnabled = true,
-    bool isVisible = true,
-  }) : super(config: {
-    // Identificació
+    bool isVisible = true }) 
+  : super(
+    pTag: pTag ?? "LdTextField_${DateTime.now().millisecondsSinceEpoch}", 
+    pConfig: {
+    // Propietats d'identificació
     cfTag: pTag ?? "LdTextField_${DateTime.now().millisecondsSinceEpoch}",
+    
+    // Propietats del CONTROLADOR (cf) - configuració visual i comportament
+    cfIsVisible: isVisible,
+    cfCanFocus: canFocus,
+    cfIsEnabled: isEnabled,
+    cfLabel: label,
+    cfHelpText: helpText,
+    cfErrorMessage: errorMessage,
+    cfHasError: hasError,
+    cfAllowNull: allowNull,
     
     // Propietats del MODEL (mf) - dades reals
     mfInitialText: initialText,
-    mfLabel: label,
-    mfHelpText: helpText,
-    mfErrorMessage: errorMessage,
-    mfHasError: hasError,
-    mfAllowNull: allowNull,
+    mfText: initialText,
     
-    // Propietats del CONTROLADOR (cf) - comportament
-    cfOnTextChanged: onTextChanged,
-    cfCanFocus: canFocus,
-    cfIsEnabled: isEnabled,
-    cfIsVisible: isVisible,
+    // Propietats d'EVENTS (ef)
+    efOnTextChanged: onTextChanged,
   }) {
     Debug.info("$tag: LdTextField creat amb configuració");
   }
 
   /// Constructor alternatiu a partir d'un mapa
-  LdTextField.fromMap(LdMap<dynamic> configMap) 
-      : super(config: configMap) {
+  LdTextField.fromMap(LdMap<dynamic> pConfig)
+  : super(pConfig: pConfig) {
     Debug.info("$tag: LdTextField creat des d'un mapa");
   }
 
   @override
-  LdWidgetCtrlAbs createController() {
-    return LdTextFieldCtrl(this);
-  }
-  
-  // ACCESSORS PER A COMPATIBILITAT =========================================
-  /// Retorna el model tipat
+  LdWidgetCtrlAbs createCtrl() => LdTextFieldCtrl(this);
+
+  // ACCESSORS PER A COMPATIBILITAT
   LdTextFieldModel? get model {
     final ctrl = wCtrl;
     if (ctrl is LdTextFieldCtrl) {
@@ -71,8 +74,7 @@ extends LdWidgetAbs {
     }
     return null;
   }
-  
-  /// Retorna el controlador tipat
+
   LdTextFieldCtrl? get controller {
     final ctrl = wCtrl;
     if (ctrl is LdTextFieldCtrl) {
@@ -80,70 +82,51 @@ extends LdWidgetAbs {
     }
     return null;
   }
-  
-  // PROPIETATS DEL MODEL ===================================================
-  /// Retorna el text actual
+
+  // PROPIETATS DEL MODEL
   String get text => model?.text ?? "";
-  
-  /// Estableix el text
   set text(String value) {
     model?.updateField(mfText, value);
   }
-  
-  /// Retorna l'etiqueta
-  String? get label => model?.label;
-  
-  /// Estableix l'etiqueta
-  set label(String? value) {
-    model?.updateField(mfLabel, value);
+
+  // PROPIETATS DE CONFIGURACIÓ
+  String? get label {
+    final config = super.config;
+    return config[cfLabel] as String?;
   }
-  
-  /// Retorna el text d'ajuda
-  String? get helpText => model?.helpText;
-  
-  /// Estableix el text d'ajuda
-  set helpText(String? value) {
-    model?.updateField(mfHelpText, value);
+
+  String? get helpText {
+    final config = super.config;
+    return config[cfHelpText] as String?;
   }
-  
-  /// Retorna si té error
-  bool get hasError => model?.hasError ?? false;
-  
-  /// Estableix l'estat d'error
-  set hasError(bool value) {
-    model?.updateField(mfHasError, value);
+
+  bool get hasError {
+    final config = super.config;
+    return config[cfHasError] as bool? ?? false;
   }
-  
-  /// Retorna el missatge d'error
-  String? get errorMessage => model?.errorMessage;
-  
-  /// Estableix el missatge d'error
-  set errorMessage(String? value) {
-    model?.updateField(mfErrorMessage, value);
+
+  String? get errorMessage {
+    final config = super.config;
+    return config[cfErrorMessage] as String?;
   }
-  
-  // MÈTODES DEL CONTROLADOR ================================================
-  /// Afegeix text al final
+
+  // MÈTODES DEL CONTROLADOR
   void appendText(String suffix) {
     controller?.addText(suffix);
   }
-  
-  /// Afegeix text al principi
+
   void prependText(String prefix) {
     controller?.prependText(prefix);
   }
-  
-  /// Neteja el text
+
   void clearText() {
     controller?.clearText();
   }
-  
-  /// Demana el focus
+
   void requestFocus() {
     controller?.requestFocus();
   }
-  
-  /// Allibera el focus
+
   void unfocus() {
     controller?.focusNode.unfocus();
   }

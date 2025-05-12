@@ -16,10 +16,10 @@ import 'package:ld_wbench5/core/lifecycle_interface.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador base abstracte per a les pàgines.
-abstract class LdPageCtrlAbs<T extends LdPageAbs>
-    extends State<T> 
-    with LdTaggableMixin
-    implements LdLifecycleIntf, LdModelObserverIntf {
+abstract   class LdPageCtrlAbs<T extends LdPageAbs>
+extends    State<T> 
+with       LdTaggableMixin
+implements LdLifecycleIntf, LdModelObserverIntf {
   
   /// Model de la pàgina
   LdPageModelAbs? _model;

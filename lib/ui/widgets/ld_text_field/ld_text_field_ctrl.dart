@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
@@ -18,29 +19,35 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   bool _isUpdatingFromModel = false;
   
   // Constructor
-  LdTextFieldCtrl(
-    super.pWidget, {
-    String? initialText,
-    super.canFocus,
-    super.isEnabled,
-    super.isVisible,
-  }) {
-    // Inicialitzem el controller amb el text inicial
-    _textController = TextEditingController(text: initialText ?? "");
-  }
-  
-  /// Retorna el model
-  LdTextFieldModel get model => widget.wModel as LdTextFieldModel;
+  LdTextFieldCtrl(super.pWidget);
   
   @override
   void initialize() {
     Debug.info("$tag: Inicialitzant controlador");
     
+    // Crear el model amb la configuració del widget
+    model = LdTextFieldModel.fromMap(widget.config);
+    
+    // Inicialitzar el controller del text amb el valor del model
+    _textController = TextEditingController(
+      text: (model as LdTextFieldModel).text
+    );
+    
     // Configurar listener per mantenir sincronitzat el model amb el textController
     _textController.addListener(_onTextChange);
     
-    // Actualitzar el text del controller amb el del model
-    _updateControllerText();
+    // Carregar la configuració del controlador
+    _loadControllerConfig();
+  }
+  
+  /// Carrega la configuració del controlador des del widget
+  void _loadControllerConfig() {
+    final config = widget.config;
+    
+    // Carregar propietats de configuració (cf)
+    final allowNull = config[cfAllowNull] as bool? ?? true;
+    
+    Debug.info("$tag: Configuració carregada: allowNull=$allowNull");
   }
   
   /// S'executa quan canvia el text al textController
@@ -49,108 +56,65 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
     if (_isUpdatingFromModel) return;
     
     final text = _textController.text;
-    
-    if (text != model.text) {
+    if (text != (model as LdTextFieldModel).text) {
       Debug.info("$tag: Text canviat des del teclat a '$text'");
+      
       // Actualitzar el model amb el nou text
-      model.text = text;
+      (model as LdTextFieldModel).updateField(mfText, text);
+      
+      // Cridar el callback si existeix
+      _callOnTextChanged(text);
+    }
+  }
+  
+  /// Crida el callback onTextChanged si existeix
+  void _callOnTextChanged(String text) {
+    final config = widget.config;
+    final onTextChanged = config[efOnTextChanged] as Function(String)?;
+    
+    if (onTextChanged != null) {
+      onTextChanged(text);
     }
   }
   
   /// Actualitza el text del controller a partir del model
   void _updateControllerText() {
-    if (_textController.text != model.text) {
+    final modelText = (model as LdTextFieldModel).text;
+    if (_textController.text != modelText) {
       _isUpdatingFromModel = true;
+      _textController.text = modelText;
       
-      _textController.text = model.text;
       // Posicionar el cursor al final
       _textController.selection = TextSelection.fromPosition(
         TextPosition(offset: _textController.text.length),
       );
-      
       _isUpdatingFromModel = false;
-      Debug.info("$tag: TextController actualitzat a '${model.text}'");
+      
+      Debug.info("$tag: TextController actualitzat a '$modelText'");
     }
   }
   
-  /// Nou mètode per afegir text directament
+  /// Afegeix text directament
   void addText(String text) {
-    Debug.info("$tag: Afegint text '$text' directament des del controlador");
-    
-    // Actualitzar el model directament
+    Debug.info("$tag: Afegint text '$text' directament");
+    final model = this.model as LdTextFieldModel;
     final newText = model.text + text;
-    
-    // Actualitzar el model sense usar els mètodes que poden causar cicles
-    _isUpdatingFromModel = true;
-    
-    // Actualitzar el model primer
-    model.text = newText;
-    
-    // Després actualitzar el controller
-    _textController.text = newText;
-    
-    // Posicionar el cursor al final
-    _textController.selection = TextSelection.fromPosition(
-      TextPosition(offset: _textController.text.length),
-    );
-    
-    _isUpdatingFromModel = false;
-    
-    // Opcional: Forçar reconstrucció per a assegurar que la UI es refresca
-    if (mounted) {
-      setState(() {
-        Debug.info("$tag: UI reconstruïda després d'afegir text");
-      });
-    }
+    model.updateField(mfText, newText);
   }
   
-  /// Nou mètode per afegir text al principi
+  /// Afegeix text al principi
   void prependText(String prefix) {
-    Debug.info("$tag: Afegint prefix '$prefix' directament des del controlador");
-    
+    Debug.info("$tag: Afegint prefix '$prefix' directamente");
+    final model = this.model as LdTextFieldModel;
     final newText = prefix + model.text;
-    
-    _isUpdatingFromModel = true;
-    
-    // Actualitzar el model
-    model.text = newText;
-    
-    // Actualitzar el controller
-    _textController.text = newText;
-    
-    // Posicionar el cursor al final
-    _textController.selection = TextSelection.fromPosition(
-      TextPosition(offset: _textController.text.length),
-    );
-    
-    _isUpdatingFromModel = false;
-    
-    if (mounted) {
-      setState(() {
-        Debug.info("$tag: UI reconstruïda després d'afegir prefix");
-      });
-    }
+    model.updateField(mfText, newText);
   }
   
-  /// Nou mètode per netejar el text
+  /// Neteja el text
   void clearText() {
-    Debug.info("$tag: Netejant text des del controlador");
-    
-    _isUpdatingFromModel = true;
-    
-    // Actualitzar el model
-    model.text = "";
-    
-    // Actualitzar el controller
-    _textController.text = "";
-    
-    _isUpdatingFromModel = false;
-    
-    if (mounted) {
-      setState(() {
-        Debug.info("$tag: UI reconstruïda després de netejar text");
-      });
-    }
+    Debug.info("$tag: Netejant text");
+    final model = this.model as LdTextFieldModel;
+    model.updateField(mfText, "");
   }
   
   @override
@@ -163,7 +127,7 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   void onEvent(LdEvent event) {
     Debug.info("$tag: Rebut event ${event.eType.name}");
     
-    // Gestionem els events que ens interessen
+    // Gestionar els events que ens interessen
     if (event.eType == EventType.languageChanged) {
       Debug.info("$tag: Processant canvi d'idioma");
       if (mounted) {
@@ -181,11 +145,8 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
     // Executar la funció d'actualització
     updateFunction();
     
-    // Si no estem ja actualitzant des del controlador,
-    // actualitzar el TextEditingController
-    if (!_isUpdatingFromModel) {
-      _updateControllerText();
-    }
+    // Actualitzar el TextEditingController si és necessari
+    _updateControllerText();
     
     // Reconstruir si està muntat
     if (mounted) {
@@ -204,7 +165,14 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   
   @override
   Widget buildContent(BuildContext context) {
+    final config = widget.config;
     final theme = Theme.of(context);
+    
+    // Obtenir propietats de configuració
+    final label = config[cfLabel] as String?;
+    final helpText = config[cfHelpText] as String?;
+    final errorMessage = config[cfErrorMessage] as String?;
+    final hasError = config[cfHasError] as bool? ?? false;
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,10 +184,10 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
           focusNode: focusNode,
           enabled: isEnabled,
           decoration: InputDecoration(
-            labelText: model.label,
-            helperText: model.helpText,
-            errorText: model.hasError ? model.errorMessage : null,
-            border: OutlineInputBorder(),
+            labelText: label,
+            helperText: helpText,
+            errorText: hasError ? errorMessage : null,
+            border: const OutlineInputBorder(),
             isDense: true,
           ),
           style: theme.textTheme.bodyMedium,

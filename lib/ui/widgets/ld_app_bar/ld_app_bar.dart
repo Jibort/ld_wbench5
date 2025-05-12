@@ -4,68 +4,103 @@
 // Updated: 2025/05/05 dl. CLA - Millora del suport d'internacionalització
 
 import 'package:flutter/material.dart';
-
-import 'package:ld_wbench5/core/L10n/string_tx.dart';
+import 'package:flutter/services.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar_ctrl.dart';
-import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar_model.dart';
-import 'package:ld_wbench5/utils/debug.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 
-export 'ld_app_bar_ctrl.dart';
-export 'ld_app_bar_model.dart';
-
-/// Widget de la barra d'aplicació personalitzada
-class LdAppBar 
-extends LdWidgetAbs {
-  /// Constructor
-  LdAppBar({
-    super.key,
-    super.pTag, 
-    required String pTitleKey,
-    String? pSubTitleKey,
-    List<Widget>? actions,
-  }) { 
-    Debug.info("$tag: Creant LdAppBar amb títol '$pTitleKey' i subtítol '$pSubTitleKey'");
-    
-    // Crear primer el model amb les claus o textos literals
-    wModel = LdAppBarModel(
-      this,
-      pTitleKey: pTitleKey, 
-      pSubTitleKey: pSubTitleKey
-    );
-    
-    // Després el controlador amb les accions opcionals
-    wCtrl = LdAppBarCtrl(
-      this,
-      actions: actions
-    );
-    
-    Debug.info("$tag: LdAppBar creat correctament");
-  }
+/// Widget AppBar personalitzat
+/// 
+/// Implementa AppBar de Flutter amb l'arquitectura unificada
+/// Tota la lògica està al [LdAppBarCtrl].
+class      LdAppBar 
+extends    LdWidgetAbs
+implements PreferredSizeWidget {
   
-  /// Constructor alternatiu que accepta directament objectes StringTx
-  LdAppBar.fromStringTx({
-    super.key,
-    super.pTag,
-    required StringTx pTitle,
-    StringTx? pSubTitle,
+  @override
+  final Size preferredSize;
+  
+  LdAppBar({
+    String? pTag,
+    Key? key,
+    Widget? title,
+    Widget? leading,
     List<Widget>? actions,
-  }) {
-    Debug.info("$tag: Creant LdAppBar des de StringTx amb clau de títol '${pTitle.key}'");
+    Widget? flexibleSpace,
+    PreferredSizeWidget? bottom,
+    double? elevation,
+    double? scrolledUnderElevation,
+    NotificationListenerCallback<ScrollNotification>? notificationPredicate,
+    Color? shadowColor,
+    Color? surfaceTintColor,
+    Color? backgroundColor,
+    Color? foregroundColor,
+    IconThemeData? iconTheme,
+    IconThemeData? actionsIconTheme,
+    bool primary = true,
+    bool? centerTitle,
+    bool excludeHeaderSemantics = false,
+    double? titleSpacing,
+    double toolbarOpacity = 1.0,
+    double bottomOpacity = 1.0,
+    double? toolbarHeight,
+    double? leadingWidth,
+    TextStyle? toolbarTextStyle,
+    TextStyle? titleTextStyle,
+    SystemUiOverlayStyle? systemOverlayStyle,
+    bool forceMaterialTransparency = false,
+    Clip? clipBehavior,
+  }) : preferredSize = _PreferredAppBarSize(
+         toolbarHeight ?? kToolbarHeight,
+         bottom?.preferredSize.height ?? 0.0,
+       ),
+       super(pTag: pTag, key: key) {
     
-    // Passar les claus de traducció o textos literals
-    wModel = LdAppBarModel(
-      this,
-      pTitleKey: pTitle.key ?? pTitle.literalText ?? "",
-      pSubTitleKey: pSubTitle?.key ?? pSubTitle?.literalText
-    );
+    // Configurar tots els camps
+    final map = <String, dynamic>{
+      cfTitle: title,
+      cfLeading: leading,
+      cfActions: actions,
+      cfFlexibleSpace: flexibleSpace,
+      cfBottom: bottom,
+      cfElevation: elevation,
+      cfScrolledUnderElevation: scrolledUnderElevation,
+      cfNotificationPredicate: notificationPredicate,
+      cfShadowColor: shadowColor,
+      cfSurfaceTintColor: surfaceTintColor,
+      cfBackgroundColor: backgroundColor,
+      cfForegroundColor: foregroundColor,
+      cfIconTheme: iconTheme,
+      cfActionsIconTheme: actionsIconTheme,
+      cfPrimary: primary,
+      cfCenterTitle: centerTitle,
+      cfExcludeHeaderSemantics: excludeHeaderSemantics,
+      cfTitleSpacing: titleSpacing,
+      cfToolbarOpacity: toolbarOpacity,
+      cfBottomOpacity: bottomOpacity,
+      cfToolbarHeight: toolbarHeight,
+      cfLeadingWidth: leadingWidth,
+      cfToolbarTextStyle: toolbarTextStyle,
+      cfTitleTextStyle: titleTextStyle,
+      cfSystemOverlayStyle: systemOverlayStyle,
+      cfForceMaterialTransparency: forceMaterialTransparency,
+      cfClipBehavior: clipBehavior,
+    };
     
-    // Després el controlador amb les accions opcionals
-    wCtrl = LdAppBarCtrl(
-      this,
-      actions: actions
-    );
-    
-    Debug.info("$tag: LdAppBar creat correctament des de StringTx");
+    mapsService.updateMap(mTag, map);
   }
+
+  @override
+  LdAppBarCtrl createCtrl() => LdAppBarCtrl(pTag: mTag);
+
+  @override
+  Widget build(BuildContext context) {
+    return wCtrl.buildWidget(context);
+  }
+}
+
+/// Implementació privada per PreferredSize
+class _PreferredAppBarSize extends Size {
+  _PreferredAppBarSize(double height, double bottom)
+      : super.fromHeight(height + bottom);
 }

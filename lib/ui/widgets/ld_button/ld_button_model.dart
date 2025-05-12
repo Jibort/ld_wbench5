@@ -1,73 +1,75 @@
 // ld_button_model.dart
 // Model del widget LdButton.
 // Created: 2025-05-01 dc. JIQ
+// Updated: 2025/05/11 dg. CLA - Actualització a l'arquitectura final de widgets,pagines i prefixs.
 
-// Model del widget LdButton.
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold_ctrl.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
-import 'package:ld_wbench5/utils/full_set.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
-import 'package:ld_wbench5/utils/str_full_set.dart';
 
-class   LdButtonModel
-extends LdWidgetModelAbs<LdButton> {
-  /// Text del botó.
-  final StrFullSet _text = StrFullSet();
-  /// Retorna el text del botó.
-  String? get text => _text.tx;
-  set text(String? pTextOrKey)  => notifyListeners(() { _text.t = pTextOrKey ?? ""; });
-
-  /// Icona del botó.
-  final FullSet<IconData?> _iconData = FullSet<IconData?>();
-  /// Retorna la icona del botó.
-  IconData? get iconData => _iconData.get();
-  /// Estableix la icona del botó.
-  set iconData(IconData? pIconData) => notifyListeners(() { _iconData.set(pIconData); });
-
-  /// Constructor General.
-  LdButtonModel(super.pWidget, { String? pText, IconData? pIcon }) {
-    text     = pText;
-    iconData = pIcon;
+/// Widget Scaffold personalitzat
+/// 
+/// Hereta de [LdWidgetAbs] per utilitzar l'arquitectura unificada
+/// amb GlobalKey i LdTaggableMixin.
+/// 
+/// Tota la lògica està al [LdScaffoldCtrl].
+class   LdScaffold 
+extends LdWidgetAbs {
+  LdScaffold({
+    super.pTag,
+    Color? backgroundColor,
+    PreferredSizeWidget? appBar,
+    Widget? body,
+    Widget? floatingActionButton,
+    FloatingActionButtonLocation? floatingActionButtonLocation,
+    FloatingActionButtonAnimator? floatingActionButtonAnimator,
+    List<Widget>? persistentFooterButtons,
+    Widget? drawer,
+    Widget? endDrawer,
+    Widget? bottomNavigationBar,
+    Widget? bottomSheet,
+    DragStartBehavior drawerDragStartBehavior = DragStartBehavior.start,
+    bool extendBody = false,
+    bool extendBodyBehindAppBar = false,
+    Color? drawerScrimColor,
+    double? drawerEdgeDragWidth,
+    bool drawerEnableOpenDragGesture = true,
+    bool endDrawerEnableOpenDragGesture = true,
+    bool? resizeToAvoidBottomInset,
+  }) {
+    // Configurar tots els camps
+    final map = <String, dynamic>{
+      cfBackgroundColor: backgroundColor,
+      cfAppBar: appBar,
+      cfBody: body,
+      cfFloatingActionButton: floatingActionButton,
+      cfFloatingActionButtonLocation: floatingActionButtonLocation,
+      cfFloatingActionButtonAnimator: floatingActionButtonAnimator,
+      cfPersistentFooterButtons: persistentFooterButtons,
+      cfDrawer: drawer,
+      cfEndDrawer: endDrawer,
+      cfBottomNavigationBar: bottomNavigationBar,
+      cfBottomSheet: bottomSheet,
+      cfDrawerDragStartBehavior: drawerDragStartBehavior,
+      cfExtendBody: extendBody,
+      cfExtendBodyBehindAppBar: extendBodyBehindAppBar,
+      cfDrawerScrimColor: drawerScrimColor,
+      cfDrawerEdgeDragWidth: drawerEdgeDragWidth,
+      cfDrawerEnableOpenDragGesture: drawerEnableOpenDragGesture,
+      cfEndDrawerEnableOpenDragGesture: endDrawerEnableOpenDragGesture,
+      cfResizeToAvoidBottomInset: resizeToAvoidBottomInset,
+    };
+    
+    mapsService.updateMap(mTag, map);
   }
 
-  /// Constructor des d'un mapa.
-  LdButtonModel.fromMap(super.pWidget, LdMap pMap) { fromMap(pMap); }
+  @override
+  LdScaffoldCtrl createCtrl() => LdScaffoldCtrl(pTag: mTag);
 
   @override
-  void fromMap(LdMap pMap) {
-    super.fromMap(pMap);
-    text = pMap[mfText] as String?;
-    iconData = pMap[mfIconData] as IconData?;
+  Widget build(BuildContext context) {
+    return wCtrl.buildWidget(context);
   }
-
-  /// Retorna un mapa amb els membres del model.
-  @override // Arrel
-  LdMap<dynamic> toMap() {
-    LdMap<dynamic> map = super.toMap();
-    map.addAll({
-      mfTag:     tag,
-      mfText:    text,
-      mfIconData: iconData,
-    });
-    return map;
-  }
-
-  @override
-  getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) 
-  => (pKey == mfText)
-    ? text
-    : (pKey == mfIconData)
-      ? iconData
-      : super.getField(pKey: pKey, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
-  
-  @override
-  void setField({required String pKey, pValue, bool pCouldBeNull = true, String? pErrorMsg})
-  => (pKey == mfText && pValue is String?)
-    ? text = pValue
-    : (pKey == mfIconData && pValue is IconData?)
-      ? iconData = pValue 
-      : super.setField(pKey: pKey, pValue: pValue, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
 }

@@ -5,137 +5,134 @@
 // Updated: 2025/05/03 ds. CLA
 
 import 'package:flutter/material.dart';
-
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
-import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
-import 'package:ld_wbench5/ui/ui_consts.dart';
+import 'package:ld_wbench5/core/ld_model_abs.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
-/// Controlador pel widget LdButton.
+/// Controlador del widget LdButton
 class LdButtonCtrl extends LdWidgetCtrlAbs<LdButton> {
-  /// Retorna el model del widget.
-  LdButtonModel get model => cWidget.wModel as LdButtonModel;
-
-  /// Callback quan es prem el botó
-  final VoidCallback? onPressed;
-  
-  /// Color de fons personalitzat
-  final Color? backgroundColor;
-  
-  /// Constructor
-  LdButtonCtrl(
-    super.pWidget, {
-    this.onPressed,
-    this.backgroundColor,
-    super.isVisible = true,
-    super.canFocus = true,
-    super.isEnabled = true,
-  });
+  // Constructor
+  LdButtonCtrl(super.pWidget);
   
   @override
   void initialize() {
-    Debug.info("$tag: Inicialitzant controlador del botó");
+    Debug.info("$tag: Inicialitzant controlador de botó");
     
-    // El registre com a observador del model ara es fa automàticament a la classe base
+    // El botó normalment no necessita model ja que no té estat persistent
+    // Si en el futur necessitem estat, podem crear-lo aquí
+    
+    // Carregar la configuració del controlador
+    _loadControllerConfig();
+  }
+  
+  /// Carrega la configuració del controlador des del widget
+  void _loadControllerConfig() {
+    final config = widget.config;
+    
+    // Carregar propietats de configuració (cf)
+    final buttonText = config[cfButtonText] as String? ?? "";
+    final icon = config[cfIcon] as IconData?;
+    
+    Debug.info("$tag: Configuració carregada: text='$buttonText', hasIcon=${icon != null}");
+  }
+  
+  /// Mètode per executar quan es prem el botó
+  void press() {
+    Debug.info("$tag: Botó premut");
+    
+    // Només executar si està actiu
+    if (isEnabled) {
+      // Cridar el callback si existeix
+      _callOnPressed();
+      
+      // Opcional: Emetre un event
+      // EventBus.s.emit(LdEvent(...));
+    } else {
+      Debug.warn("$tag: Botó premut però està desactivat");
+    }
+  }
+  
+  /// Crida el callback onPressed si existeix
+  void _callOnPressed() {
+    final config = widget.config;
+    final onPressed = config[efOnPressed] as VoidCallback?;
+    
+    if (onPressed != null) {
+      onPressed();
+      Debug.info("$tag: Callback onPressed executat");
+    }
   }
   
   @override
   void update() {
-    // No cal fer res de moment
+    // No hi ha estat del model que actualitzar
   }
   
   @override
   void onEvent(LdEvent event) {
-    Debug.info("$tag: Rebut esdeveniment ${event.eType.name}");
+    Debug.info("$tag: Rebut event ${event.eType.name}");
     
-    // Gestionar canvis d'idioma
-    if (event.eType == EventType.languageChanged) {
-      Debug.info("$tag: Processant esdeveniment de canvi d'idioma");
-      
-      // Forçar una reconstrucció del botó per actualitzar el text
-      if (mounted) {
-        setState(() {
-          Debug.info("$tag: Forçant reconstrucció del botó amb el nou idioma");
-        });
-      }
-    }
-    
-    // Gestionar canvis de tema
+    // Gestionar els events que ens interessen
     if (event.eType == EventType.themeChanged) {
-      Debug.info("$tag: Processant esdeveniment de canvi de tema");
-      
-      // Forçar una reconstrucció del botó per actualitzar l'estil
+      Debug.info("$tag: Processant canvi de tema");
       if (mounted) {
         setState(() {
-          Debug.info("$tag: Forçant reconstrucció del botó amb el nou tema");
-        });
-      }
-    }
-    
-    // Gestionar reconstrucció global de la UI
-    if (event.eType == EventType.rebuildUI) {
-      Debug.info("$tag: Processant esdeveniment de reconstrucció de la UI");
-      
-      if (mounted) {
-        setState(() {
-          Debug.info("$tag: Reconstruint el botó");
+          // La UI es reconstruirà amb el nou tema
         });
       }
     }
   }
   
-  /// Alterna la visibilitat del botó
   @override
-  void toggleVisibility() {
-    Debug.info("$tag: Cridant a toggleVisibility(). Estat actual: $isVisible");
+  void onModelChanged(LdModelAbs pModel, void Function() updateFunction) {
+    // El botó no té model normalment, però si en tenim un:
+    Debug.info("$tag: Model de botó ha canviat");
+    updateFunction();
     
-    setState(() {
-      isVisible = !isVisible;
-      Debug.info("$tag: Visibilitat alternada a $isVisible");
-    });
-  }
-  
-  /// Alterna l'estat d'activació del botó
-  @override
-  void toggleEnabled() {
-    Debug.info("$tag: Cridant a toggleEnabled(). Estat actual: $isEnabled");
-    
-    setState(() {
-      isEnabled = !isEnabled;
-      Debug.info("$tag: Estat d'activació alternat a $isEnabled");
-    });
+    if (mounted) {
+      setState(() {
+        Debug.info("$tag: Reconstruint després del canvi del model");
+      });
+    }
   }
   
   @override
   Widget buildContent(BuildContext context) {
-    String text = (model.text == null && model.iconData == null) ? errInText : model.text ?? errInText;
+    final config = widget.config;
     
-    // Determinar si el botó està actiu
-    final VoidCallback? effectiveOnPressed = isEnabled ? onPressed : null;
+    // Obtenir propietats de configuració
+    final buttonText = config[cfButtonText] as String? ?? "";
+    final icon = config[cfIcon] as IconData?;
+    final style = config[cfButtonStyle] as ButtonStyle?;
     
-    Debug.info("$tag: Construint el botó. Text: '$text', Visible: $isVisible, Enabled: $isEnabled");
-    
-    // Crear el botó amb el focusNode del controlador
-    return ElevatedButton(
-      onPressed: effectiveOnPressed,
-      focusNode: focusNode, // Utilitzem el node de focus del controlador
-      style: ElevatedButton.styleFrom(
-        backgroundColor: backgroundColor,
-      ),
-      child: model.iconData != null
-          ? Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(model.iconData),
-                if (model.text != null) 
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(text),
-                  ),
-              ],
-            )
-          : Text(text),
-    );
+    // Determinar el tipus de botó segons la configuració
+    if (icon != null && buttonText.isNotEmpty) {
+      // Botó amb icona i text
+      return ElevatedButton.icon(
+        onPressed: isEnabled ? press : null,
+        icon: Icon(icon),
+        label: Text(buttonText),
+        style: style,
+      );
+    } else if (icon != null) {
+      // Botó només amb icona
+      return IconButton(
+        onPressed: isEnabled ? press : null,
+        icon: Icon(icon),
+        style: IconButton.styleFrom(
+          // Adaptar l'estil si cal
+        ),
+      );
+    } else {
+      // Botó només amb text
+      return ElevatedButton(
+        onPressed: isEnabled ? press : null,
+        style: style,
+        child: Text(buttonText),
+      );
+    }
   }
 }

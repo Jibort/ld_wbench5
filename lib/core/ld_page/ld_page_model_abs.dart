@@ -11,8 +11,9 @@ import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Model base per a les pàgines.
-abstract class LdPageModelAbs<T extends LdPageAbs> extends LdModelAbs {
-  
+abstract class LdPageModelAbs<T extends LdPageAbs> 
+extends  LdModelAbs {
+  // CONSTRUCTORS/DESTRUCTORS =============================
   /// Construeix un model a partir d'un mapa de propietats
   LdPageModelAbs.fromMap(LdMap<dynamic> pMap) {
     // Filtrar només les propietats que comencen amb 'mf'
@@ -25,12 +26,12 @@ abstract class LdPageModelAbs<T extends LdPageAbs> extends LdModelAbs {
     
     // Establir el tag des del mapa (prioritzant mfTag, després cfTag)
     tag = pMap[mfTag] as String? ?? 
-          pMap[cfTag] as String? ?? 
-          "PageModel_${DateTime.now().millisecondsSinceEpoch}";
+          pMap[cfTag] as String? ??
+          generateTag();
+          // JAB_6: "PageModel_${DateTime.now().millisecondsSinceEpoch}";
     
     // Carregar les propietats filtrades
     fromMap(modelProperties);
-    
     Debug.info("$tag: Model de pàgina creat a partir de mapa");
   }
   
@@ -47,7 +48,7 @@ abstract class LdPageModelAbs<T extends LdPageAbs> extends LdModelAbs {
     }
     
     // Establir el tag basat en la pàgina
-    tag = "${pPage.tag}_Model";
+    tag = generateTag(); // JAB_6: "${pPage.tag}_Model";
     
     // Carregar les propietats
     if (modelProperties.isNotEmpty) {
@@ -64,6 +65,7 @@ abstract class LdPageModelAbs<T extends LdPageAbs> extends LdModelAbs {
     tag = "${pPage.tag}_Model";
   }
   
+  // GESTIÓ DE MAPA DE PROPIETATS =========================
   /// Converteix el model a un mapa de propietats
   @override
   LdMap<dynamic> toMap() {
@@ -98,20 +100,12 @@ abstract class LdPageModelAbs<T extends LdPageAbs> extends LdModelAbs {
     }
   }
   
-  /// Actualitza una propietat específica del model
-  void updateField(String fieldKey, dynamic value) {
-    // Verificar que la clau comença amb 'mf'
-    if (!fieldKey.startsWith('mf')) {
-      Debug.warn("$tag: Intent d'actualitzar camp que no és de model: $fieldKey");
-      return;
-    }
-    
-    notifyListeners(() {
-      setField(pKey: fieldKey, pValue: value);
-    });
-    
-    Debug.info("$tag: Camp actualitzat: $fieldKey = $value");
-  }
+  // GESTIÓ DE CAMPS ======================================
+  /// Retorna el valor associat amb un membre del model.
+  @override
+  @mustCallSuper
+  dynamic getField({ required String pKey, bool pCouldBeNull = true, String? pErrorMsg })
+  => super.getField(pKey: pKey, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
   
   /// Obté múltiples camps del model
   LdMap<dynamic> getFields(List<String> fieldKeys) {
@@ -130,6 +124,31 @@ abstract class LdPageModelAbs<T extends LdPageAbs> extends LdModelAbs {
     return result;
   }
   
+  /// Actualitza una propietat específica del model
+  void updateField(String fieldKey, dynamic value) {
+    // Verificar que la clau comença amb 'mf'
+    if (!fieldKey.startsWith('mf')) {
+      Debug.warn("$tag: Intent d'actualitzar camp que no és de model: $fieldKey");
+      return;
+    }
+    
+    notifyListeners(() {
+      setField(pKey: fieldKey, pValue: value);
+    });
+    
+    Debug.info("$tag: Camp actualitzat: $fieldKey = $value");
+  }
+  
+  /// Estableix el valor associat amb un membre del model.
+  @override
+  @mustCallSuper
+  bool setField({ 
+    required String pKey, 
+    dynamic pValue, 
+    bool pCouldBeNull = true, 
+    String? pErrorMsg })
+  => super.setField(pKey: pKey);
+
   /// Actualitza múltiples camps del model alhora
   void setFields(LdMap<dynamic> fields) {
     // Filtrar només camps del model
@@ -151,6 +170,32 @@ abstract class LdPageModelAbs<T extends LdPageAbs> extends LdModelAbs {
     }
   }
   
+  // VALIDACIÓ I GESTIÓ DEL MODEL =========================
+  /// Valida el model abans de persistir-lo
+  bool validate() {
+    // Implementació base - pot ser sobreescrit per validacions específiques
+    return true;
+  }
+  
+  /// Mètode per persistir el model (pot connectar amb backend)
+  Future<bool> save() async {
+    if (!validate()) {
+      Debug.warn("$tag: Validació fallida, no es pot guardar el model");
+      return false;
+    }
+    
+    // Implementació base - pot ser sobreescrit per lògica de persistència específica
+    Debug.info("$tag: Model de pàgina guardat");
+    return true;
+  }
+  
+  /// Mètode per restaurar el model des de persistència
+  Future<bool> load(String identifier) async {
+    // Implementació base - pot ser sobreescrit per lògica de càrrega específica
+    Debug.info("$tag: Model de pàgina carregat amb identificador: $identifier");
+    return true;
+  }
+
   /// Copia el model a un nou mapa amb només les propietats de model
   LdMap<dynamic> toModelMap() {
     final fullMap = toMap();
@@ -184,30 +229,5 @@ abstract class LdPageModelAbs<T extends LdPageAbs> extends LdModelAbs {
     }
     
     return false;
-  }
-  
-  /// Valida el model abans de persistir-lo
-  bool validate() {
-    // Implementació base - pot ser sobreescrit per validacions específiques
-    return true;
-  }
-  
-  /// Mètode per persistir el model (pot connectar amb backend)
-  Future<bool> save() async {
-    if (!validate()) {
-      Debug.warn("$tag: Validació fallida, no es pot guardar el model");
-      return false;
-    }
-    
-    // Implementació base - pot ser sobreescrit per lògica de persistència específica
-    Debug.info("$tag: Model de pàgina guardat");
-    return true;
-  }
-  
-  /// Mètode per restaurar el model des de persistència
-  Future<bool> load(String identifier) async {
-    // Implementació base - pot ser sobreescrit per lògica de càrrega específica
-    Debug.info("$tag: Model de pàgina carregat amb identificador: $identifier");
-    return true;
   }
 }

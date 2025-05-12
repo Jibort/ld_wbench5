@@ -36,6 +36,6 @@ extends LdModelAbs {
   => super.getField(pKey: pKey, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
 
   @override
-  void setField({required String pKey, dynamic pValue, bool pCouldBeNull = true, String? pErrorMsg}) 
+  bool setField({required String pKey, dynamic pValue, bool pCouldBeNull = true, String? pErrorMsg}) 
   => super.setField(pKey: pKey, pValue: pValue, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
 }

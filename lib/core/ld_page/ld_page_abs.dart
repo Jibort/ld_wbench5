@@ -9,33 +9,60 @@ import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_ctrl_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_model_abs.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/services/maps_service.dart';
+import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 export 'ld_page_ctrl_abs.dart';
 export 'ld_page_model_abs.dart';
 
 /// Pàgina base que proporciona funcionalitats comunes
-abstract class LdPageAbs extends StatefulWidget 
-    with LdTaggableMixin
-    implements LdModelObserverIntf {
+abstract   class LdPageAbs 
+extends    StatefulWidget 
+with       LdTaggableMixin
+implements LdModelObserverIntf {
+  // MEMBRES ==============================================
+  /// ID del mapa de configuració
+  late final String _mapId;
   
-  /// Constructor
+  // CONSTRUCTORS/DESTRUCTORS =============================
+  /// Constructor principal amb mapa de configuració
   LdPageAbs({
     String? pTag,
-  }) : super(key: null) {
-    tag = pTag ?? className;
-    Debug.info("$tag: Creant pàgina");
+    LdMap<dynamic>? pConfig,
+    Key? pKey }) 
+  : super(key: pKey) {
+    tag = pTag ?? generateTag(); // JAB_6: "LdPage_${DateTime.now().millisecondsSinceEpoch}";
+    final fullConfig = _buildFullConfig(tag, pConfig ?? LdMap<dynamic>());
+    _mapId = MapsService.s.registerMap(tag, fullConfig, kMapTypeWidget);
+    
+    Debug.info("$tag: Creant pàgina amb mapa (ID: $_mapId)");
   }
+
+  static LdMap<dynamic> _buildFullConfig(String tag, LdMap<dynamic> config) {
+    final map = LdMap<dynamic>.from(config);
+    // Assegurar que el tag està al mapa
+    map[cfTag] = tag;
+    return map;
+  }
+
+  /// Allibera recursos quan la pàgina és eliminada
+  void cleanup() {
+    MapsService.s.releaseMap(_mapId);
+    Debug.info("$tag: Recursos de la pàgina alliberats");
+  }
+
+  /// Obté el mapa de configuració
+  LdMap<dynamic> get config => MapsService.getMap(_mapId);
   
-  /// Sobreescrivim key per retornar la GlobalKey sota demanda
-  @override
-  Key? get key {
-    if (globalKey == null) {
-      // Crear la GlobalKey amb el tipus genèric adequat
-      forceGlobalKey<LdPageCtrlAbs>();
-    }
-    return globalKey;
-  }
+  // JAB_6: /// Constructor
+  // LdPageAbs({
+  //   String? pTag,
+  // }) : super(key: null) {
+  //   tag = pTag ?? className;
+  //   Debug.info("$tag: Creant pàgina");
+  // }
   
   // ACCÉS AL CONTROLADOR ===================================================
   /// Retorna el controlador de la pàgina utilitzant la GlobalKey
@@ -52,6 +79,16 @@ abstract class LdPageAbs extends StatefulWidget
     final ctrl = vCtrl;
     assert(ctrl != null, "$tag: Controlador de pàgina no disponible encara");
     return ctrl!;
+  }
+  
+  /// Sobreescrivim key per retornar la GlobalKey sota demanda
+  @override
+  Key? get key {
+    if (globalKey == null) {
+      // Crear la GlobalKey amb el tipus genèric adequat
+      forceGlobalKey<LdPageCtrlAbs>();
+    }
+    return globalKey;
   }
   
   // ACCÉS AL MODEL (delegat al controlador) ================================
@@ -86,9 +123,9 @@ abstract class LdPageAbs extends StatefulWidget
   /// CREACIÓ DE CONTROLADOR ================================================
   /// Mètode que cada pàgina ha d'implementar per crear el seu controlador
   @protected
-  LdPageCtrlAbs createController();
+  LdPageCtrlAbs createCtrl();
   
   /// Retorna el controlador de la pàgina
   @override
-  State<LdPageAbs> createState() => createController();
+  State<LdPageAbs> createState() => createCtrl();
 }

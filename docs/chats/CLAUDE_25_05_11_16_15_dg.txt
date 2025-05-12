@@ -1,0 +1,193 @@
+Resum complet de les últimes converses
+Conversa 1 (PDF) - Optimització d'arquitectura amb GlobalKey i mapes
+Tema principal: Refactorització completa de l'arquitectura per eliminar redundàncies
+Canvis clau implementats:
+
+Unificació GlobalKey + LdTaggableMixin:
+
+GlobalKey es crea sota demanda (lazy loading)
+Eliminació del paràmetre super.key dels constructors
+Helpers de navegació integrats (navigateTo, showSnackBar, etc.)
+
+
+Eliminació de camps redundants:
+
+_ctrl i _model eliminats dels widgets
+Accés a través de GlobalKey i getters
+Delegació d'accessors al controlador
+
+
+MapsService (abans ModelService):
+
+Gestió centralitzada de mapes
+Comptador de referències automàtic
+Optimització de memòria
+
+
+
+Arquitectura actualitzada:
+
+Widgets lleugers amb només configuració
+Controladors gestionen cicle de vida i modeles
+Models només amb dades persistents
+
+Conversa 2 (Text) - Clarificació mf/cf/ef i actualització sistemàtica
+Tema principal: Separació correcta de prefixos i implementació coherent
+Criteri definitiu establert:
+mf: Dades que sobreviuen al cicle de vida del widget
+   (usuari.mfName, TextField.mfText)
+
+cf: Configuració estàtica del widget
+   (cfLabel, cfIsVisible, cfCanFocus)
+
+ef: Tot relacionat amb events
+   (efOnPressed, efOnTextChanged)
+Pregunta clau: "Aquest paràmetre ha de poder sobreviure al cicle de vida del widget?"
+Actualitzacions realitzades:
+
+map_fields.dart: Reclassificació completa de constants
+LdTextField: Constructor actualitzat amb nou criteri
+LdTextFieldCtrl: Gestió correcta de mf/cf/ef
+LdTextFieldModel: Simplificat, només texte actual
+LdButton: Iniciat amb nova arquitectura
+aResum detallat de les últimes dues converses
+Conversa 1 (PDF) - Refactorització d'arquitectura amb GlobalKey
+Context inicial:
+
+Problema: Confusió d'identificadors (tag vs GlobalKey)
+Error fonamental: Crear models i controladors al constructor del widget
+Flutter recrea widgets sovint; State és persistent
+
+Decisió clau: Integrar GlobalKey al LdTaggableMixin
+dart// Abans: Paràmetres externs
+LdWidgetAbs({Key? key, String? pTag}) : super(key: key);
+
+// Després: GlobalKey gestionada internament
+LdWidgetAbs({}) : super(key: null);
+// GlobalKey es crea sota demanda via mixin
+Canvis implementats:
+
+LdTaggableMixin actualitzat:
+
+_globalKey privat gestionat internament
+getState<T>(): Accés tipat al State
+widgetContext: Accés al BuildContext
+isWidgetMounted: Comprova si està muntat
+Helpers: navigateTo(), showSnackBar(), etc.
+
+
+LdWidgetAbs simplificat:
+
+No més paràmetre key
+Eliminat _ctrl i _model
+createController(): Mètode abstracte per crear controladors
+Accés via wCtrl i wModel (delegats)
+
+
+LdPageAbs actualitzat:
+
+Mateixa estructura que widgets
+createController() per controladors de pàgina
+vCtrl i vModel per coherència
+
+
+ModelService → MapsService:
+
+Gestió centralitzada de mapes de configuració
+Comptador de referències automàtic
+registerMap(), getMap(), releaseMap()
+updateMap(): Crea nou si hi ha múltiples referències
+
+
+
+Conversa 2 (Text) - Clarificació de prefixos i implementació
+Problema identificat:
+
+Confusió entre mf/cf en implementacions
+Necessitat de criteri clar per classificar propietats
+
+Regla definitiva establerta:
+Pregunta: "Aquest paràmetre sobreviu al cicle de vida del widget?"
+
+NO → cf (Controller Fields) - Configuració estàtica
+   - cfLabel, cfIsVisible, cfButtonText, cfAllowNull
+
+SÍ → Pot ser mf o ef
+   - mf (Model Fields) - Dades que persisteixen
+     - mfText, mfUserName, mfSelectedTheme
+   - ef (Event Fields) - Informació d'events
+     - efOnPressed, efOnTextChanged, efSourceTag
+Implementació sistemàtica:
+
+map_fields.dart actualitzat:
+
+dart// CORRECTE després
+const String cfLabel = 'cf_label';          // Configuració
+const String mfText = 'mf_text';           // Dada persistent
+const String efOnTextChanged = 'ef_on_text_changed'; // Event
+
+LdTextField refactoritzat:
+
+dart// Constructor amb separació clara
+LdTextField({
+  // Configuració (cf)
+  String? pTag,
+  bool isVisible = true,
+  bool canFocus = true,
+  String? label,
+  
+  // Dades (mf)
+  String initialText = "",
+  
+  // Events (ef)
+  Function(String)? onTextChanged,
+}
+
+LdTextFieldCtrl implementat:
+
+
+Carrega configuració de cf
+Gestiona model amb mf
+Executa callbacks de ef
+Separació clara de responsabilitats
+
+
+LdTextFieldModel simplificat:
+
+
+Només gestiona mfText
+No té accés a configuració
+No gestiona validació (això és del controlador)
+
+
+LdButton iniciat:
+
+
+Configuració visual com cf
+Callbacks com ef
+Probablement no necessita model (sense estat persistent)
+
+Estat actual del projecte:
+
+LdTextField: Complet i validat
+LdButton: Widget i controlador implementats
+Pendent: Continuar amb altres widgets seguint el mateix patró
+
+Principis clars establerts:
+
+GlobalKey transparents via mixin
+mf només per dades persistents
+cf per configuració visual i comportament
+ef per tots els events i callbacks
+Models separats per widget vs entitat de negoci
+
+Aquest resum detallat captura l'evolució de les decisions i l'estat actual del codi per facilitar la continuació del treball.
+Estat actual:
+
+LdTextField complet i validat
+LdButtonCtrl implementat
+Pendent: LdButtonModel (probablement no necessari)
+
+Els dos fils principals són:
+Optimització d'arquitectura amb GlobalKey
+Separació clara entre dades, configuració i events
