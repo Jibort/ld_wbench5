@@ -4,11 +4,11 @@
 // Updated: 2025/05/12 dt. CLA - Correcció del bucle infinit al getter model
 
 import 'package:flutter/material.dart';
+
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/services/ld_theme.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector.dart';
-import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/ui/extensions/color_extensions.dart';
 

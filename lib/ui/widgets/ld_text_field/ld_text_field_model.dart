@@ -3,6 +3,7 @@
 // Created: 2025/05/06 dt. CLA
 // Updated: 2025/05/11 ds. CLA - Adaptació completa a la nova arquitectura
 // Updated: 2025/05/12 dt. CLA - Correcció del tipus de retorn de setField
+// Updated: 2025/05/13 dt. CLA - Correcció del constructor fromMap
 
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
@@ -25,18 +26,27 @@ extends LdWidgetModelAbs<LdTextField> {
     }
   }
 
-  // Constructor des d'un mapa
-  LdTextFieldModel.fromMap(super.pMap) : super.fromMap() {
-    // Les propietats es carregaran a fromMap
+  // Constructor des d'un mapa - CORREGIT
+  // ignore: use_super_parameters
+  LdTextFieldModel.fromMap(LdMap<dynamic> pMap) : super.fromMap(pMap) {
+    // Ara el constructor pare rep el paràmetre correctament
+    // Les propietats es carregaran a fromMap()
   }
+
+  // Constructor alternatiu per compatibilitat
+  // ignore: use_super_parameters
+  LdTextFieldModel.forWidget(LdTextField widget, LdMap<dynamic> pMap) 
+    : super.forWidget(widget, pMap);
 
   // Mapeig
   @override
   void fromMap(LdMap<dynamic> pMap) {
     super.fromMap(pMap);
     
-    // Carregar propietats del model (mf)
-    _text = pMap[mfText] as String? ?? pMap[mfInitialText] as String? ?? "";
+    // Carregar propietats del model (mf) amb valor per defecte assegurat
+    _text = pMap[mfText] as String? ?? 
+            pMap[mfInitialText] as String? ?? 
+            "";  // Valor per defecte que prevé null
     
     Debug.info("$tag: Model carregat des de mapa amb text='$_text'");
   }
@@ -68,6 +78,11 @@ extends LdWidgetModelAbs<LdTextField> {
       case mfText:
         if (pValue is String) {
           text = pValue;
+          return true;
+        }
+        // Si pValue és null i pCouldBeNull és true, assignar string buit
+        if (pValue == null && pCouldBeNull) {
+          text = "";
           return true;
         }
         break;

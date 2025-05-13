@@ -1,8 +1,10 @@
 // lib/ui/widgets/ld_text_field/ld_text_field_ctrl.dart
 // Controlador del widget 'LdTextField'.
 // Created: 2025/05/06 dt. CLA
+// Updated: 2025/05/13 dt. CLA - Correcció del mètode initialize
 
 import 'package:flutter/material.dart';
+
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
@@ -26,28 +28,41 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
     Debug.info("$tag: Inicialitzant controlador");
     
     // Crear el model amb la configuració del widget
-    model = LdTextFieldModel.fromMap(widget.config);
+    _createModel();
     
     // Inicialitzar el controller del text amb el valor del model
-    _textController = TextEditingController(
-      text: (model as LdTextFieldModel).text
-    );
+    final textModel = model as LdTextFieldModel?;
+    final initialText = textModel?.text ?? "";
+    
+    Debug.info("$tag: Text inicial del model: '$initialText'");
+    
+    _textController = TextEditingController(text: initialText);
     
     // Configurar listener per mantenir sincronitzat el model amb el textController
     _textController.addListener(_onTextChange);
     
-    // Carregar la configuració del controlador
-    _loadControllerConfig();
+    Debug.info("$tag: TextEditingController creat amb text: '${_textController.text}'");
   }
   
-  /// Carrega la configuració del controlador des del widget
-  void _loadControllerConfig() {
-    final config = widget.config;
+  /// Crea el model del TextField
+  void _createModel() {
+    Debug.info("$tag: Creant model del TextField");
     
-    // Carregar propietats de configuració (cf)
-    final allowNull = config[cfAllowNull] as bool? ?? true;
-    
-    Debug.info("$tag: Configuració carregada: allowNull=$allowNull");
+    try {
+      // Crear el model amb la configuració del widget
+      model = LdTextFieldModel.fromMap(widget.config);
+      
+      Debug.info("$tag: Model creat amb èxit. Text: '${(model as LdTextFieldModel).text}'");
+    } catch (e) {
+      Debug.error("$tag: Error creant model: $e");
+      // Crear un model buit per defecte en cas d'error
+      try {
+        model = LdTextFieldModel.fromMap({});
+        Debug.info("$tag: Model de recanvi creat");
+      } catch (e2) {
+        Debug.error("$tag: Error creant model de recanvi: $e2");
+      }
+    }
   }
   
   /// S'executa quan canvia el text al textController
@@ -56,11 +71,13 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
     if (_isUpdatingFromModel) return;
     
     final text = _textController.text;
-    if (text != (model as LdTextFieldModel).text) {
+    final textModel = model as LdTextFieldModel?;
+    
+    if (textModel != null && text != textModel.text) {
       Debug.info("$tag: Text canviat des del teclat a '$text'");
       
       // Actualitzar el model amb el nou text
-      (model as LdTextFieldModel).updateField(mfText, text);
+      textModel.updateField(mfText, text);
       
       // Cridar el callback si existeix
       _callOnTextChanged(text);
@@ -79,7 +96,10 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   
   /// Actualitza el text del controller a partir del model
   void _updateControllerText() {
-    final modelText = (model as LdTextFieldModel).text;
+    final textModel = model as LdTextFieldModel?;
+    if (textModel == null) return;
+    
+    final modelText = textModel.text;
     if (_textController.text != modelText) {
       _isUpdatingFromModel = true;
       _textController.text = modelText;
@@ -97,24 +117,30 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   /// Afegeix text directament
   void addText(String text) {
     Debug.info("$tag: Afegint text '$text' directament");
-    final model = this.model as LdTextFieldModel;
-    final newText = model.text + text;
-    model.updateField(mfText, newText);
+    final textModel = model as LdTextFieldModel?;
+    if (textModel != null) {
+      final newText = textModel.text + text;
+      textModel.updateField(mfText, newText);
+    }
   }
   
   /// Afegeix text al principi
   void prependText(String prefix) {
-    Debug.info("$tag: Afegint prefix '$prefix' directamente");
-    final model = this.model as LdTextFieldModel;
-    final newText = prefix + model.text;
-    model.updateField(mfText, newText);
+    Debug.info("$tag: Afegint prefix '$prefix' directament");
+    final textModel = model as LdTextFieldModel?;
+    if (textModel != null) {
+      final newText = prefix + textModel.text;
+      textModel.updateField(mfText, newText);
+    }
   }
   
   /// Neteja el text
   void clearText() {
     Debug.info("$tag: Netejant text");
-    final model = this.model as LdTextFieldModel;
-    model.updateField(mfText, "");
+    final textModel = model as LdTextFieldModel?;
+    if (textModel != null) {
+      textModel.updateField(mfText, "");
+    }
   }
   
   @override

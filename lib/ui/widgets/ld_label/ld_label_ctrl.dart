@@ -106,7 +106,7 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
     final locale = config[cfLocale] as Locale?;
     final softWrap = config[cfSoftWrap] as bool?;
     final overflow = config[cfOverflow] as TextOverflow?;
-    final textScaleFactor = config[cfTextScaleFactor] as double?;
+    // final textScaleFactor = config[cfTextScaleFactor] as double?;
     final textScaler = config[cfTextScaler] as TextScaler?;
     final maxLines = config[cfMaxLines] as int?;
     final semanticsLabel = config[cfSemanticLabel] as String?;
@@ -125,7 +125,7 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
       locale: locale,
       softWrap: softWrap,
       overflow: overflow,
-      textScaleFactor: textScaleFactor,
+      // textScaleFactor: textScaleFactor,
       textScaler: textScaler,
       maxLines: maxLines,
       semanticsLabel: semanticsLabel,

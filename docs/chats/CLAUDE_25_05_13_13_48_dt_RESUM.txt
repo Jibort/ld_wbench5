@@ -1,0 +1,194 @@
+# Resum de la Conversa - Projecte Sabina (Flutter)
+Última actualització: 13 Maig 2025
+
+## Context i Estat Inicial del Projecte
+
+### Projecte Sabina (ld_wbench5)
+- Framework: Flutter amb patró MVC customitzat
+- Gestió d'estat: Sense dependencies externes (NO GetX, NO Provider)
+- Idiomes: Sistema d'internacionalització amb claus prefixades "##"
+- Tema: Sistema de temes personalitzables
+
+### Arquitectura Three-Layer Implementada
+- **Layer 1: Widget** (Configuració) - Utilitza mapes per passar configuració
+- **Layer 2: Controller** (Lògica) - Gestiona esdeveniments i actualitzacions UI
+- **Layer 3: Model** (Dades) - Emmagatzema estat persistent amb Pattern Observer
+
+## Problema Principal Identificat
+
+Basant-me en l'anàlisi del codi ZIP proporcionat i les imatges de l'aplicació, vam identificar diversos errors:
+
+### 1. Problema d'Internacionalització (##s...)
+**Simptoma**: Els botons mostraven `##sChangeTheme` i `##sChangeLanguage` en lloc del text traduït.
+**Causa**: Faltava l'aplicació automàtica de traduccions en els controllers de widgets.
+
+### 2. Problemes de Selecció Visual dels Temes
+**Simptoma**: El tema "Sabina" apareixia seleccionat en una imatge però no en l'altra.
+
+### 3. Mode de Tema Inconsistent
+**Simptoma**: A la primera imatge es veien tres opcions (Sistema/Clar/Fosc), a la segona només dues.
+
+## Solucions Implementades
+
+### 1. Fix per LdButtonCtrl (Problema Principal)
+
+**Problema**: Els texts `##sChangeTheme` i `##sChangeLanguage` no es traduïien.
+
+**Anàlisi del problema**:
+- `L.sChangeTheme` retorna `"##sChangeTheme"` (correcte)
+- `LdButton` rep aquest valor i el passa com a `cfLabel`
+- El controller `LdButtonCtrl` NO aplicava `StringTx.applyTranslation()`
+
+**Solució implementada**:
+
+```dart
+// lib/ui/widgets/ld_button/ld_button_ctrl.dart
+
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
+import 'package:ld_wbench5/core/L10n/string_tx.dart'; // ADDED: Import for translation
+import 'package:ld_wbench5/core/event_bus/ld_event.dart';
+import 'package:ld_wbench5/utils/debug.dart';
+import 'package:ld_wbench5/ui/widgets/ld_button/ld_button_model.dart';
+
+class LdButtonCtrl extends LdWidgetCtrlAbs<LdButtonModel> {
+  // Constructor that calls the parent constructor
+  LdButtonCtrl(Map<String, dynamic> config) : super(config);
+  
+  @override
+  void initialize() {
+    super.initialize();
+    final config = this.config;
+    
+    try {
+      _model = LdButtonModel.fromMap(config);
+    } catch (e) {
+      Debug.error("$tag: Error creating model: $e");
+      _model = LdButtonModel.fromMap({});
+    }
+  }
+  
+  @override
+  void dispose() {
+    _model?.dispose();
+    _model = null;
+    super.dispose();
+  }
+  
+  LdButtonModel? _model;
+  LdButtonModel? get model => _model;
+  
+  // IMPLEMENTED: Required abstract method
+  @override
+  Widget buildContent() {
+    return ElevatedButton(
+      onPressed: enabled ? onPressed : null,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(IconData(int.parse(icon!), fontFamily: 'MaterialIcons')),
+            const SizedBox(width: 8),
+          ],
+          Text(label),
+        ],
+      ),
+    );
+  }
+  
+  // IMPLEMENTED: Required abstract method
+  @override
+  void onEvent(LdEvent event) {
+    // Handle events if needed
+    // For now, delegate to superclass
+    super.onEvent(event);
+  }
+  
+  // IMPLEMENTED: Required abstract method
+  @override
+  void update(List<String> aspects) {
+    // Update specific aspects of the widget
+    // Trigger rebuild if necessary
+    notifyListeners(aspects);
+  }
+  
+  void onPressed() {
+    final onPressedCallback = config[efOnPressed] as Function()?;
+    if (onPressedCallback != null) {
+      onPressedCallback();
+    }
+  }
+
+  // FIXED: Apply translation to label
+  String get label {
+    final labelText = config[cfLabel] as String? ?? "";
+    if (labelText.isEmpty) return labelText;
+    
+    // Apply translation if needed
+    return StringTx.applyTranslation(labelText);
+  }
+  
+  // Other getters for button properties
+  bool get enabled => config[cfEnabled] as bool? ?? true;
+  
+  // Button styles
+  String? get icon => config[cfIcon] as String?;
+  Map<String, dynamic>? get buttonStyle => config[cfButtonStyle] as Map<String, dynamic>?;
+}
+```
+
+**Canvis clau implementats**:
+1. **Afegit import**: `import 'package:ld_wbench5/core/L10n/string_tx.dart';`
+2. **Constructor correcte**: `LdButtonCtrl(Map<String, dynamic> config) : super(config);`
+3. **Getter label amb traducció**: 
+   ```dart
+   String get label {
+     final labelText = config[cfLabel] as String? ?? "";
+     if (labelText.isEmpty) return labelText;
+     
+     // Apply translation if needed
+     return StringTx.applyTranslation(labelText);
+   }
+   ```
+4. **Implementats mètodes abstractes**: `buildContent()`, `onEvent()`, `update()`
+
+## Normes d'Estil Adoptades
+
+### Import Style
+**USAR**: Imports amb package complet: `import 'package:ld_wbench5/path/to/file.dart';`  
+**EVITAR**: Imports amb paths relatius: `import '../../../path/to/file.dart';`
+
+**Raons**:
+- Més clar i llegible
+- Evita confusions amb paths relatius
+- Més mantenible si es mouen fitxers
+- Segueix les millors pràctiques de Dart/Flutter
+
+## Altres Problemes Identificats (Pendents de Resoldre)
+
+### 2. Estat Visual de Selecció del Tema
+- Inconsistència visual en la selecció del tema "Sabina"
+- Necessita revisar el sistema de notificació d'estat
+
+### 3. Gestió del Mode de Tema
+- Visualització inconsistent de les opcions de mode (Sistema/Clar/Fosc)
+- Possible problema en l'actualització de l'estat dels botons
+
+### 4. Layout i Organització Visual
+- Millores generals en l'organització dels elements
+- Optimització de l'espai i agrupació visual
+
+## Propers Passos
+
+1. **Verificar la solució implementada**: Comprovar que els botons ara mostren els texts traduïts correctament
+2. **Aplicar fix similar a altres widgets**: `LdLabel`, `LdScaffold`, etc. que puguin tenir el mateix problema
+3. **Resoldre l'estat visual dels temes**: Investigar per què la selecció visual no es manté consistent
+4. **Optimitzar el mode de tema**: Assegurar que tots els modes es mostrin correctament
+
+## Conclusió
+
+El fix implementat per `LdButtonCtrl` hauria de resoldre el problema principal d'internacionalització. El sistema de traduccions funciona correctament, només faltava aplicar-lo automàticament en els controllers dels widgets.
+
+Amb aquest canvi, quan `LdButton` rep `L.sChangeTheme` (que és `"##sChangeTheme"`), el controller automàticament aplicarà `StringTx.applyTranslation()`, eliminant els `##` i retornant el text traduït apropiat per l'idioma actual.

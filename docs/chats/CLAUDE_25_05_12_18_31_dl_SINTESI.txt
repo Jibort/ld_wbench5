@@ -1,0 +1,238 @@
+Resum Profund de les Últimes Converses
+Context Específic del Projecte
+Estructura del Projecte Flutter
+
+Aplicació: Sabina (ld_wbench5)
+Pattern: MVC customitzat amb Mixins
+Gestió d'estat: Sense dependencies externes (no GetX, no Provider)
+Idiomes: Sistema d'internacionalització amb prefix "##" per claus de traducció
+Tema: Sistema de temes personalitzables
+
+Problema Fonamental Descobert
+dart// ❌ ERROR ARQUITECTÒNIC INICIAL
+class LdWidgetAbs extends StatefulWidget {
+  final LdWidgetCtrlAbs _ctrl;
+  final LdWidgetModelAbs _model;
+  
+  LdWidgetAbs({Key? key, String? pTag}) {
+    // ERROR: Crear state en el constructor del widget
+    _ctrl = MyCtrl(this); 
+    _model = MyModel(this);
+  }
+}
+Por qué era problemático:
+
+Flutter recrea widgets sovint (cada rebuild)
+State és persistent, Widget NO
+Això causava l'error: "The given State already has a dispose() call on it"
+
+Solució Arquitectònica Detallada
+1. Sistema de Mapes Unificat
+Constants Estandarditzades
+dart// lib/core/map_fields.dart
+const String mfText = 'mf_text';           // Model: dada persistent
+const String cfLabel = 'cf_label';         // Controller: configuració
+const String efOnPressed = 'ef_on_pressed'; // Event: callbacks
+MapsService (abans ModelService)
+dartclass MapsService {
+  // Gestió intel·ligent de memòria
+  String registerMap(Map config) {
+    // Detecta mapes duplicats
+    // Retorna ID existent o crea nou
+    // Contador de referències automàtic
+  }
+  
+  void releaseMap(String id) {
+    // Decrementa referències
+    // Elimina automàticament si ref count = 0
+  }
+}
+2. Mixin LdTaggableMixin Avançat
+Gestió Dual de Identificadors
+dartmixin LdTaggableMixin {
+  String? _tag;                    // Per debugging i events
+  GlobalKey? _globalKey;           // Per accés programàtic
+  
+  // Tag sempre disponible
+  String get tag => _tag ?? generateTag();
+  
+  // GlobalKey sota demanda
+  GlobalKey<T> _ensureGlobalKey<T extends State>() {
+    _globalKey ??= GlobalKey<T>();
+    return _globalKey! as GlobalKey<T>;
+  }
+  
+  // NAVEGACIÓ INTEGRADA
+  void navigateTo(Widget destination) {
+    Navigator.of(widgetContext!).push(...);
+  }
+  
+  void showSnackBar(String message) {
+    ScaffoldMessenger.of(widgetContext!).showSnackBar(...);
+  }
+}
+3. Arquitectura Three-Layer
+Layer 1: Widget (Configuració)
+dartclass LdTextField extends LdWidgetAbs {
+  LdTextField({
+    String? pTag,
+    String initialText = "",
+    // ... altres paràmetres
+  }) : super(config: {
+    cfTag: pTag ?? "LdTextField_${timestamp}",
+    mfInitialText: initialText,
+    cfOnTextChanged: onTextChanged,
+  });
+  
+  @override
+  LdWidgetCtrlAbs createController() => LdTextFieldCtrl(this);
+}
+Layer 2: Controller (Lògica)
+dartclass LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
+  @override
+  void _createModelIfNeeded() {
+    model = LdTextFieldModel.fromMap(widget.config);
+  }
+  
+  @override
+  Widget buildContent(BuildContext context) {
+    return TextField(
+      controller: _textController,
+      decoration: InputDecoration(
+        labelText: (model as LdTextFieldModel).label,
+      ),
+    );
+  }
+}
+Layer 3: Model (Dades)
+dartclass LdTextFieldModel extends LdWidgetModelAbs<LdTextField> {
+  String _text = "";
+  
+  String get text => _text;
+  set text(String value) {
+    if (_text != value) {
+      notifyListeners(() {
+        _text = value;
+      });
+    }
+  }
+  
+  @override
+  void fromMap(LdMap<dynamic> pMap) {
+    _text = pMap[mfInitialText] ?? "";
+    // Carrega altres propietats...
+  }
+}
+4. Event System Refinat
+EventBus amb Tag Support
+dart// Emetre event a tag específic
+EventBus.s.emitToTag(
+  LdEvent(eType: EventType.custom, eData: data),
+  "target_widget_tag"
+);
+
+// Processar events al controlador
+void _handleEvent(LdEvent event) {
+  if (event.isTargetedAt(tag)) {
+    onEvent(event);
+  }
+}
+Patrons Implementats
+1. Factory Pattern per Controllers
+Cada widget implementa createController() per crear el seu controlador específic.
+2. Observer Pattern per Models
+Models notifiquen automàticament als observadors quan canvien.
+3. Singleton Pattern per Services
+MapsService, EventBus utilitzen el pattern Singleton.
+4. Delegation Pattern complert
+
+Widget delega configuració via mapes
+Controller delega model via accessor
+Model delega notificacions automàticament
+
+Decisions Tècniques Importants
+1. No més OnceSet
+Eliminat per simplicitat, utilitzem GlobalKey per accedir al State.
+2. Tipus de Constructor
+dart// ✅ PREFERIT
+MyWidget({String? pTag}) : super(config: {...});
+
+// ❌ DEPRECAT
+@Deprecated("Usar constructor amb mapa")
+MyWidget.old({Key? key}) : super.obsolete(key: key);
+3. Accés a Models via Controller
+dart// Widget accedeix al model així:
+MyWidget get wModel => wCtrl?.model;
+
+// Controller expose el model:
+abstract class LdWidgetCtrlAbs {
+  LdWidgetModelAbs? get model => _model;
+}
+4. Tipus Genèrics Clarificats
+dart// Evitar conflicte de tipus
+Future<R?> showPageDialog<R>({ // NO usar T
+  required Widget Function(BuildContext) builder,
+}) async { ... }
+Millores en Curs
+Widgets Actualitzats
+
+✅ LdTextField - Completament refactoritzat
+🔄 LdButton - Pendent
+🔄 LdLabel - Pendent
+🔄 LdScaffold - Pendent
+
+Nomenament Consistent
+
+Classes abstractes sempre acaben en "Abs"
+Controllers específics NO porten "Abs"
+Models de widgets vs models de negoci ben diferenciats
+
+Performance Optimizations
+1. Lazy Loading de GlobalKeys
+GlobalKey només es crea quan es necessita per primera vegada.
+2. Reference Counting per Mapes
+MapsService reutilitza automàticament mapes idèntics.
+3. Notificacions Eficients
+Models només notifiquen quan hi ha canvis reals.
+Errors Comuns Evitats
+1. Circular Updates
+dart// ✅ CORRECTE - Prevenir loops
+bool _isUpdatingFromModel = false;
+
+void _onTextChange() {
+  if (_isUpdatingFromModel) return;
+  // ... actualitzar model
+}
+2. Null Checks Consistents
+dart// ✅ CORRECTE
+LdTextFieldModel? get model => wCtrl?.model as LdTextFieldModel?;
+
+// ✅ CORRECTE - Versió que garanteix non-null
+LdTextFieldModel get modelRequired {
+  final model = this.model;
+  assert(model != null, "$tag: Model no disponible");
+  return model!;
+}
+3. Dispose Chains
+dart@override
+void dispose() {
+  widget.cleanup();        // Allibera mapa
+  _controller.dispose();   // Allibera resources
+  _model?.dispose();      // Neteja model
+  super.dispose();        // Crida parent
+}
+Next Steps Recomanats
+
+Completar widgets restants seguint el patró de LdTextField
+Actualitzar TestPage per provar la nova arquitectura
+Revisar imports i eliminar referències obsoletes
+Tests unitaris per verificar el funcionament
+Performance profiling per optimitzar si cal
+
+Aquesta arquitectura proporciona:
+
+✅ Separació clara de responsabilitats
+✅ Zero redundància
+✅ Gestió automàtica de recursos
+✅ Debugging simplificat
+✅ Extensibilitat maximitzada

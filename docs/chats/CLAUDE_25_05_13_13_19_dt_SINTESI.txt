@@ -1,0 +1,246 @@
+Síntesi Completa del Projecte Sabina (Flutter)
+Última actualització: 13 Maig 2025
+Context General del Projecte
+Aplicació: Sabina (ld_wbench5)
+Framework: Flutter amb patró MVC customitzat
+Gestió d'estat: Sense dependencies externes (NO GetX, NO Provider)
+Idiomes: Sistema d'internacionalització amb claus prefixades "##"
+Tema: Sistema de temes personalitzables
+Arquitectura Three-Layer Confirmada
+Layer 1: Widget (Configuració)
+
+Utilitza mapes per passar configuració
+No conté lògica ni estat
+Delega tot al Controller
+
+Layer 2: Controller (Lògica)
+
+Gestiona esdeveniments i actualitzacions UI
+Crea i gestiona el model específic
+Conté la lògica de negoci del widget
+
+Layer 3: Model (Dades)
+
+Emmagatzema estat persistent
+Notifica automàticament els observadors
+Pattern Observer implementat
+
+Problema Principal Resolt: Pantalla en Blanc
+Error identificat:
+type 'Null' is not a subtype of type 'String'
+Causes i Solucions:
+
+LdTextFieldModel constructor - RESOLT ✅
+LdTextFieldCtrl mètode initialize - RESOLT ✅
+Gestió de valors null - RESOLT ✅
+
+Sistema de Constants
+Prefixos del Sistema de Mapes:
+dart// Propietats del Model (dades persistents)
+const String mfText = 'mf_text';
+const String mfInitialText = 'mf_initial_text';
+
+// Propietats del Controlador (configuració)
+const String cfLabel = 'cf_label';
+const String cfTag = 'cf_tag';
+
+// Events (callbacks)
+const String efOnPressed = 'ef_on_pressed';
+const String efOnTextChanged = 'ef_on_text_changed';
+LdTaggableMixin Funcionalitats
+Gestió Dual d'Identificadors:
+dartmixin LdTaggableMixin {
+  String? _tag;                    // Per debugging i events
+  GlobalKey? _globalKey;           // Per accés programàtic (lazy loading)
+  
+  // API de navegació integrada
+  void navigateTo(Widget destination);
+  void showSnackBar(String message);
+}
+Event System Detalls
+EventBus:
+dart// Emetre event a tag específic
+EventBus.s.emitToTag(
+  LdEvent(eType: EventType.custom, eData: data),
+  "target_widget_tag"
+);
+
+// Processar events amb filtratge per tag
+void _handleEvent(LdEvent event) {
+  if (event.isTargetedAt(tag)) {
+    onEvent(event);
+  }
+}
+Widgets - Estat Actual
+Completats:
+
+✅ LdTextField - Completament refactoritzat i funcional
+
+Constructor corregit
+Gestió null-safe
+Integració Model-Controller confirmada
+
+
+
+Pendents:
+
+🔄 LdButton - Per refactoritzar
+🔄 LdLabel - Per refactoritzar
+🔄 LdScaffold - Per refactoritzar
+
+Errors Comuns Identificats
+1. Constructors incorrectes
+dart// ❌ INCORRECTE
+WidgetModel.fromMap(super.pMap) : super.fromMap() {
+
+// ✅ CORRECTE  
+WidgetModel.fromMap(LdMap<dynamic> pMap) : super.fromMap(pMap) {
+2. Accés a propietats null
+dart// ❌ INCORRECTE
+String text = model.text;  // Pot ser null
+
+// ✅ CORRECTE
+String text = model.text ?? "";  // Valor per defecte
+3. Override de mètodes inexistents
+dart// ❌ INCORRECTE
+@override
+void _methodThatDoesntExist() {
+
+// ✅ CORRECTE
+// No posar @override si el mètode no existeix al pare
+void _privateMethod() {
+4. Creació múltiple de State
+
+NO crear staat en constructors de widgets
+Usar createState() adequadament
+Evitar dispose() múltiples
+
+Normes d'Estil
+1. Nomenclatura:
+dart// Classes abstractes sempre acaben en "Abs"
+class LdWidgetAbs {}
+class LdWidgetCtrlAbs {}
+
+// Controllers específics NO porten "Abs"  
+class LdTextFieldCtrl {}
+
+// Models específics tampoc
+class LdTextFieldModel {}
+2. Tipus Genèrics:
+dart// ❌ EVITAR confusió de tipus
+Future<T> showDialog<T>()  // T pot confondre
+
+// ✅ PREFERIT
+Future<R?> showPageDialog<R>()  // R més clar
+3. Gestió d'Errors:
+dart// Sempre implementar try-catch en operacions crítiques
+try {
+  model = WidgetModel.fromMap(config);
+} catch (e) {
+  Debug.error("$tag: Error: $e");
+  model = WidgetModel.fromMap({});  // Fallback
+}
+4. Logging Consistent:
+dartDebug.info("$tag: Acció realitzada");
+Debug.error("$tag: Error - $e");
+Debug.warning("$tag: Advertència");
+MapsService Implementació
+Gestió Intel·ligent:
+dartclass MapsService {
+  // Detecta duplicats automàticament
+  String registerMap(Map config);
+  
+  // Comte references automàtic
+  void releaseMap(String id);
+  
+  // Cleanup automàtic quan ref count = 0
+}
+Decisions Tècniques Clau
+1. OnceSet eliminat:
+
+Massa complexitat sense benefici clar
+Usar GlobalKey per accés al State
+
+2. Constructors preferits:
+dart// ✅ PREFERIT - amb mapa
+MyWidget({String? pTag}) : super(config: {...});
+
+// ❌ DEPRECAT  
+@Deprecated("Usar constructor amb mapa")
+MyWidget.old({Key? key}) : super.obsolete(key: key);
+3. Accés Models:
+dart// Widget accés segur al model
+MyWidgetModel? get wModel => wCtrl?.model as MyWidgetModel?;
+
+// Controller exposa model
+LdWidgetModelAbs? get model => _model;
+Optimització Performance
+1. Lazy Loading:
+
+GlobalKeys només es creen quan es necessiten
+Models es carreguen sota demanda
+
+2. Gestió Memòria:
+
+Reference counting automàtic en MapsService
+Disposal chains correctes
+
+3. Notificacions Eficients:
+dart// Només notificar en canvis reals
+void setText(String value) {
+  if (_text != value) {  // Check abans de notify
+    _text = value;
+    notifyListeners(() {
+      _text = value;
+    });
+  }
+}
+Patrons de Codi Evitats
+1. Circular Updates:
+dart// ✅ CORRECTE - Prevenir loops
+bool _isUpdatingFromModel = false;
+
+void _onTextChange() {
+  if (_isUpdatingFromModel) return;
+  // ... actualitzar model
+}
+2. Null Checks Defensius:
+dart// ✅ CORRECTE
+MyModel? get model => wCtrl?.model as MyModel?;
+
+// ✅ CORRECTE - Versió que garanteix non-null
+MyModel get modelRequired {
+  final model = this.model;
+  assert(model != null, "$tag: Model no disponible");
+  return model!;
+}
+Next Steps Recomanats
+
+Refactoritzar widgets pendents seguint patró LdTextField
+Actualitzar TestPage per provar nova arquitectura
+Revisar imports i eliminar referències obsoletes
+Afegir tests unitaris per verificar funcionament
+Performance profiling si cal optimitzar
+
+Estructura de Fitxers
+lib/
+├── core/
+│   ├── map_fields.dart       // Constants del sistema
+│   ├── event_bus/            // Sistema d'esdeveniments
+│   └── services/             // MapsService, etc.
+├── ui/
+│   └── widgets/
+│       ├── ld_text_field/    // ✅ COMPLETAT
+│       ├── ld_button/        // 🔄 PENDENT
+│       ├── ld_label/         // 🔄 PENDENT
+│       └── ld_scaffold/      // 🔄 PENDENT
+└── utils/
+    └── debug.dart            // Logging system
+Recordatoris Importants
+
+SEMPRE usar valors per defecte per evitar nulls
+NO usar @override sense verificar l'existència del mètode pare
+Cridar super.initialize() si el pare el té
+Implementar dispose chains correctament
+Afegir logging per debugging
+Validar configuracions antes d'usar-les
