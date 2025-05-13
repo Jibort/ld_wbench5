@@ -6,6 +6,7 @@ import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/core/L10n/string_tx.dart'; // ADDED: Import for translation
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
+import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 import 'package:ld_wbench5/utils/debug.dart';
@@ -84,11 +85,11 @@ class LdButtonCtrl extends LdWidgetCtrlAbs<LdButton> {
     if (labelText.isEmpty) return labelText;
     
     // Apply translation if needed
-    return StringTx.applyTranslation(labelText);
+    return labelText.tx;
   }
   
   // Other getters for button properties
-  bool get enabled => config[cfEnabled] as bool? ?? true;
+  bool get enabled => config[cfIsEnabled] as bool? ?? true;
   
   // Button styles
   String? get icon => config[cfIcon] as String?;

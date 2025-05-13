@@ -480,7 +480,7 @@ class LdTheme with LdTaggableMixin {
           backgroundColor: buttonColor.toBackgroundProperty(
             disabled: buttonColor.lessVivid().setOpacity(0.6),
           ),
-          foregroundColor: Colors.white.toForegroundProperty(
+          foregroundColor: (isDark ? Colors.white : Colors.white).toForegroundProperty(
             disabled: Colors.white.setOpacity(0.6),
           ),
           elevation: WidgetStateProperty.all<double>(isDark ? 8 : 6),
