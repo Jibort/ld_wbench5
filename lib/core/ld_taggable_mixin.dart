@@ -5,11 +5,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/ui/extensions/type_extensions.dart';
+import 'package:ld_wbench5/core/extensions/type_extensions.dart';
 
 /// Mixin que proporciona capacitats d'identificació mitjançant tags únics
 /// i GlobalKey transparent per a widgets i pàgines.
 mixin LdTaggableMixin {
+  // MEMBRES ESTÀTICS =====================================
+  static int _cntWidgets = 0;
+  static int get cntWidgets => ++_cntWidgets;
+
   // MEMBRES LOCALS =======================================
   /// Nom base de la classe.
   String get className => runtimeType.cleanClassName;
@@ -33,7 +37,8 @@ mixin LdTaggableMixin {
   // FUNCIONALITAT TAG'S ==================================
   /// Genera un tag únic basat en el tipus de classe i timestamp
   String generateTag() {
-    final generatedTag = '${className}_${DateTime.now().millisecondsSinceEpoch}';
+    // final generatedTag = '${className}_${DateTime.now().millisecondsSinceEpoch}';
+    final generatedTag = '${className}_$cntWidgets';
     _tag = generatedTag;
     return generatedTag;
   }
@@ -54,16 +59,16 @@ mixin LdTaggableMixin {
   GlobalKey? get globalKey => _globalKey;
   
   /// Accés tipat a l'estat del widget si està disponible
-  T? getState<T extends State>() {
-    if (_globalKey?.currentState != null) {
-      try {
-        return _globalKey!.currentState as T?;
-      } catch (e) {
-        Debug.warn("$tag: Error al obtenir estat del widget: $e");
-        return null;
-      }
+  T? getState<T extends State<StatefulWidget>>() {
+    var state = _globalKey?.currentState;
+    assert(state != null, "$tag: Estat no disponible encara");
+    
+    try {
+      return state as T?;
+    } catch (e) {
+      Debug.fatal("$tag: Error al obtenir estat del widget: $e");
+      return null;
     }
-    return null;
   }
   
   /// Accés al context del widget si està disponible

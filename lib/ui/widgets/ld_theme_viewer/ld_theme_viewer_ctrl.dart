@@ -7,7 +7,7 @@ import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/services/ld_theme.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_viewer/ld_theme_viewer.dart';
-import 'package:ld_wbench5/ui/extensions/color_extensions.dart';
+import 'package:ld_wbench5/core/extensions/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Classe auxiliar per representar un estil de text

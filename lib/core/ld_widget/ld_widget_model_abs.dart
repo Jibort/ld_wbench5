@@ -4,9 +4,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Model base pels widgets.
@@ -14,14 +14,15 @@ abstract class LdWidgetModelAbs<T extends LdWidgetAbs>
 extends  LdModelAbs {
   // CONSTRUCTORS/DESTRUCTORS =============================
   /// Construeix un model a partir d'un mapa de propietats
-  LdWidgetModelAbs.fromMap(LdMap<dynamic> pMap) {
-    // Filtrar només les propietats que comencen amb 'mf'
-    LdMap<dynamic> modelProperties = {};
-    for (var entry in pMap.entries) {
-      if (entry.key.startsWith('mf')) {
-        modelProperties[entry.key] = entry.value;
-      }
-    }
+  LdWidgetModelAbs.fromMap(MapDyns pMap)
+  : super(pMap) {
+    // JAB_7: // Filtrar només les propietats que comencen amb 'mf'
+    // MapDyns modelProperties = {};
+    // for (var entry in pMap.entries) {
+    //   if (entry.key.startsWith('mf')) {
+    //     modelProperties[entry.key] = entry.value;
+    //   }
+    // }
     
     // Establir el tag des del mapa (prioritzant mfTag, després cfTag)
     tag = pMap[mfTag] as String? ?? 
@@ -30,17 +31,18 @@ extends  LdModelAbs {
           // JAB_6: "WidgetModel_${DateTime.now().millisecondsSinceEpoch}";
     
     // Carregar les propietats filtrades
-    fromMap(modelProperties);
+    fromMap(pMap);
     Debug.info("$tag: Model creat a partir de mapa");
   }
   
   /// Constructor alternatiu amb widget específic
   /// Utilitzat quan el widget específic necessita configuració especial
   @protected
-  LdWidgetModelAbs.forWidget(T pWidget, LdMap<dynamic> pMap) {
+  LdWidgetModelAbs.forWidget(T pWidget, MapDyns pConfig)
+  : super(pConfig) {
     // Filtrar propietats del model (mf*)
-    LdMap<dynamic> modelProperties = {};
-    for (var entry in pMap.entries) {
+    MapDyns modelProperties = {};
+    for (var entry in pConfig.entries) {
       if (entry.key.startsWith('mf')) {
         modelProperties[entry.key] = entry.value;
       }
@@ -59,7 +61,8 @@ extends  LdModelAbs {
   
   /// Constructor obsolet
   @Deprecated("Fes servir els constructors 'fromMap' o 'forWidget' enlloc d'aquest antic.")
-  LdWidgetModelAbs(T pWidget) {
+  LdWidgetModelAbs(T pWidget)
+  : super(LdMap()) {
     Debug.warn("$tag: Utilitzant constructor obsolet. Canvieu al constructor amb mapa de propietats.");
     tag = "${pWidget.tag}_Model";
   }
@@ -67,23 +70,23 @@ extends  LdModelAbs {
   // GESTIÓ DE MAPA DE PROPIETATS =========================
   /// Converteix el model a un mapa de propietats
   @override
-  LdMap<dynamic> toMap() {
-    LdMap<dynamic> map = super.toMap();
+  MapDyns toMap() {
+    MapDyns map = super.toMap();
     map[mfTag] = tag;
     return map;
   }
   
   /// Carrega el model des d'un mapa de propietats
   @override
-  void fromMap(LdMap<dynamic> pMap) {
+  void fromMap(MapDyns pMap) {
     super.fromMap(pMap);
     // Específic de cada implementació
   }
   
   /// Actualitza només les propietats específiques del model
-  void updateFromMap(LdMap<dynamic> pMap) {
+  void updateFromMap(MapDyns pMap) {
     // Filtrar només les propietats que comencen amb 'mf'
-    LdMap<dynamic> modelProperties = {};
+    MapDyns modelProperties = {};
     for (var entry in pMap.entries) {
       if (entry.key.startsWith('mf')) {
         modelProperties[entry.key] = entry.value;
@@ -122,8 +125,8 @@ extends  LdModelAbs {
   }
   
   /// Obté múltiples camps del model
-  LdMap<dynamic> getFields(List<String> fieldKeys) {
-    LdMap<dynamic> result = {};
+  MapDyns getFields(List<String> fieldKeys) {
+    MapDyns result = {};
     
     for (String key in fieldKeys) {
       if (key.startsWith('mf')) {
@@ -149,9 +152,9 @@ extends  LdModelAbs {
   => super.setField(pKey: pKey);
 
   /// Actualitza múltiples camps del model alhora
-  void setFields(LdMap<dynamic> fields) {
+  void setFields(MapDyns fields) {
     // Filtrar només camps del model
-    LdMap<dynamic> modelFields = {};
+    MapDyns modelFields = {};
     for (var entry in fields.entries) {
       if (entry.key.startsWith('mf')) {
         modelFields[entry.key] = entry.value;
@@ -194,11 +197,11 @@ extends  LdModelAbs {
     Debug.info("$tag: Model de pàgina carregat amb identificador: $identifier");
     return true;
   }
-  
+
   /// Copia el model a un nou mapa amb només les propietats de model
-  LdMap<dynamic> toModelMap() {
+  MapDyns toModelMap() {
     final fullMap = toMap();
-    LdMap<dynamic> modelOnly = {};
+    MapDyns modelOnly = {};
     
     for (var entry in fullMap.entries) {
       if (entry.key.startsWith('mf')) {
@@ -210,7 +213,7 @@ extends  LdModelAbs {
   }
   
   /// Compara aquest model amb un altre mapa per detectar canvis
-  bool hasChangesFrom(LdMap<dynamic> otherMap) {
+  bool hasChangesFrom(MapDyns otherMap) {
     final currentMap = toModelMap();
     
     // Comparar claus existents

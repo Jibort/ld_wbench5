@@ -3,11 +3,11 @@
 // Created: 2025/05/09 dv. 
 
 import 'package:flutter/material.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/services/ld_theme.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 
 /// Model de dades per al selector de temes
 class LdThemeSelectorModel extends LdWidgetModelAbs<LdThemeSelector> {
@@ -48,8 +48,8 @@ class LdThemeSelectorModel extends LdWidgetModelAbs<LdThemeSelector> {
   
   /// Retorna un mapa amb els membres del model
   @override
-  LdMap<dynamic> toMap() {
-    LdMap<dynamic> map = super.toMap();
+  MapDyns toMap() {
+    MapDyns map = super.toMap();
     map.addAll({
       'themeMode': _themeMode.toString(),
       'themeName': _themeName.toString(),

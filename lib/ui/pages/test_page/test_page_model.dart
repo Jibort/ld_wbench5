@@ -4,11 +4,11 @@
 // Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
 
 import 'package:ld_wbench5/core/ld_page/ld_page_model_abs.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/str_full_set.dart';
 
 /// Model de dades per a la pàgina de prova
@@ -35,7 +35,7 @@ extends LdPageModelAbs<TestPage> {
   }
 
   /// Constructor des d'un mapa
-  TestPageModel.fromMap(TestPage pPage, LdMap<dynamic> pMap) 
+  TestPageModel.fromMap(TestPage pPage, MapDyns pMap) 
     : super.forPage(pPage, pMap) {
     fromMap(pMap);
   }
@@ -103,7 +103,7 @@ extends LdPageModelAbs<TestPage> {
 
   // 'LdPageModelAbs' -----------------
   @override
-  void fromMap(LdMap<dynamic> pMap) {
+  void fromMap(MapDyns pMap) {
     super.fromMap(pMap);
     
     // Carregar des de configuració (cf) o model (mf)
@@ -116,8 +116,8 @@ extends LdPageModelAbs<TestPage> {
 
   /// Retorna un mapa amb els membres del model.
   @override
-  LdMap<dynamic> toMap() {
-    LdMap<dynamic> map = super.toMap();
+  MapDyns toMap() {
+    MapDyns map = super.toMap();
     map.addAll({
       mfTag: tag,
       mfTitle: title,

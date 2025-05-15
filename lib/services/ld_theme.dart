@@ -1,6 +1,6 @@
 // lib/services/ld_theme.dart
 // Servei unificat per a la gestió de temes de l'aplicació
-// CreatedAt: 2025/05/08 dj.
+// Created: 2025/05/08 dj.
 // Actualitzat: 2025/05/08 dj. CLA - Refactorització completa
 
 import 'dart:ui';
@@ -11,7 +11,7 @@ import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/ui/extensions/color_extensions.dart';
+import 'package:ld_wbench5/core/extensions/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Noms dels temes personalitzats disponibles

@@ -15,13 +15,12 @@ import 'package:ld_wbench5/services/ld_theme.dart';
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
-import 'package:ld_wbench5/ui/widgets/ld_button/ld_button_ctrl.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_viewer/ld_theme_viewer.dart';
-import 'package:ld_wbench5/ui/extensions/color_extensions.dart';
+import 'package:ld_wbench5/core/extensions/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/services/time_service.dart';
 
@@ -204,44 +203,46 @@ extends LdPageCtrlAbs<TestPage> {
     // Inicialitzem els widgets la primera vegada que es construeix la pàgina
     if (labCounter == null && pageModel != null) {
       labCounter = LdLabel(
-        text: L.sCounter,
-        args: [pageModel.counter],
+        pLabel: L.sCounter,
+        pPosArgs: [pageModel.counter.toString()],
         style: Theme.of(context).textTheme.bodyMedium,
       );
-      labCounter!.registerModelCallback<TestPageModel>(pageModel, (pModel) {
-        labCounter!.args = [pModel.counter];
-      });
+      model!.attachObserver(labCounter!);
+      // labCounter!.registerModelCallback<TestPageModel>(pageModel, (pModel) {
+      //   labCounter!.args = [pModel.counter];
+      // });
     }
     
     if (labLocale == null && pageModel != null) {
       labLocale = LdLabel(
         key: ValueKey('language_${L.getCurrentLocale().languageCode}'),
-        text: L.sCurrentLanguage,
-        args: [L.getCurrentLocale().languageCode],
+        pLabel: L.sCurrentLanguage,
+        pPosArgs: [L.getCurrentLocale().languageCode],
         style: Theme.of(context).textTheme.bodyMedium,
       );
-      labLocale!.registerModelCallback<TestPageModel>(pageModel, (pModel) {
-        labLocale!.args = [L.getCurrentLocale().languageCode];
-      });
+      model!.attachObserver(labLocale!);
+      // labLocale!.registerModelCallback<TestPageModel>(pageModel, (pModel) {
+      //   labLocale!.args = [L.getCurrentLocale().languageCode];
+      // });
     }
     
     // Crear l'etiqueta d'hora si encara no existeix
     if (labTime == null) {
       labTime = LdLabel(
         key: const ValueKey('time_label'),
-        text: "Hora actual: {0}",  // Usem un placeholder {0} que serà substituït per l'hora
-        args: [TimeService.s.model.formattedTime],  // Inicialitzem amb l'hora actual
+        pLabel: L.sCurrentTime,
+        pPosArgs: [TimeService.s.model.formattedTime],  // Inicialitzem amb l'hora actual
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
           fontWeight: FontWeight.bold,
           color: Theme.of(context).colorScheme.primary,
         ),
       );
-      
-      // Registrar callback per quan canviï el model d'hora
-      labTime!.registerModelCallback<TimeModel>(TimeService.s.model, (pModel) {
-        // Actualitzar només l'argument amb l'hora actualitzada
-        labTime!.args = [pModel.formattedTime];
-      });
+      TimeService.s.model.attachObserver(labTime!);
+      // // Registrar callback per quan canviï el model d'hora
+      // labTime!.registerModelCallback<TimeModel>(TimeService.s.model, (pModel) {
+      //   // Actualitzar només l'argument amb l'hora actualitzada
+      //   labTime!.args = [pModel.formattedTime];
+      // });
     }
 
     // Creem una referència al TextField (amb Key per evitar que es recreï)
@@ -318,7 +319,7 @@ extends LdPageCtrlAbs<TestPage> {
                     if (pageModel?.subTitle != null)
                     LdLabel(
                       key: ValueKey('subtitle_${pageModel!.subTitle}'),
-                      text: pageModel.subTitle!,
+                      pLabel: pageModel.subTitle!,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     
@@ -386,21 +387,21 @@ extends LdPageCtrlAbs<TestPage> {
                     
                     const SizedBox(height: 24),
                     
-                    // Segona instància del selector de temes (per demostració)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: LdThemeSelector(
-                        pTag: "ThemeSelector_TestPage2",
-                        onModeChanged: (mode) {
-                          Debug.info("$tag: Canvi de mode de tema des del selector2: ${mode.toString()}");
-                        },
-                        onThemeChanged: (theme) {
-                          Debug.info("$tag: Canvi de tema des del selector2: ${LdTheme.s.getThemeNameString(theme)}");
-                        },
-                      ),
-                    ),
+                    // JIQ_7: // Segona instància del selector de temes (per demostració)
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 16),
+                    //   child: LdThemeSelector(
+                    //     pTag: "ThemeSelector_TestPage2",
+                    //     onModeChanged: (mode) {
+                    //       Debug.info("$tag: Canvi de mode de tema des del selector2: ${mode.toString()}");
+                    //     },
+                    //     onThemeChanged: (theme) {
+                    //       Debug.info("$tag: Canvi de tema des del selector2: ${LdTheme.s.getThemeNameString(theme)}");
+                    //     },
+                    //   ),
+                    // ),
 
-                    const SizedBox(height: 24),
+                    // const SizedBox(height: 24),
 
                     // NOU: Visualitzador de temes
                     Padding(
@@ -438,7 +439,7 @@ extends LdPageCtrlAbs<TestPage> {
                         children: [
                           LdLabel(
                             key: ValueKey('features_demo'),
-                            text: L.sFeaturesDemo,
+                            pLabel: L.sFeaturesDemo,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 16),
@@ -467,15 +468,15 @@ extends LdPageCtrlAbs<TestPage> {
                 // NOMÉS modifiquem el model, mai manipulem directament els LdText
                 (model as TestPageModel?)?.incrementCounter();
                 
-                // Demo: demanar focus al botó de tema quan el comptador és parell
-                if ((pageModel?.counter ?? 0) % 2 == 0) {
-                  // Ens assegurem de tenir els controladors
-                  _updateControllerReferences();
+                // // Demo: demanar focus al botó de tema quan el comptador és parell
+                // if ((pageModel?.counter ?? 0) % 2 == 0) {
+                //   // Ens assegurem de tenir els controladors
+                //   _updateControllerReferences();
                   
-                  if (_themeButtonCtrl != null && _themeButtonCtrl!.isVisible) {
-                    _themeButtonCtrl!.requestFocus();
-                  }
-                }
+                //   if (_themeButtonCtrl != null && _themeButtonCtrl!.isVisible) {
+                //     _themeButtonCtrl!.requestFocus();
+                //   }
+                // }
               },
               child: const Icon(Icons.add),
             ),

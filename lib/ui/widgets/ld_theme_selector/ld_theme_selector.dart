@@ -8,7 +8,6 @@ import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/ld_theme.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector_ctrl.dart';
-import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 export 'ld_theme_selector_ctrl.dart';
@@ -44,23 +43,6 @@ class LdThemeSelector extends LdWidgetAbs {
 
   @override
   LdThemeSelectorCtrl createCtrl() => LdThemeSelectorCtrl(this);
-
-  // ACCESSORS PER A COMPATIBILITAT
-  LdThemeSelectorModel? get model {
-    final ctrl = wCtrl;
-    if (ctrl is LdThemeSelectorCtrl) {
-      return ctrl.model as LdThemeSelectorModel?;
-    }
-    return null;
-  }
-
-  LdThemeSelectorCtrl? get controller {
-    final ctrl = wCtrl;
-    if (ctrl is LdThemeSelectorCtrl) {
-      return ctrl;
-    }
-    return null;
-  }
 
   // PROPIETATS DE CONFIGURACIÓ
   bool get displayMode => config[cfDisplayMode] as bool? ?? true;

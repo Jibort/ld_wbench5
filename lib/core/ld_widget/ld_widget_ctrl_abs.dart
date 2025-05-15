@@ -14,6 +14,7 @@ import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/lifecycle_interface.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/utils/debug.dart';
@@ -23,7 +24,6 @@ abstract   class LdWidgetCtrlAbs<T extends LdWidgetAbs>
 extends    State<T>
 with       LdTaggableMixin
 implements LdLifecycleIntf, LdModelObserverIntf {
-  
   /// Model del widget
   LdWidgetModelAbs? _model;
   

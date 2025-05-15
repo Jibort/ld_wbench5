@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/ui/app/sabina_app_ctrl.dart';
 import 'package:ld_wbench5/ui/app/sabina_app_model.dart';
 
@@ -29,7 +30,7 @@ with    LdTaggableMixin {
   /// Constructor privat
   SabinaApp._() {
     tag = className;
-    _model = SabinaAppModel(pApp: this);
+    _model = SabinaAppModel(MapDyns(), pApp: this);
     _ctrl = SabinaAppCtrl(pApp: this);
   }
   

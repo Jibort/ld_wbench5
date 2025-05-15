@@ -4,8 +4,8 @@
 
 
 import 'package:ld_wbench5/core/ld_model_abs.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/ui/app/sabina_app.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/once_set.dart';
 
 /// Model del widget principal de l'aplicació.
@@ -21,15 +21,15 @@ extends LdModelAbs {
   set app(SabinaApp pPage) => _app.set(pPage);
 
   /// CONSTRUCTORS --------------------
-  SabinaAppModel({ required SabinaApp pApp }) { app = pApp; }
+  SabinaAppModel(super.config, { required SabinaApp pApp }) { app = pApp; }
 
   // 'LdPageModelAbs' -----------------
   @override
-  void fromMap(LdMap pMap) => super.fromMap(pMap);
+  void fromMap(MapDyns pMap) => super.fromMap(pMap);
 
   /// Retorna un mapa amb els membres del model.
   @override
-  LdMap<dynamic> toMap() => super.toMap();
+  MapDyns toMap() => super.toMap();
 
   @override
   getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) 

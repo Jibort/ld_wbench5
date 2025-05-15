@@ -6,8 +6,8 @@
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Model base per a les pàgines.
@@ -15,9 +15,10 @@ abstract class LdPageModelAbs<T extends LdPageAbs>
 extends  LdModelAbs {
   // CONSTRUCTORS/DESTRUCTORS =============================
   /// Construeix un model a partir d'un mapa de propietats
-  LdPageModelAbs.fromMap(LdMap<dynamic> pMap) {
+  LdPageModelAbs.fromMap(MapDyns pMap)
+  : super(pMap) {
     // Filtrar només les propietats que comencen amb 'mf'
-    LdMap<dynamic> modelProperties = {};
+    MapDyns modelProperties = {};
     for (var entry in pMap.entries) {
       if (entry.key.startsWith('mf')) {
         modelProperties[entry.key] = entry.value;
@@ -38,10 +39,11 @@ extends  LdModelAbs {
   /// Constructor alternatiu amb pàgina específica
   /// Utilitzat quan la pàgina específica necessita configuració especial
   @protected
-  LdPageModelAbs.forPage(T pPage, LdMap<dynamic> pMap) {
+  LdPageModelAbs.forPage(T pPage, MapDyns pConfig)
+  : super(pConfig) {
     // Filtrar propietats del model (mf*)
-    LdMap<dynamic> modelProperties = {};
-    for (var entry in pMap.entries) {
+    MapDyns modelProperties = {};
+    for (var entry in pConfig.entries) {
       if (entry.key.startsWith('mf')) {
         modelProperties[entry.key] = entry.value;
       }
@@ -60,7 +62,8 @@ extends  LdModelAbs {
   
   /// Constructor obsolet
   @Deprecated("Fes servir els constructors 'fromMap' o 'forPage' enlloc d'aquest antic.")
-  LdPageModelAbs({ required T pPage }) {
+  LdPageModelAbs({ required T pPage })
+  : super(LdMap()) {
     Debug.warn("$tag: Utilitzant constructor obsolet. Canvieu al constructor amb mapa de propietats.");
     tag = "${pPage.tag}_Model";
   }
@@ -68,23 +71,23 @@ extends  LdModelAbs {
   // GESTIÓ DE MAPA DE PROPIETATS =========================
   /// Converteix el model a un mapa de propietats
   @override
-  LdMap<dynamic> toMap() {
-    LdMap<dynamic> map = super.toMap();
+  MapDyns toMap() {
+    MapDyns map = super.toMap();
     map[mfTag] = tag;
     return map;
   }
   
   /// Carrega el model des d'un mapa de propietats
   @override
-  void fromMap(LdMap<dynamic> pMap) {
+  void fromMap(MapDyns pMap) {
     super.fromMap(pMap);
     // Específic de cada implementació
   }
   
   /// Actualitza només les propietats específiques del model
-  void updateFromMap(LdMap<dynamic> pMap) {
+  void updateFromMap(MapDyns pMap) {
     // Filtrar només les propietats que comencen amb 'mf'
-    LdMap<dynamic> modelProperties = {};
+    MapDyns modelProperties = {};
     for (var entry in pMap.entries) {
       if (entry.key.startsWith('mf')) {
         modelProperties[entry.key] = entry.value;
@@ -108,8 +111,8 @@ extends  LdModelAbs {
   => super.getField(pKey: pKey, pCouldBeNull: pCouldBeNull, pErrorMsg: pErrorMsg);
   
   /// Obté múltiples camps del model
-  LdMap<dynamic> getFields(List<String> fieldKeys) {
-    LdMap<dynamic> result = {};
+  MapDyns getFields(List<String> fieldKeys) {
+    MapDyns result = {};
     
     for (String key in fieldKeys) {
       if (key.startsWith('mf')) {
@@ -150,9 +153,9 @@ extends  LdModelAbs {
   => super.setField(pKey: pKey);
 
   /// Actualitza múltiples camps del model alhora
-  void setFields(LdMap<dynamic> fields) {
+  void setFields(MapDyns fields) {
     // Filtrar només camps del model
-    LdMap<dynamic> modelFields = {};
+    MapDyns modelFields = {};
     for (var entry in fields.entries) {
       if (entry.key.startsWith('mf')) {
         modelFields[entry.key] = entry.value;
@@ -197,9 +200,9 @@ extends  LdModelAbs {
   }
 
   /// Copia el model a un nou mapa amb només les propietats de model
-  LdMap<dynamic> toModelMap() {
+  MapDyns toModelMap() {
     final fullMap = toMap();
-    LdMap<dynamic> modelOnly = {};
+    MapDyns modelOnly = {};
     
     for (var entry in fullMap.entries) {
       if (entry.key.startsWith('mf')) {
@@ -211,7 +214,7 @@ extends  LdModelAbs {
   }
   
   /// Compara aquest model amb un altre mapa per detectar canvis
-  bool hasChangesFrom(LdMap<dynamic> otherMap) {
+  bool hasChangesFrom(MapDyns otherMap) {
     final currentMap = toModelMap();
     
     // Comparar claus existents

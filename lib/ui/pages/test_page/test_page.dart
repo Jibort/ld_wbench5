@@ -5,9 +5,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/pages/test_page/test_page_ctrl.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 
 export 'test_page_ctrl.dart';
 export 'test_page_model.dart';
@@ -41,7 +41,7 @@ extends LdPageAbs {
   }
 
   /// Constructor alternatiu des d'un mapa de configuració
-  TestPage.fromMap(LdMap<dynamic> config)
+  TestPage.fromMap(MapDyns config)
     : super(pConfig: config);
 
   @override

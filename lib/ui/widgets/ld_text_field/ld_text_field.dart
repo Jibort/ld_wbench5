@@ -7,12 +7,13 @@
 // Updated: 2025/05/12 dt. CLA - Afegit suport per al paràmetre key
 
 import 'package:flutter/material.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field_ctrl.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 
 export 'ld_text_field_ctrl.dart';
 export 'ld_text_field_model.dart';
@@ -62,7 +63,7 @@ extends LdWidgetAbs {
   }
 
   /// Constructor alternatiu a partir d'un mapa
-  LdTextField.fromMap(LdMap<dynamic> pConfig)
+  LdTextField.fromMap(MapDyns pConfig)
   : super(pConfig: pConfig) {
     Debug.info("$tag: LdTextField creat des d'un mapa");
   }
@@ -70,25 +71,8 @@ extends LdWidgetAbs {
   @override
   LdWidgetCtrlAbs createCtrl() => LdTextFieldCtrl(this);
 
-  // ACCESSORS PER A COMPATIBILITAT
-  LdTextFieldModel? get model {
-    final ctrl = wCtrl;
-    if (ctrl is LdTextFieldCtrl) {
-      return ctrl.model as LdTextFieldModel?;
-    }
-    return null;
-  }
-
-  LdTextFieldCtrl? get controller {
-    final ctrl = wCtrl;
-    if (ctrl is LdTextFieldCtrl) {
-      return ctrl;
-    }
-    return null;
-  }
-
   // PROPIETATS DEL MODEL
-  String get text => model?.text ?? "";
+  String get text => (model as LdTextFieldModel?)?.text ?? "";
   set text(String value) {
     model?.updateField(mfText, value);
   }
@@ -116,22 +100,22 @@ extends LdWidgetAbs {
 
   // MÈTODES DEL CONTROLADOR
   void appendText(String suffix) {
-    controller?.addText(suffix);
+    (ctrl as LdTextFieldCtrl?)?.addText(suffix);
   }
 
   void prependText(String prefix) {
-    controller?.prependText(prefix);
+    (ctrl as LdTextFieldCtrl?)?.prependText(prefix);
   }
 
   void clearText() {
-    controller?.clearText();
+    (ctrl as LdTextFieldCtrl?)?.clearText();
   }
 
   void requestFocus() {
-    controller?.requestFocus();
+    (ctrl as LdTextFieldCtrl?)?.requestFocus();
   }
 
   void unfocus() {
-    controller?.focusNode.unfocus();
+    (ctrl as LdTextFieldCtrl?)?.focusNode.unfocus();
   }
 }

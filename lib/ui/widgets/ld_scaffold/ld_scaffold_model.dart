@@ -1,12 +1,11 @@
 // lib/ui/widgets/ld_scaffold/ld_scaffold_model.dart
 // Model pel widget LdScaffold.
-// CreatedAt: 2025/05/03 ds. CLA
+// Created: 2025/05/03 ds. CLA
 
-import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 
 /// Model pel widget LdScaffold.
 /// Aquest model és bàsicament buit, però existeix per complir amb l'arquitectura.
@@ -23,7 +22,7 @@ class LdScaffoldModel extends LdWidgetModelAbs<LdScaffold> {
   }
   
   @override
-  LdMap<dynamic> toMap() {
+  MapDyns toMap() {
     final map = super.toMap();
     // No hi ha propietats específiques per afegir
     return map;

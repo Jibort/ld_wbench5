@@ -9,17 +9,20 @@ import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/core/extensions/string_extensions.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador del widget LdTextField
 class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
-  // Controller per al TextField
+  // MEMBRES ==============================================
+  /// Controller per al TextField
   late final TextEditingController _textController;
   
   // Flag para evitar actualizaciones circulares
   bool _isUpdatingFromModel = false;
   
+  // CONSTRUCTORS/INICIALITZADORS/DESTRUCTORS =============
   // Constructor
   LdTextFieldCtrl(super.pWidget);
   
@@ -195,9 +198,9 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
     final theme = Theme.of(context);
     
     // Obtenir propietats de configuració
-    final label = config[cfLabel] as String?;
-    final helpText = config[cfHelpText] as String?;
-    final errorMessage = config[cfErrorMessage] as String?;
+    final label = (config[cfLabel] as String?)?.tx();
+    final helpText = (config[cfHelpText] as String?)?.tx();
+    final errorMessage = (config[cfErrorMessage] as String?)?.tx();
     final hasError = config[cfHasError] as bool? ?? false;
     
     return Column(

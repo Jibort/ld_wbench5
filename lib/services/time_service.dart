@@ -14,12 +14,15 @@ import 'package:ld_wbench5/utils/debug.dart';
 /// Model de dades de l'hora del servidor
 class TimeModel extends LdModelAbs {
   DateTime _currentTime = DateTime.now();
+
+  TimeModel(super.config);
+
   DateTime get currentTime => _currentTime;
   
   /// Actualitza l'hora i notifica als observadors
   void updateTime(DateTime newTime) {
+    _currentTime = newTime;
     notifyListeners(() {
-      _currentTime = newTime;
       Debug.info("$tag: Hora actualitzada a ${formatTime(newTime)}");
     });
   }
@@ -45,7 +48,7 @@ class TimeService with LdTaggableMixin {
   static TimeService get s => _inst;
   
   /// Model de dades amb l'hora actual
-  final TimeModel _model = TimeModel();
+  final TimeModel _model = TimeModel({});
   
   /// Retorna el model de dades
   TimeModel get model => _model;

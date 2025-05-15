@@ -14,9 +14,3 @@ extension MapExtensions<K, V> on Map<K, V> {
     return containsKey(key) ? this[key] : null;
   }
 }
-
-/// Generalització d'un mapa amb clau String i valor tipus 'T'.
-typedef LdMap<T> = Map<String, T>;
-
-/// Alias per a mapes de text a text, útil per als diccionaris
-typedef Dictionary = LdMap<String>;

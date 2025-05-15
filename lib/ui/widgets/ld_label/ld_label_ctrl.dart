@@ -1,137 +1,135 @@
 // lib/ui/widgets/ld_label/ld_label_ctrl.dart
-// Controlador del widget LdLabel.
+// Controlador del widget LdLabel
 // Created: 2025/05/06 dt. CLA
-// Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
+// Updated: 2025/05/15 dc. GPT(JIQ) - Usa RichText per mostrar etiquetes amb interpolació
 
 import 'package:flutter/material.dart';
 
-import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
-import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
+import 'package:ld_wbench5/core/extensions/string_extensions.dart';
 
-/// Controlador del widget LdLabel.
 class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
-  /// Constructor
+  // CONSTRUCTORS/INICIALITZADORS/DESTRUCTORS =============
   LdLabelCtrl(super.pWidget);
 
   @override
   void initialize() {
-    Debug.info("$tag: Inicialitzant controlador del label");
-    
-    // Crear el model amb la configuració del widget
-    final config = widget.config;
-    final text = config[mfText] as String? ?? "";
-    final args = config[mfArgs] as List<dynamic>?;
-    
-    model = LdLabelModel(widget, text: text, args: args);
-    
-    // Registrar aquest widget per rebre events de canvi d'idioma
-    EventBus.s.registerForEvent(tag, EventType.languageChanged);
-    
-    Debug.info("$tag: Controlador inicialitzat i registrat per rebre events de canvi d'idioma");
+    Debug.info("$tag: Inicialitzant controlador d'etiqueta");
+    _createModel();
+    Debug.info("$tag: Model creat amb text: '${(model as LdLabelModel?)?.label ?? ''}'");
   }
-  
+
+  void _createModel() {
+    Debug.info("$tag: Creant model del Label");
+    try {
+      model = LdLabelModel.fromMap(widget.config);
+      Debug.info("$tag: Model creat amb èxit. Text: '${(model as LdLabelModel).label}'");
+    } catch (e) {
+      Debug.error("$tag: Error creant model: $e");
+      try {
+        model = LdLabelModel.fromMap({});
+        Debug.info("$tag: Model de recanvi creat");
+      } catch (e2) {
+        Debug.error("$tag: Error creant model de recanvi: $e2");
+      }
+    }
+  }
+
   @override
   void update() {
-    // No cal fer res de moment
+    Debug.info("$tag: Actualització del controlador d'etiqueta");
   }
-  
-  @override
-  void dispose() {
-    // Desregistrar callbacks de models externs
-    widget.detachFromAllModels();
-    super.dispose();
-  }
-  
+
   @override
   void onEvent(LdEvent event) {
-    Debug.info("$tag: Rebut esdeveniment ${event.eType.name}");
-    
-    // Gestionar canvis d'idioma
-    if (event.eType == EventType.languageChanged) {
-      Debug.info("$tag: Processant esdeveniment de canvi d'idioma");
-      
-      // Forçar una reconstrucció del text per actualitzar-lo
+    Debug.info("$tag: Rebut event ${event.eType.name}");
+    if (event.eType == EventType.languageChanged || event.eType == EventType.themeChanged) {
+      Debug.info("$tag: Processant canvi ${event.eType.name}");
       if (mounted) {
         setState(() {
-          Debug.info("$tag: Forçant reconstrucció del text amb el nou idioma");
-        });
-      }
-    }
-    
-    // Gestionar reconstrucció global de la UI
-    if (event.eType == EventType.rebuildUI) {
-      Debug.info("$tag: Processant esdeveniment de reconstrucció de la UI");
-      
-      if (mounted) {
-        setState(() {
-          Debug.info("$tag: Reconstruint el text");
+          Debug.info("$tag: Reconstruint després de canvi");
         });
       }
     }
   }
-  
+
   @override
-  void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
+  void onModelChanged(LdModelAbs pModel, void Function() pfnUpdate) {
     Debug.info("$tag: Model ha canviat");
-    
-    // Executar la funció d'actualització
-    pfUpdate();
-    
-    // Reconstruir si està muntat
+    pfnUpdate();
     if (mounted) {
       setState(() {
         Debug.info("$tag: Reconstruint després del canvi del model");
       });
     }
   }
-  
+
   @override
   Widget buildContent(BuildContext context) {
     final labelModel = model as LdLabelModel?;
-    String text = labelModel?.displayText ?? "";
-    
-    Debug.info("$tag: Construint el text '$text'");
-    
-    // Obtenir propietats de configuració
-    final config = widget.config;
-    final style = config[cfTextStyle] as TextStyle?;
-    final textAlign = config[cfTextAlign] as TextAlign?;
-    final textDirection = config[cfTextDirection] as TextDirection?;
-    final locale = config[cfLocale] as Locale?;
-    final softWrap = config[cfSoftWrap] as bool?;
-    final overflow = config[cfOverflow] as TextOverflow?;
-    // final textScaleFactor = config[cfTextScaleFactor] as double?;
-    final textScaler = config[cfTextScaler] as TextScaler?;
-    final maxLines = config[cfMaxLines] as int?;
-    final semanticsLabel = config[cfSemanticLabel] as String?;
-    final textWidthBasis = config[cfTextWidthBasis] as TextWidthBasis?;
-    final textHeightBehavior = config[cfTextHeightBehavior] as TextHeightBehavior?;
-    final selectionColor = config[cfSelectionColor] as Color?;
-    final strutStyle = config[cfStructStyle] as StrutStyle?;
-    
-    // Crear el widget Text SENSE la key del widget pare per evitar duplicats
-    return Text(
-      text,
-      style: style,
-      strutStyle: strutStyle,
-      textAlign: textAlign,
-      textDirection: textDirection,
-      locale: locale,
-      softWrap: softWrap,
-      overflow: overflow,
-      // textScaleFactor: textScaleFactor,
-      textScaler: textScaler,
-      maxLines: maxLines,
-      semanticsLabel: semanticsLabel,
-      textWidthBasis: textWidthBasis,
-      textHeightBehavior: textHeightBehavior,
-      selectionColor: selectionColor,
+    if (labelModel == null) {
+      Debug.warn("$tag: Model no disponible, mostrant text buit");
+      return const SizedBox.shrink();
+    }
+
+    final translated = labelModel.label.tx(
+      labelModel.positionalArgs,
+      labelModel.namedArgs,
     );
+
+    Debug.info("$tag: Renderitzant RichText amb: '$translated'");
+
+    return RichText(
+      text: TextSpan(
+        text: translated,
+        style: labelModel.labelStyle ?? Theme.of(context).textTheme.bodyLarge,
+      ),
+      textAlign: labelModel.textAlign ?? TextAlign.start,
+      maxLines: labelModel.maxLines,
+      overflow: labelModel.overflow ?? TextOverflow.clip,
+      softWrap: labelModel.softWrap ?? true,
+    );
+  }
+
+  // MÈTODES ESPECÍFICS DEL LABEL =========================
+  void updateLabel(String pNewLabel) {
+    final labelModel = model as LdLabelModel?;
+    if (labelModel != null) {
+      labelModel.label = pNewLabel;
+      Debug.info("$tag: Text actualitzat a '$pNewLabel'");
+    }
+  }
+
+  void updateTranslationParams({
+    List<String>? positionalArgs,
+    LdMap<String>? namedArgs,
+  }) {
+    final labelModel = model as LdLabelModel?;
+    if (labelModel != null) {
+      labelModel.notifyListeners(() {
+        if (positionalArgs != null) labelModel.positionalArgs = positionalArgs;
+        if (namedArgs != null) labelModel.namedArgs = namedArgs;
+      });
+      Debug.info("$tag: Paràmetres de traducció actualitzats");
+    }
+  }
+
+  TextStyle? getCurrentLabelStyle() {
+    final labelModel = model as LdLabelModel?;
+    return labelModel?.labelStyle;
+  }
+
+  void updateLabelStyle(TextStyle? newStyle) {
+    final labelModel = model as LdLabelModel?;
+    if (labelModel != null) {
+      labelModel.labelStyle = newStyle;
+      Debug.info("$tag: Estil de text actualitzat");
+    }
   }
 }

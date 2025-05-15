@@ -10,9 +10,9 @@ import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_ctrl_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_model_abs.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/maps_service.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 export 'ld_page_ctrl_abs.dart';
@@ -32,17 +32,17 @@ implements LdModelObserverIntf {
   LdPageAbs({
     Key? pKey,
     String? pTag,
-    LdMap<dynamic>? pConfig,
+    MapDyns? pConfig,
   }) : super(key: pKey) {
     tag = pTag ?? generateTag();
-    final fullConfig = _buildFullConfig(tag, pConfig ?? LdMap<dynamic>());
+    final fullConfig = _buildFullConfig(tag, pConfig ?? MapDyns());
     _mapId = MapsService.s.registerMap(tag, fullConfig, kMapTypeWidget);
     
     Debug.info("$tag: Creant pàgina amb mapa (ID: $_mapId)");
   }
 
-  static LdMap<dynamic> _buildFullConfig(String tag, LdMap<dynamic> config) {
-    final map = LdMap<dynamic>.from(config);
+  static MapDyns _buildFullConfig(String tag, MapDyns config) {
+    final map = MapDyns.from(config);
     // Assegurar que el tag està al mapa
     map[cfTag] = tag;
     return map;
@@ -55,7 +55,7 @@ implements LdModelObserverIntf {
   }
 
   /// Obté el mapa de configuració
-  LdMap<dynamic> get config => MapsService.getMap(_mapId);
+  MapDyns get config => MapsService.getMap(_mapId);
   
   // ACCÉS AL CONTROLADOR ===================================================
   /// Retorna el controlador de la pàgina utilitzant la GlobalKey

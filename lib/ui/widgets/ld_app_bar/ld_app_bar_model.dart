@@ -4,12 +4,12 @@
 // Updated: 2025-05-05 dl. CLA - Millora del suport d'internacionalització
 // Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
 
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 import 'package:ld_wbench5/utils/str_full_set.dart';
 
 /// Model de dades del widget LdAppBar.
@@ -86,14 +86,14 @@ extends LdWidgetModelAbs<LdAppBar> {
   }
 
   /// Constructor des d'un mapa de valors.
-  LdAppBarModel.fromMap(LdAppBar widget, LdMap<dynamic> pMap) 
+  LdAppBarModel.fromMap(LdAppBar widget, MapDyns pMap) 
     : super.forWidget(widget, pMap) {
     fromMap(pMap);
   }
 
   /// 'LdModelAbs': Assigna els valors dels membres del model a partir d'un mapa.
   @override
-  void fromMap(LdMap<dynamic> pMap) {
+  void fromMap(MapDyns pMap) {
     super.fromMap(pMap);
     titleKey = pMap[mfTitle] as String? ?? pMap[cfTitleKey] as String? ?? "";
     subTitleKey = pMap[mfSubTitle] as String? ?? pMap[cfSubTitleKey] as String?;
@@ -102,8 +102,8 @@ extends LdWidgetModelAbs<LdAppBar> {
 
   /// Retorna un mapa amb els membres del model.
   @override
-  LdMap<dynamic> toMap() {
-    LdMap<dynamic> map = super.toMap();
+  MapDyns toMap() {
+    MapDyns map = super.toMap();
     map.addAll({
       mfTag: tag,
       mfTitle: _titleKey.t,      // Guardem la clau original, no el text traduït

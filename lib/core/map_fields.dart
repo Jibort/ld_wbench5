@@ -44,7 +44,9 @@ const String cfHasError = "cf_has_error";
 const String cfAllowNull = 'cf_allow_null';
 
 // LdButton constants (cf)
-const String cfButtonText = 'cf_button_text';
+const String cfButtonType = 'cf_button_type';  // Tipus de botó (elevated, filled, etc.)
+const String cfPositionalArgs = 'cf_positional_args';  // Paràmetres posicionals per traducció
+const String cfNamedArgs = 'cf_named_args';  // Paràmetres nomenats per traducció
 const String cfIcon = 'cf_icon';
 const String cfButtonStyle = 'cf_button_style';
 
@@ -70,6 +72,13 @@ const String cfStructStyle = 'cf_strut_style';
 const String cfTextScaleFactor = 'cf_text_scale_factor';
 const String cfTextScaler = 'cf_text_scaler';
 const String cfMaxLines = 'cf_max_lines';
+const String cfLabelStyle = "cf_label_style";
+const String cfLabelTextAlign = "cf_label_text_align";
+const String cfLabelOverflow = "cf_label_overflow";
+const String cfLabelMaxLines = "cf_label_max_lines";
+const String cfLabelSoftWrap = "cf_label_soft_wrap";
+const String cfLabelPosArgs = "cf_label_pos_args";
+const String cfLabelNamedArgs = "cf_label_named_args";
 
 // LdScaffold constants (cf)
 const String cfBackgroundColor = 'cf_background_color';

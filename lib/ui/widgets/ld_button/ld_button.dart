@@ -1,89 +1,65 @@
-// lib/ui/widgets/ld_button.dart
+// lib/ui/widgets/ld_button/ld_button.dart
 // Botó personalitzat de Sabina
 // Created: 2025/04/29 DT. CLA[JIQ]
-// Updated: 2025/05/12 dt. CLA - Afegit suport per al paràmetre key
+// Updated: 2025/05/13 dl. GPT(JIQ) - Imports i estil actualitzats
 
 import 'package:flutter/material.dart';
 
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
+import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/services/L.dart';
+import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button_ctrl.dart';
-import 'package:ld_wbench5/ui/widgets/ld_button/ld_button_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 
-class   LdButton 
-extends LdWidgetAbs {
-  /// Constructor principal
+export 'package:ld_wbench5/ui/widgets/ld_button/ld_button_ctrl.dart';
+export 'package:ld_wbench5/ui/widgets/ld_button/ld_button_model.dart';
+
+class LdButton extends LdWidgetAbs {
+  // CONSTRUCTOR PRINCIPAL =================================
   LdButton({
     Key? key,
     super.pTag,
-    String text = "",
+    String? text = "",
     IconData? icon,
     VoidCallback? onPressed,
     ButtonStyle? style,
     bool isEnabled = true,
     bool isVisible = true,
   }) : super(pKey: key, pConfig: {
-    // Propietats d'identificació
-    cfTag: pTag ?? "LdButton_${DateTime.now().millisecondsSinceEpoch}",
-    
-    // Propietats del CONTROLADOR (cf) - configuració visual i comportament
-    cfIsVisible: isVisible,
-    cfIsEnabled: isEnabled,
-    cfButtonText: text,
-    cfIcon: icon,
-    cfButtonStyle: style,
-    
-    // Propietats d'EVENTS (ef)
-    efOnPressed: onPressed,
-  }) {
+          cfTag: pTag ?? "LdButton_${DateTime.now().millisecondsSinceEpoch}",
+          cfIsVisible: isVisible,
+          cfIsEnabled: isEnabled,
+          cfLabel: text,
+          cfIcon: icon,
+          cfButtonStyle: style,
+          efOnPressed: onPressed,
+        }) {
+    Debug.info("$tag: text pla: '$text', text traduït: '${(text??errInText).tx}'");
     Debug.info("$tag: LdButton creat amb configuració");
   }
 
-  /// Constructor alternatiu a partir d'un mapa
-  LdButton.fromMap(LdMap<dynamic> configMap)
-    : super(pConfig: configMap) {
+  // CONSTRUCTOR FROM MAP ==================================
+  LdButton.fromMap(MapDyns configMap)
+      : super(pConfig: configMap) {
     Debug.info("$tag: LdButton creat des d'un mapa");
   }
 
+  // CONTROLADOR ASSOCIAT ==================================
   @override
   LdWidgetCtrlAbs createCtrl() {
     return LdButtonCtrl(this);
   }
 
-  // ACCESSORS PER A COMPATIBILITAT
-  LdButtonModel? get model {
-    final ctrl = wCtrl;
-    if (ctrl is LdButtonCtrl) {
-      return ctrl.model as LdButtonModel?;
-    }
-    return null;
-  }
+  // GETTERS DE CONFIGURACIÓ ===============================
+  String get text => config[cfLabel] as String? ?? "";
 
-  LdButtonCtrl? get controller {
-    final ctrl = wCtrl;
-    if (ctrl is LdButtonCtrl) {
-      return ctrl;
-    }
-    return null;
-  }
+  IconData? get icon => config[cfIcon] as IconData?;
 
-  // PROPIETATS DE CONFIGURACIÓ
-  String get text {
-    return config[cfButtonText] as String? ?? "";
-  }
+  ButtonStyle? get style => config[cfButtonStyle] as ButtonStyle?;
 
-  IconData? get icon {
-    return config[cfIcon] as IconData?;
-  }
-
-  ButtonStyle? get style {
-    return config[cfButtonStyle] as ButtonStyle?;
-  }
-
-  // MÈTODES DEL CONTROLADOR
-  void press() {
-    controller?.press();
-  }
+  // ACCIÓ PROGRAMÀTICA =====================================
+  void press() => (ctrl as LdButtonCtrl?)?.press();
 }

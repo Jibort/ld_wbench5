@@ -5,16 +5,18 @@
 // Updated: 2025/05/12 dt. CLA - Correcció del tipus de retorn de setField
 // Updated: 2025/05/13 dt. CLA - Correcció del constructor fromMap
 
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
 import 'package:ld_wbench5/utils/debug.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
+
 
 /// Model de dades del widget LdTextField
 class   LdTextFieldModel 
 extends LdWidgetModelAbs<LdTextField> {
-  // Text intern (dada real del model)
+  // MEMBRES ==============================================
+  /// Text intern (dada real del model)
   String _text = "";
   String get text => _text;
   set text(String value) {
@@ -26,21 +28,22 @@ extends LdWidgetModelAbs<LdTextField> {
     }
   }
 
-  // Constructor des d'un mapa - CORREGIT
+  // CONSTRUCTORS/DESTRUCTORS =============================
+  /// Constructor des d'un mapa - CORREGIT
   // ignore: use_super_parameters
-  LdTextFieldModel.fromMap(LdMap<dynamic> pMap) : super.fromMap(pMap) {
-    // Ara el constructor pare rep el paràmetre correctament
-    // Les propietats es carregaran a fromMap()
+  LdTextFieldModel.fromMap(MapDyns pMap) : super.fromMap(pMap) {
+    // Carregar propietats específiques de LdTextFieldModel
+    text = pMap[mfText];
   }
 
-  // Constructor alternatiu per compatibilitat
+  /// Constructor alternatiu per compatibilitat
   // ignore: use_super_parameters
-  LdTextFieldModel.forWidget(LdTextField widget, LdMap<dynamic> pMap) 
+  LdTextFieldModel.forWidget(LdTextField widget, MapDyns pMap) 
     : super.forWidget(widget, pMap);
 
   // Mapeig
   @override
-  void fromMap(LdMap<dynamic> pMap) {
+  void fromMap(MapDyns pMap) {
     super.fromMap(pMap);
     
     // Carregar propietats del model (mf) amb valor per defecte assegurat
@@ -52,8 +55,8 @@ extends LdWidgetModelAbs<LdTextField> {
   }
 
   @override
-  LdMap<dynamic> toMap() {
-    LdMap<dynamic> map = super.toMap();
+  MapDyns toMap() {
+    MapDyns map = super.toMap();
     map.addAll({
       mfText: _text,
     });

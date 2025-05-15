@@ -3,8 +3,8 @@
 // Created: 2025/05/02 dj. JIQ
 // Updated: 2025/05/03 ds. CLA
 
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/utils/full_set.dart';
-import 'package:ld_wbench5/ui/extensions/map_extensions.dart';
 
 /// Tipus d'events de l'aplicació
 enum EventType {
@@ -30,7 +30,7 @@ class LdEvent {
   final EventType eType;
   
   /// Dades associades a l'event
-  final LdMap eData;
+  final MapDyns eData;
   
   /// Tag de l'emissor de l'event
   final String? srcTag;
