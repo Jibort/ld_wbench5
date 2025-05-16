@@ -112,11 +112,13 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
   }) {
     final labelModel = model as LdLabelModel?;
     if (labelModel != null) {
+      // IMPORTANT: NO perdis la clau original del label
       labelModel.notifyListeners(() {
         if (positionalArgs != null) labelModel.positionalArgs = positionalArgs;
         if (namedArgs != null) labelModel.namedArgs = namedArgs;
+        // La clau del label no canvia, només els arguments
       });
-      Debug.info("$tag: Paràmetres de traducció actualitzats");
+      Debug.info("$tag: Arguments actualitzats. Clau: '${labelModel.label}'");
     }
   }
 

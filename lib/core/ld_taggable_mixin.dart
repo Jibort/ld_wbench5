@@ -35,13 +35,15 @@ mixin LdTaggableMixin {
   }
   
   // FUNCIONALITAT TAG'S ==================================
-  /// Genera un tag únic basat en el tipus de classe i timestamp
+  /// Genera un tag únic basat en un nom pur de classe i el comptador de widgets.
   String generateTag() {
-    // final generatedTag = '${className}_${DateTime.now().millisecondsSinceEpoch}';
-    final generatedTag = '${className}_$cntWidgets';
-    _tag = generatedTag;
-    return generatedTag;
+    _tag = customTag(className);
+    return _tag!;
   }
+
+  /// Genera un tag únic basat en un prefix fix i el comptador de widgets.
+  static String customTag(String pPrefix) 
+  => '${pPrefix}_$cntWidgets';
   
   // FUNCIONALITAT GLOBALKEY'S ============================
   /// Inicialitza i retorna la GlobalKey per a widgets

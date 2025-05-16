@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_ctrl_abs.dart';
+import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/services/ld_theme.dart';
@@ -26,9 +28,14 @@ import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/services/time_service.dart';
 
 /// Controlador per a la pàgina de prova
-class   TestPageCtrl 
-extends LdPageCtrlAbs<TestPage>
+class      TestPageCtrl 
+extends    LdPageCtrlAbs<TestPage>
 implements LdModelObserverIntf {
+  // MEMBRES ==============================================
+  final String tagLabCounter = LdTaggableMixin.customTag("labCounter");
+  final String tagLabLocale = LdTaggableMixin.customTag("labLocale");
+  final String tagLabTime = LdTaggableMixin.customTag("labTime");
+
   /// Etiqueta amb el valor del comptador.
   LdLabel? labCounter;
   
@@ -51,7 +58,11 @@ implements LdModelObserverIntf {
   /// Constructor.
   TestPageCtrl({ super.pTag, required super.pPage });
 
-  @override
+  /// Observer amb FnModelObs - SÚPER CLEAN!
+  late final FnModelObs _obsTimer;
+  
+  /// SOLUCIÓ MILLORADA: Observer que conserva el text base
+    @override
   void initialize() {
     Debug.info("$tag: Inicialitzant controlador");
     
@@ -65,7 +76,37 @@ implements LdModelObserverIntf {
       pTitleKey: titleKey,
       pSubTitleKey: subTitleKey,
     );
-    TimeService.s.model.attachObserver(this);
+    
+    _obsTimer = (LdModelAbs pModel, void Function() pfnUpdate) {
+      if (model == TimeService.s.model && mounted) {
+        final time = (model as TimeModel).formattedTime;
+        
+        Debug.info("$tag: TimeService observer activat");
+        Debug.info("  - Nova hora: '$time'");
+        Debug.info("  - labTime null: ${labTime == null}");
+        
+        if (labTime != null) {
+          // Verificar l'estat abans i després
+          final labelModel = labTime!.model as LdLabelModel?;
+          Debug.info("  - Text base abans: '${labelModel?.baseText}'");
+          
+          // Executar la funció d'actualització proporcionada pel model
+          pfnUpdate();
+          
+          setState(() {
+            labTime!.setTranslationArgs(positionalArgs: [time]);
+          });
+          
+          Debug.info("  - Text base després: '${labelModel?.baseText}'");
+          Debug.info("  - Text final: '${labelModel?.label}'");
+        } else {
+          Debug.warn("$tag: labTime és null, no es pot actualitzar");
+        }
+      }
+    };
+
+    // SOLUCIÓ CORREGIDA: Observer que respecta la interfície LdModelObserverIntf
+    TimeService.s.model.attachObserverFunction(_obsTimer);
     Debug.info("$tag: Model de la pàgina creat");
   }
   
@@ -80,7 +121,7 @@ implements LdModelObserverIntf {
     
     // Desregistrar els widgets de tots els models externs
     if (labCounter != null) {
-      (model as TestPageModel?)?.detachObserver(labCounter!);
+      (model as TestPageModel?)?.detachObserverFunction(_obsTimer);
     }
     
     if (labLocale != null) {
@@ -208,6 +249,8 @@ implements LdModelObserverIntf {
     // Inicialitzem els widgets la primera vegada que es construeix la pàgina
     if (labCounter == null && pageModel != null) {
       labCounter = LdLabel(
+        key: ValueKey(tagLabCounter),
+        pTag: tagLabCounter,
         pLabel: L.sCounter,
         pPosArgs: [pageModel.counter.toString()],
         style: Theme.of(context).textTheme.bodyMedium,
@@ -217,7 +260,8 @@ implements LdModelObserverIntf {
     
     if (labLocale == null && pageModel != null) {
       labLocale = LdLabel(
-        key: ValueKey('language_${L.getCurrentLocale().languageCode}'),
+        key: ValueKey(tagLabLocale), // JIQ_10: 'language_${L.getCurrentLocale().languageCode}'),
+        pTag: tagLabLocale,
         pLabel: L.sCurrentLanguage,
         pPosArgs: [L.getCurrentLocale().languageCode],
         style: Theme.of(context).textTheme.bodyMedium,
@@ -231,7 +275,8 @@ implements LdModelObserverIntf {
     // Crear l'etiqueta d'hora si encara no existeix
     if (labTime == null) {
       labTime = LdLabel(
-        key: const ValueKey('time_label'),
+        key: ValueKey(tagLabTime), // JIQ_10: 'time_label'),
+        pTag: tagLabTime,
         pLabel: L.sCurrentTime,
         pPosArgs: [TimeService.s.model.formattedTime],  // Inicialitzem amb l'hora actual
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(

@@ -9,6 +9,19 @@ import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
+
+/// Wrapper intern per convertir funcions a interfície
+class _FunctionObserverWrapper implements LdModelObserverIntf {
+  final FnModelObs function;
+  
+  _FunctionObserverWrapper(this.function);
+  
+  @override
+  void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
+    function(pModel, pfUpdate);
+  }
+}
+
 // INTERFÍCIE D'OBSERVADORS ==============================
 abstract class LdModelObserverIntf {
   /// Notifica que el model ha canviat
@@ -31,6 +44,13 @@ abstract class LdModelAbs with LdTaggableMixin {
     Debug.info("$tag: Observador assignat. Total: ${_observers.length}");
   }
 
+  /// Mètode sobrecarregat per acceptar funcions directament
+  void attachObserverFunction(FnModelObs pObserverFn) {
+    final wrapper = _FunctionObserverWrapper(pObserverFn);
+    _observers.add(wrapper);
+    Debug.info("$tag: Observador funció assignat. Total: ${_observers.length}");
+  }
+
   void detachObserver([LdModelObserverIntf? pObs]) {
     if (pObs != null) {
       _observers.remove(pObs);
@@ -39,6 +59,15 @@ abstract class LdModelAbs with LdTaggableMixin {
       _observers.clear();
       Debug.info("$tag: Tots els observadors desvinculats");
     }
+  }
+
+  /// Mètode per desattach funcions observer
+  void detachObserverFunction(FnModelObs pObserverFn) {
+    _observers.removeWhere((obs) => 
+      obs is _FunctionObserverWrapper && 
+      obs.function == pObserverFn
+    );
+    Debug.info("$tag: Observador funció desvinculat. Restants: ${_observers.length}");
   }
 
   void notifyListeners(void Function() action, [bool pOnlyWithObs = false]) {
