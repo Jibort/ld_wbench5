@@ -101,11 +101,11 @@ implements LdModelObserverIntf {
   // OBSERVADOR DEL MODEL ===================================================
   /// Implementació del LdModelObserverIntf
   @override
-  void onModelChanged(LdModelAbs model, void Function() pfUpdate) {
+  void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
     // Delegar al controlador quan estigui disponible
     final ctrl = vCtrl;
     if (ctrl != null) {
-      ctrl.onModelChanged(model, pfUpdate);
+      ctrl.onModelChanged(pModel, pfUpdate);
     } else {
       // Si el controlador no està disponible encara, 
       // només executar la funció d'actualització

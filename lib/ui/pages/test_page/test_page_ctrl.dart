@@ -15,6 +15,7 @@ import 'package:ld_wbench5/services/ld_theme.dart';
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
+import 'package:ld_wbench5/ui/widgets/ld_label/ld_label_model.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
@@ -26,7 +27,8 @@ import 'package:ld_wbench5/services/time_service.dart';
 
 /// Controlador per a la pàgina de prova
 class   TestPageCtrl 
-extends LdPageCtrlAbs<TestPage> {
+extends LdPageCtrlAbs<TestPage>
+implements LdModelObserverIntf {
   /// Etiqueta amb el valor del comptador.
   LdLabel? labCounter;
   
@@ -63,7 +65,7 @@ extends LdPageCtrlAbs<TestPage> {
       pTitleKey: titleKey,
       pSubTitleKey: subTitleKey,
     );
-    
+    TimeService.s.model.attachObserver(this);
     Debug.info("$tag: Model de la pàgina creat");
   }
   
@@ -88,6 +90,7 @@ extends LdPageCtrlAbs<TestPage> {
     if (labTime != null) {
       // Desregistrar del model d'hora
       TimeService.s.model.detachObserver(labTime!);
+      TimeService.s.model.detachObserver(this);
     }
     
     super.dispose();
@@ -121,6 +124,8 @@ extends LdPageCtrlAbs<TestPage> {
     // (incloent-hi LdText) obtenen el valor actualitzat
     if (mounted) {
       setState(() {
+        Debug.info("$tag: Actualitzant hora");
+        (labTime?.model as LdLabelModel).label = TimeModel.formatTime(TimeService.s.model.currentTime);
         Debug.info("$tag.onModelChanged(): ... executat amb reconstrucció");
       });
     } else {
@@ -208,9 +213,6 @@ extends LdPageCtrlAbs<TestPage> {
         style: Theme.of(context).textTheme.bodyMedium,
       );
       model!.attachObserver(labCounter!);
-      // labCounter!.registerModelCallback<TestPageModel>(pageModel, (pModel) {
-      //   labCounter!.args = [pModel.counter];
-      // });
     }
     
     if (labLocale == null && pageModel != null) {
@@ -238,11 +240,6 @@ extends LdPageCtrlAbs<TestPage> {
         ),
       );
       TimeService.s.model.attachObserver(labTime!);
-      // // Registrar callback per quan canviï el model d'hora
-      // labTime!.registerModelCallback<TimeModel>(TimeService.s.model, (pModel) {
-      //   // Actualitzar només l'argument amb l'hora actualitzada
-      //   labTime!.args = [pModel.formattedTime];
-      // });
     }
 
     // Creem una referència al TextField (amb Key per evitar que es recreï)

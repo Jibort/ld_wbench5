@@ -145,7 +145,7 @@ class L with LdTaggableMixin {
       sChangeTheme: "Change Theme",
       sToggleThemeButtonVisibility: "Toggle theme button visibility",
       sToggleLanguageButtonEnabled: "Toggle language button enabled state",
-      sCounter: "Counter: {0}",
+      sCounter: "[en] Counter: {0}",
       sCurrentLanguage: "Current language: {0}",
       sFeaturesDemo: "Features demonstration:",
       sTextField: "Text field",
