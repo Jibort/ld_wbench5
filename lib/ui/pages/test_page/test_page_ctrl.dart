@@ -1,10 +1,29 @@
+//JIQ>CLA: Veuràs que sempre inicio els fitxers de font amb:
+//JIQ>CLA:   1. Camí i nom absolut del fitxer dins el projecte. 
+//JIQ>CLA:   2. Una breu descripció de la funcionalitat del fitxer.
+//JIQ>CLA:   3. La data de creació del fitxer "Created: (YYYY/MM/DD dx. sigles)", on:
+//JIQ>CLA:      'dx' són les sigles del dia de la setmana
+//JIQ>CLA:         'dl' per a dilluns, 'dt' per a dimarts, 'dc' per a dimecres, etc.
+//JIQ>CLA:         'dt' per a dimecres, etc.
+//JIQ>CLA:      'sigles' són les sigles del programador.
+//JIQ>CLA:         'JIQ' per a mí, Jordi.
+//JIQ>CLA:         'CLA' per a tú, Claude.
+//JIQ>CLA:         'GPT' per a tú, ChatGPT, etc.
+//JIQ>CLA:      si les sigles contenen '[...]' significa que han hagut correccions 
+//JIQ>CLA:      sobre el codi per part del programador de les sigles que contenen.
+//JIQ>CLA:   4. Línies de registre de modificació 'Updated:', que es formaten igual que 
+//JIQ>CLA:      les de creació però afegin un guió o una descripció breu de la modificació.
 // lib/ui/pages/test_page/test_page_ctrl.dart
 // Controlador de la pàgina de prova que mostra la implementació simplificada.
-// Created: 2025/04/29 DT. CLA[JIQ]
+// Created: 2025/04/29 dt. CLA[JIQ]
 // Updated: 2025/05/08 dj. CLA - Actualitzat per utilitzar LdTheme
 // Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
 
 import 'package:flutter/material.dart';
+//JIQ>CLA: Observa que sempre separo amb una línia en blanc els imports per blocs:
+//JIQ>CLA:   1. Aquells que pertanyen a dart o a paquets de flutter.
+//JIQ>CLA:   2. Aquells que pertanyen a paquets de llibreries externes.
+//JIQ>CLA:   3. Aquells que pertanyen al projecte i per ordre alfabètic.
 
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
@@ -17,7 +36,6 @@ import 'package:ld_wbench5/services/ld_theme.dart';
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
-import 'package:ld_wbench5/ui/widgets/ld_label/ld_label_model.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
@@ -27,14 +45,30 @@ import 'package:ld_wbench5/core/extensions/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/services/time_service.dart';
 
+//JIQ>CLA: Després dels imports, si s'han de definir constants o enumeracions,
+//JIQ>CLA: aquestes s'incouran aquí com a seccions 'CONSTANTS' i 'ENUMS'.
+//JIQ>CLA: En aquest fitxer no ho veuràs perquè no hi ha constants externes ni enumeracions.
+
+//JIQ>CLA: Sempre descric la classe abans de la seva declaració. 
+//JIQ>CLA: El mateix que la segona línia del fitxer però més detallat si cal.
 /// Controlador per a la pàgina de prova
+//JIQ>CLA: Veuràs que les declaracions de les classes sempre tabulen en la columna 
+//JIQ>CLA: lliure més a la dreta de 'class', 'extends', 'with' o 'implements'.
 class      TestPageCtrl 
 extends    LdPageCtrlAbs<TestPage>
 implements LdModelObserverIntf {
+  //JIQ>CLA: Veuràs que sempre agrupo lògicament les classes a través 
+  //JIQ>CLA: de capçaleres que indiquen en majúsucles el nom de la secció,
+  //JIQ>CLA: un espai i tants símbols '=' com sigui necessari per a arribar extactament
+  //JIQ>CLA: a la columna 60.
+  //JIQ>CLA: Aquesta classe comença amb la secció MEMBRES però si hi hagués declaracións
+  //JIQ>CLA: i/o funcionalitats estàtiques les seves seccions aniran abans de 'MEMBRES'.
   // MEMBRES ==============================================
+  //JIQ>CLA: Sé que no és estàndard en Dart però fixa't com ajusto a una columna les 
+  //JIQ>CLA: declaracions de variables, constants, ... a partir de l'operador '='.
   final String tagLabCounter = LdTaggableMixin.customTag("labCounter");
-  final String tagLabLocale = LdTaggableMixin.customTag("labLocale");
-  final String tagLabTime = LdTaggableMixin.customTag("labTime");
+  final String tagLabLocale  = LdTaggableMixin.customTag("labLocale");
+  final String tagLabTime    = LdTaggableMixin.customTag("labTime");
 
   /// Etiqueta amb el valor del comptador.
   LdLabel? labCounter;
@@ -55,14 +89,22 @@ implements LdModelObserverIntf {
   /// Key per tenir accés al widget del botó idioma
   final GlobalKey<LdButtonCtrl> _languageButtonKey = GlobalKey<LdButtonCtrl>();
 
+  //JIQ>CLA: Després de la declaració dels membres sempre segueix la secció on
+  //JIQ>CLA: codifiquem els constructors que existeixin, cualsevol funció necessària
+  //JIQ>CLA: per a la inicialització dels membres, el mètode 'dispose()' (si cal) i 
+  //JIQ>CLA: qualsevol altre funció o mètode de neteja de la instància.
+  // CONSTRUCTORS/DESTRUTORS ==============================
   /// Constructor.
   TestPageCtrl({ super.pTag, required super.pPage });
 
   /// Observer amb FnModelObs - SÚPER CLEAN!
   late final FnModelObs _obsTimer;
   
+  /// Observer per al comptador
+  late final FnModelObs _obsCounter;
+
   /// SOLUCIÓ MILLORADA: Observer que conserva el text base
-    @override
+  @override
   void initialize() {
     Debug.info("$tag: Inicialitzant controlador");
     
@@ -78,41 +120,58 @@ implements LdModelObserverIntf {
     );
     
     _obsTimer = (LdModelAbs pModel, void Function() pfnUpdate) {
-      if (model == TimeService.s.model && mounted) {
-        final time = (model as TimeModel).formattedTime;
-        
-        Debug.info("$tag: TimeService observer activat");
-        Debug.info("  - Nova hora: '$time'");
-        Debug.info("  - labTime null: ${labTime == null}");
+      if (pModel == TimeService.s.model && mounted) {
+        final time = TimeService.s.model.formattedTime;
         
         if (labTime != null) {
-          // Verificar l'estat abans i després
-          final labelModel = labTime!.model as LdLabelModel?;
-          Debug.info("  - Text base abans: '${labelModel?.baseText}'");
-          
-          // Executar la funció d'actualització proporcionada pel model
+          // Executar la funció d'actualització del model
           pfnUpdate();
           
+          // Actualitzar els arguments del LdLabel
           setState(() {
             labTime!.setTranslationArgs(positionalArgs: [time]);
           });
-          
-          Debug.info("  - Text base després: '${labelModel?.baseText}'");
-          Debug.info("  - Text final: '${labelModel?.label}'");
-        } else {
-          Debug.warn("$tag: labTime és null, no es pot actualitzar");
         }
       }
     };
 
     // SOLUCIÓ CORREGIDA: Observer que respecta la interfície LdModelObserverIntf
     TimeService.s.model.attachObserverFunction(_obsTimer);
+
+    // OBSERVER PER AL COMPTADOR
+    //JIQ>CLA: Observa com anomeno el paràmetres de qualsevol mena (menys aquests que
+    //JIQ>CLA: provenen d'us paràmetre 'super' que portarà, òbviament el nom del paràmtre
+    //JIQ>CLA: del pare).
+    //JIQ>CLA:   'pX' per a paràmetres generals.
+    //JIQ>CLA:   'pfnY' per a paràmetres funcions.
+    //JIQ>CLA: Això millora molt la meva llegebilitat del codi i m'evita errors.
+    //JIQ>CLA: Quan analitzis el codi veuràs que aquesta norma d'estil no es troba a tot arreu.
+    //JIQ>CLA: Això és degut a que quan has fet canvis o codificat desde cero no coneixies aquesta
+    //JIQ>CLA: norma d'estil.
+    _obsCounter = (LdModelAbs pModel, void Function() pfnUpdate) {
+      if (pModel == model && mounted) {
+        final count = (model as TestPageModel).counter.toString();
+        
+        Debug.info("$tag: Comptador observer activat. Nou valor: '$count'");
+        
+        if (labCounter != null) {
+          // Executar la funció d'actualització del model
+          pfnUpdate();
+          
+          // Actualitzar els arguments del LdLabel
+          setState(() {
+            labCounter!.setTranslationArgs(positionalArgs: [count]);
+          });
+          
+          Debug.info("$tag: LdLabel comptador actualitzat amb valor '$count'");
+        }
+      }
+    };
+
+    // CONNECTAR L'OBSERVER FUNCTION
+    model!.attachObserverFunction(_obsCounter);
+
     Debug.info("$tag: Model de la pàgina creat");
-  }
-  
-  @override
-  void update() {
-    // No cal fer res de moment
   }
   
   @override
@@ -137,18 +196,30 @@ implements LdModelObserverIntf {
     super.dispose();
   }
 
+  //JIQ>CLA: Després de la secció de constructors i netejadors sempre seguirà la secció
+  //JIQ>CLA: 'GETTERS/SETTERS', però en aquest fitxer no la veus perquè no hi ha aquesta
+  //JIQ>CLA: mena de codi.
+  //JIQ>CLA: Després agrupem les implementació de funcions abstractes per seccions 
+  //JIQ>CLA: segons la classe abstracta, mixin o interfície a la que impementem.
+  // IMPLEMENTACIÓ 'LdLifecycleIntf' ======================
   @override
-  void onEvent(LdEvent event) {
-    Debug.info("$tag: Event rebut: ${event.eType.name}");
+  void update() {
+    // No cal fer res de moment
+  }
+  
+  // IMPLEMENTACIÓ 'LdPageCtrlAbs' ========================
+  @override
+  void onEvent(LdEvent pEvent) {
+    Debug.info("$tag: Event rebut: ${pEvent.eType.name}");
 
     // Gestionar diferents tipus d'events
-    if (event.eType == EventType.languageChanged || 
-        event.eType == EventType.rebuildUI) {
+    if (pEvent.eType == EventType.languageChanged || 
+        pEvent.eType == EventType.rebuildUI) {
       
       // Només reconstruir si està muntat
       if (mounted) {
         setState(() {
-          Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'event ${event.eType.name}");
+          Debug.info("$tag: Forçant reconstrucció de la UI després del canvi d'event ${pEvent.eType.name}");
         });
       }
     }
@@ -158,81 +229,20 @@ implements LdModelObserverIntf {
   void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
     Debug.info("$tag.onModelChanged(): executant ...");
     
-    // Executar l'actualització
+    // Executar l'actualització sempre
     pfUpdate();
     
-    // Forçar una reconstrucció per assegurar que tots els widgets fills 
-    // (incloent-hi LdText) obtenen el valor actualitzat
+    // Reconstruir si està muntat
     if (mounted) {
       setState(() {
-        Debug.info("$tag: Actualitzant hora");
-        (labTime?.model as LdLabelModel).label = TimeModel.formatTime(TimeService.s.model.currentTime);
-        Debug.info("$tag.onModelChanged(): ... executat amb reconstrucció");
+        Debug.info("$tag.onModelChanged(): Reconstruint widget");
       });
-    } else {
-      Debug.info("$tag.onModelChanged(): ... executat sense reconstrucció");
     }
-  }
     
-  /// Canvia l'idioma entre català i espanyol
-  void changeLanguage() {
-    Debug.info("$tag: Canviant idioma");
-    L.toggleLanguage();
-    (model as TestPageModel?)?.changeLocale();
+    Debug.info("$tag.onModelChanged(): ... executat");
   }
   
-  /// Canvia el tema entre clar i fosc
-  void changeTheme() {
-    Debug.info("$tag: Canviant tema");
-    LdTheme.s.toggleTheme();
-  }
-  
-  /// Obté accés als controladors dels botons després que s'hagin creat
-  void _updateControllerReferences() {
-    // Intentem obtenir el controlador del botó de tema
-    if (_themeButtonKey.currentState != null) {
-      _themeButtonCtrl = _themeButtonKey.currentState!;
-      Debug.info("$tag: Controlador del botó de tema obtingut correctament");
-    }
-    
-    // Intentem obtenir el controlador del botó d'idioma
-    if (_languageButtonKey.currentState != null) {
-      _languageButtonCtrl = _languageButtonKey.currentState!;
-      Debug.info("$tag: Controlador del botó d'idioma obtingut correctament");
-    }
-  }
-  
-  /// Alterna la visibilitat del botó de tema
-  void toggleThemeButtonVisibility() {
-    Debug.info("$tag: Alternant visibilitat del botó de tema");
-    
-    // Ens assegurem de tenir els controladors
-    _updateControllerReferences();
-    
-    if (_themeButtonCtrl != null) {
-      _themeButtonCtrl!.toggleVisibility();
-      Debug.info("$tag: Visibilitat del botó de tema alternada a ${_themeButtonCtrl!.isVisible}");
-    } else {
-      Debug.error("$tag: No s'ha pogut obtenir el controlador del botó de tema");
-    }
-  }
-  
-  /// Alterna l'estat d'activació del botó d'idioma
-  void toggleLanguageButtonEnabled() {
-    Debug.info("$tag: Alternant estat d'activació del botó d'idioma");
-    
-    // Ens assegurem de tenir els controladors
-    _updateControllerReferences();
-    
-    if (_languageButtonCtrl != null) {
-      _languageButtonCtrl!.toggleEnabled();
-      Debug.info("$tag: Estat d'activació del botó d'idioma alternat a ${_languageButtonCtrl!.isEnabled}");
-    } else {
-      Debug.error("$tag: No s'ha pogut obtenir el controlador del botó d'idioma");
-    }
-  }
-
-  @override
+    @override
   Widget buildPage(BuildContext context) {
     // Inicialitzem per assegurar-nos que tenim els controladors dels botons
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -273,8 +283,7 @@ implements LdModelObserverIntf {
     }
     
     // Crear l'etiqueta d'hora si encara no existeix
-    if (labTime == null) {
-      labTime = LdLabel(
+    labTime ??= LdLabel(
         key: ValueKey(tagLabTime), // JIQ_10: 'time_label'),
         pTag: tagLabTime,
         pLabel: L.sCurrentTime,
@@ -284,8 +293,6 @@ implements LdModelObserverIntf {
           color: Theme.of(context).colorScheme.primary,
         ),
       );
-      TimeService.s.model.attachObserver(labTime!);
-    }
 
     // Creem una referència al TextField (amb Key per evitar que es recreï)
     final textField = LdTextField(
@@ -429,22 +436,6 @@ implements LdModelObserverIntf {
                     
                     const SizedBox(height: 24),
                     
-                    // JIQ_7: // Segona instància del selector de temes (per demostració)
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 16),
-                    //   child: LdThemeSelector(
-                    //     pTag: "ThemeSelector_TestPage2",
-                    //     onModeChanged: (mode) {
-                    //       Debug.info("$tag: Canvi de mode de tema des del selector2: ${mode.toString()}");
-                    //     },
-                    //     onThemeChanged: (theme) {
-                    //       Debug.info("$tag: Canvi de tema des del selector2: ${LdTheme.s.getThemeNameString(theme)}");
-                    //     },
-                    //   ),
-                    // ),
-
-                    // const SizedBox(height: 24),
-
                     // NOU: Visualitzador de temes
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -526,5 +517,67 @@ implements LdModelObserverIntf {
         ),
       ),
     );
+  }
+
+  //JIQ>CLA: Just després segueix la secció de funcionalitat pròpia del fitxer,
+  //JIQ>CLA: deixant pel final els mètodes o funcions ocults o protegits.
+  // FUNCIONALITAT ========================================
+  /// Canvia l'idioma entre català i espanyol
+  void changeLanguage() {
+    Debug.info("$tag: Canviant idioma");
+    L.toggleLanguage();
+    (model as TestPageModel?)?.changeLocale();
+  }
+  
+  /// Canvia el tema entre clar i fosc
+  void changeTheme() {
+    Debug.info("$tag: Canviant tema");
+    LdTheme.s.toggleTheme();
+  }
+  
+  
+  /// Alterna la visibilitat del botó de tema
+  void toggleThemeButtonVisibility() {
+    Debug.info("$tag: Alternant visibilitat del botó de tema");
+    
+    // Ens assegurem de tenir els controladors
+    _updateControllerReferences();
+    
+    if (_themeButtonCtrl != null) {
+      _themeButtonCtrl!.toggleVisibility();
+      Debug.info("$tag: Visibilitat del botó de tema alternada a ${_themeButtonCtrl!.isVisible}");
+    } else {
+      Debug.error("$tag: No s'ha pogut obtenir el controlador del botó de tema");
+    }
+  }
+  
+  /// Alterna l'estat d'activació del botó d'idioma
+  void toggleLanguageButtonEnabled() {
+    Debug.info("$tag: Alternant estat d'activació del botó d'idioma");
+    
+    // Ens assegurem de tenir els controladors
+    _updateControllerReferences();
+    
+    if (_languageButtonCtrl != null) {
+      _languageButtonCtrl!.toggleEnabled();
+      Debug.info("$tag: Estat d'activació del botó d'idioma alternat a ${_languageButtonCtrl!.isEnabled}");
+    } else {
+      Debug.error("$tag: No s'ha pogut obtenir el controlador del botó d'idioma");
+    }
+  }
+
+  /// Obté accés als controladors dels botons després que s'hagin creat
+  void _updateControllerReferences() {
+    // Intentem obtenir el controlador del botó de tema
+    if (_themeButtonKey.currentState != null) {
+      _themeButtonCtrl = _themeButtonKey.currentState!;
+      Debug.info("$tag: Controlador del botó de tema obtingut correctament");
+    }
+    
+    // Intentem obtenir el controlador del botó d'idioma
+    if (_languageButtonKey.currentState != null) {
+      _languageButtonCtrl = _languageButtonKey.currentState!;
+      Debug.info("$tag: Controlador del botó d'idioma obtingut correctament");
+    }
   }
 }
