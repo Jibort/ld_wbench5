@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
-import 'package:ld_wbench5/services/ld_theme.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/core/extensions/color_extensions.dart';
@@ -24,7 +25,7 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   final Function(ThemeMode)? onModeChanged;
   
   /// Callback quan canvia el tema
-  final Function(ThemeName)? onThemeChanged;
+  final Function(String)? onThemeChanged;
   
   /// Constructor
   LdThemeSelectorCtrl(
@@ -41,13 +42,13 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
     
     // Crear el model amb la configuració del widget
     final config = widget.config;
-    final initialMode = config['mfInitialMode'] as ThemeMode? ?? LdTheme.s.themeMode;
-    final initialTheme = config['mfInitialTheme'] as ThemeName? ?? LdTheme.s.currentThemeName;
+    final initialMode = config['mfInitialMode'] as ThemeMode? ?? ThemeService.s.themeMode;
+    final initialTheme = config['mfInitialTheme'] as String? ?? ThemeService.s.currentThemeName;
     
     model = LdThemeSelectorModel(
       widget,
-      initialMode: initialMode,
-      initialTheme: initialTheme,
+      pInitialMode: initialMode,
+      pInitialTheme: initialTheme,
     );
   }
   
@@ -66,14 +67,14 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
       bool needsUpdate = false;
       
       // Comprovar si ha canviat el mode
-      final currentMode = LdTheme.s.themeMode;
+      final currentMode = ThemeService.s.themeMode;
       if ((model as LdThemeSelectorModel).themeMode != currentMode) {
         (model as LdThemeSelectorModel).themeMode = currentMode;
         needsUpdate = true;
       }
       
       // Comprovar si ha canviat el tema
-      final currentTheme = LdTheme.s.currentThemeName;
+      final currentTheme = ThemeService.s.currentThemeName;
       if ((model as LdThemeSelectorModel).themeName != currentTheme) {
         (model as LdThemeSelectorModel).themeName = currentTheme;
         needsUpdate = true;
@@ -96,7 +97,7 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
     (model as LdThemeSelectorModel).themeMode = mode;
     
     // Després actualitzar el tema global
-    LdTheme.s.changeThemeMode(mode);
+    ThemeService.s.changeThemeMode(mode);
     
     // Notificar al callback si existeix
     if (onModeChanged != null) {
@@ -105,24 +106,25 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   }
   
   /// Canvia el tema
-  void _changeTheme(ThemeName name) {
-    Debug.info("$tag: Canviant tema a ${LdTheme.s.getThemeNameString(name)}");
+  void _changeTheme(String pName) {
+    Debug.info("$tag: Canviant tema a '$pName'");
     
     // Actualitzar primer el model
-    (model as LdThemeSelectorModel).themeName = name;
+    (model as LdThemeSelectorModel).themeName = pName;
     
     // Després actualitzar el tema global
-    LdTheme.s.currentThemeName = name;
+    ThemeService.s.setCurrentTheme(pName);
     
     // Notificar al callback si existeix
     if (onThemeChanged != null) {
-      onThemeChanged!(name);
+      onThemeChanged!(pName);
     }
   }
   
   @override
   Widget buildContent(BuildContext context) {
-    return Column(
+    return SingleChildScrollView(  // Afegir ScrollView
+    child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         // Selector de mode (clar/fosc/sistema)
@@ -134,7 +136,7 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
         // Selector de temes
         if (displayThemes) _buildThemeSelector(context),
       ],
-    );
+    ));
   }
   
   /// Construeix el selector de mode (clar/fosc/sistema)
@@ -284,8 +286,8 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
               padding: const EdgeInsets.all(8.0),
               children: [
                 // Per a cada tema, crear un item
-                ...ThemeName.values.map((themeName) =>
-                  _buildThemeItem(context, themeName)
+                ...themes.map((pName) =>
+                  _buildThemeItem(context, pName)
                 ),
               ],
             ),
@@ -296,45 +298,48 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   }
   
   /// Construeix un item del selector de temes
-  Widget _buildThemeItem(BuildContext context, ThemeName themeName) {
+  Widget _buildThemeItem(BuildContext pCtx, String pThemeName) {
     final selectorModel = model as LdThemeSelectorModel?;
-    final isSelected = selectorModel?.themeName == themeName;
-    final theme = Theme.of(context);
+    final isSelected = selectorModel?.themeName == pThemeName;
+    final theme = Theme.of(pCtx);
     
     // Obtenim colors representatius del tema
     Color primaryColor;
     Color secondaryColor;
     
     // Assignem colors segons el tema
-    switch (themeName) {
-      case ThemeName.sabina:
+    switch (pThemeName) {
+      case themeSabina:
         primaryColor = const Color(0xFF4B70A5);
         secondaryColor = const Color(0xFFE8C074);
         break;
-      case ThemeName.natura:
+      case themeNatura:
         primaryColor = const Color(0xFF2E7D32);
         secondaryColor = const Color(0xFFFDD835);
         break;
-      case ThemeName.foc:
+      case themeFire:
         primaryColor = const Color(0xFFE64A19);
         secondaryColor = const Color(0xFFFFD54F);
         break;
-      case ThemeName.nit:
+      case themeNight:
         primaryColor = const Color(0xFF512DA8);
         secondaryColor = const Color(0xFF7C4DFF);
         break;
-      case ThemeName.custom1:
+      case themeCustom1:
         primaryColor = const Color(0xFF00796B);
         secondaryColor = const Color(0xFFFFAB40);
         break;
-      case ThemeName.custom2:
+      case themeCustom2:
         primaryColor = const Color(0xFF5D4037);
         secondaryColor = const Color(0xFF8D6E63);
         break;
+      default:
+        primaryColor = Colors.white;
+        secondaryColor = Colors.black;
     }
     
     return InkWell(
-      onTap: () => _changeTheme(themeName),
+      onTap: () => _changeTheme(pThemeName),
       borderRadius: BorderRadius.circular(8),
       child: Container(
         decoration: BoxDecoration(
@@ -343,52 +348,54 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
               ? Border.all(color: theme.colorScheme.primary, width: 2)
               : Border.all(color: theme.dividerColor, width: 1),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Previsualització de colors
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [primaryColor, secondaryColor],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.setOpacity(0.2),
-                    spreadRadius: 1,
-                    blurRadius: 2,
-                    offset: const Offset(0, 1),
+        child: SingleChildScrollView(  // Afegir ScrollView
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Previsualització de colors
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [primaryColor, secondaryColor],
                   ),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.setOpacity(0.2),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Nom del tema
-            Text(
-              LdTheme.s.getThemeNameString(themeName),
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? theme.colorScheme.primary : null,
+              
+              const SizedBox(height: 8),
+              
+              // Nom del tema
+              Text(
+                pThemeName,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  color: isSelected ? theme.colorScheme.primary : null,
+                ),
               ),
-            ),
-            
-            // Indicador de seleccionat
-            if (isSelected)
-              Icon(
-                Icons.check_circle,
-                color: theme.colorScheme.primary,
-                size: 16,
-              ),
-          ],
+              
+              // Indicador de seleccionat
+              if (isSelected)
+                Icon(
+                  Icons.check_circle,
+                  color: theme.colorScheme.primary,
+                  size: 16,
+                ),
+            ],
+          ),
         ),
       ),
     );

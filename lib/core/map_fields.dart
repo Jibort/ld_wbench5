@@ -1,4 +1,4 @@
-// map_fields.dart
+// lib/core/map_fields.dart
 // Constants per als noms dels camps utilitzats en mapes.
 // Created: 2025/04/29 dt. JIQ
 // Updated: 2025/05/09 dv. CLA - Ampliació de camps i millora de nomenclatura.
@@ -6,6 +6,8 @@
 // Updated: 2025/05/12 dt. CLA - Afegir constants que falten per completar l'arquitectura
 
 // Constants per tipus de mapes
+import 'package:ld_wbench5/core/extensions/string_extensions.dart';
+
 const String kMapTypeWidget = 'widget';
 const String kMapTypeEntity = 'entity';  
 const String kMapTypeConfig = 'config';
@@ -19,6 +21,7 @@ const String efThemeMode = "ef_theme_mode";
 const String efThemeName = "ef_theme_name";
 const String efOnPressed = 'ef_on_pressed';
 const String efOnTextChanged = 'ef_on_text_changed';
+const String efOnModeChanged = 'ef_on_mode_changed';
 const String efOnThemeChanged = 'ef_on_theme_changed';
 
 // LdTaggableMixin constants (cf) - Configuració general
@@ -146,3 +149,20 @@ const String cfCompact = 'cf_compact';
 // Constants específiques per a camps personalitzats
 const String cfArgs = 'cf_args';
 const String mfArgs = 'mf_args';
+
+// Constants específiques pels temes.
+const String themeSabina  = "ThemeSabina";
+const String themeNatura  = "ThemeNatura";
+const String themeFire    = "ThemeFire";
+const String themeNight   = "ThemeNight";
+const String themeCustom1 = "ThemeCustom1";
+const String themeCustom2 = "ThemeCustom2";
+
+const Strings lstThemes = [
+  themeSabina,
+  themeNatura,
+  themeFire,
+  themeNight,
+  themeCustom1,
+  themeCustom2,
+];

@@ -1,11 +1,11 @@
 // lib/ui/widgets/ld_theme_viewer/ld_theme_viewer_ctrl.dart
 // Controlador per al visualitzador de temes
-// Created: 2025/05/09 dv.
+// Created: 2025/05/09 dv. JIQ
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
-import 'package:ld_wbench5/services/ld_theme.dart';
+import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_viewer/ld_theme_viewer.dart';
 import 'package:ld_wbench5/core/extensions/color_extensions.dart';
 import 'package:ld_wbench5/utils/debug.dart';
@@ -95,13 +95,13 @@ extends LdWidgetCtrlAbs<LdThemeViewer> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Tema: ${LdTheme.s.getThemeNameString(LdTheme.s.currentThemeName)}",
+                  "Tema: ${ThemeService.s.currentThemeName}",
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  LdTheme.s.isDarkMode ? "Fosc" : "Clar",
+                  ThemeService.s.isDarkMode ? "Fosc" : "Clar",
                   style: TextStyle(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,

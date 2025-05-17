@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
-import 'package:ld_wbench5/services/ld_theme.dart';
+import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
@@ -24,13 +24,13 @@ class LdThemeSelectorModel extends LdWidgetModelAbs<LdThemeSelector> {
   }
   
   /// Tema actual
-  ThemeName _themeName = ThemeName.sabina;
-  ThemeName get themeName => _themeName;
-  set themeName(ThemeName name) {
-    if (_themeName != name) {
+  String _themeName = themeSabina;
+  String get themeName => _themeName;
+  set themeName(String pName) {
+    if (_themeName != pName) {
       notifyListeners(() {
-        _themeName = name;
-        Debug.info("$tag: Tema canviat a ${LdTheme.s.getThemeNameString(name)}");
+        _themeName = pName;
+        Debug.info("$tag: Tema canviat a $pName}");
       });
     }
   }
@@ -38,12 +38,12 @@ class LdThemeSelectorModel extends LdWidgetModelAbs<LdThemeSelector> {
   /// Constructor
   LdThemeSelectorModel(
     super.pWidget, {
-    required ThemeMode initialMode,
-    required ThemeName initialTheme,
+    required ThemeMode pInitialMode,
+    required String pInitialTheme,
   }) {
-    _themeMode = initialMode;
-    _themeName = initialTheme;
-    Debug.info("$tag: Model inicialitzat amb mode ${initialMode.toString()} i tema ${LdTheme.s.getThemeNameString(initialTheme)}");
+    _themeMode = pInitialMode;
+    _themeName = pInitialTheme;
+    Debug.info("$tag: Model inicialitzat amb mode ${pInitialMode.toString()} i tema $pInitialTheme");
   }
   
   /// Retorna un mapa amb els membres del model
@@ -74,10 +74,10 @@ class LdThemeSelectorModel extends LdWidgetModelAbs<LdThemeSelector> {
       }
     }
     
-    // Convertir string a ThemeName
+    // Convertir string a String
     String? themeNameStr = pMap['themeName'] as String?;
     if (themeNameStr != null) {
-      for (ThemeName name in ThemeName.values) {
+      for (String name in lstThemes) {
         if (name.toString() == themeNameStr) {
           _themeName = name;
           break;

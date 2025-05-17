@@ -6,7 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/services/ld_theme.dart';
+import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector_ctrl.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
@@ -19,24 +19,24 @@ class LdThemeSelector extends LdWidgetAbs {
   LdThemeSelector({
     Key? key,
     super.pTag,
-    bool displayMode = true,
-    bool displayThemes = true,
-    ThemeMode? initialMode,
-    ThemeName? initialTheme,
-    Function(ThemeMode)? onModeChanged,
-    Function(ThemeName)? onThemeChanged,
+    bool pDisplayMode = true,
+    bool pDisplayThemes = true,
+    ThemeMode? pInitialMode,
+    String? pInitialTheme,
+    Function(ThemeMode)? pfnOnModeChanged,
+    Function(String)? pfnOnThemeChanged,
   }) : super(pKey: key, pConfig: {
     // Configuració del controlador (cf)
-    cfDisplayMode: displayMode,
-    cfDisplayThemes: displayThemes,
+    cfDisplayMode: pDisplayMode,
+    cfDisplayThemes: pDisplayThemes,
     
     // Dades inicials del model (mf)
-    'mfInitialMode': initialMode ?? LdTheme.s.themeMode,
-    'mfInitialTheme': initialTheme ?? LdTheme.s.currentThemeName,
+    'mfInitialMode': pInitialMode ?? ThemeService.s.themeMode,
+    'mfInitialTheme': pInitialTheme ?? ThemeService.s.currentThemeName,
     
     // Callbacks (ef)
-    'efOnModeChanged': onModeChanged,
-    'efOnThemeChanged': onThemeChanged,
+    'efOnModeChanged': pfnOnModeChanged,
+    'efOnThemeChanged': pfnOnThemeChanged,
   }) {
     Debug.info("$tag: Selector de temes creat");
   }
@@ -47,6 +47,6 @@ class LdThemeSelector extends LdWidgetAbs {
   // PROPIETATS DE CONFIGURACIÓ
   bool get displayMode => config[cfDisplayMode] as bool? ?? true;
   bool get displayThemes => config[cfDisplayThemes] as bool? ?? true;
-  Function(ThemeMode)? get onModeChanged => config['efOnModeChanged'] as Function(ThemeMode)?;
-  Function(ThemeName)? get onThemeChanged => config['efOnThemeChanged'] as Function(ThemeName)?;
+  Function(String)? get onModeChanged => config[efOnModeChanged] as Function(String)?;
+  Function(String)? get onThemeChanged => config['efOnThemeChanged'] as Function(String)?;
 }
