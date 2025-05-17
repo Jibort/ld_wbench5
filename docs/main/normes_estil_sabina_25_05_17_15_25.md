@@ -49,6 +49,8 @@ import 'package:ld_wbench5/utils/debug.dart';
 ```
 
 ### Declaracions de Classe
+Sempre que sigui possible no fer tota la capçalera de la declaració en una sola línia.
+
 Alinear a la columna lliure més a la dreta:
 ```dart
 class      TestPageCtrl 

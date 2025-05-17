@@ -4,6 +4,7 @@
 // Updated: 2025/05/12 dt. CLA - Correcció per seguir l'arquitectura unificada
 
 import 'package:flutter/material.dart';
+
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
 import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
@@ -15,7 +16,8 @@ export 'test_page_model.dart';
 /// Pàgina de prova que mostra la nova arquitectura simplificada
 class   TestPage
 extends LdPageAbs {
-  /// Constructor
+  // CONSTRUCTORS/DESTRUCTORS =============================
+  /// Constructor base
   TestPage({
     Key? key, 
     super.pTag, 
@@ -44,6 +46,8 @@ extends LdPageAbs {
   TestPage.fromMap(MapDyns config)
     : super(pConfig: config);
 
+  // IMPLEMENTACIÓ 'LdPageAbs' ============================
+  /// Retorna la instància del controlador de la pàgina.
   @override
   LdPageCtrlAbs createCtrl() => TestPageCtrl(pPage: this);
 }

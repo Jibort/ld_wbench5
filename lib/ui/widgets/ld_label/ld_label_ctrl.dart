@@ -132,9 +132,7 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
       
       // Forçar una reconstrucció NOMÉS d'aquest widget
       if (mounted) {
-        setState(() {
-          Debug.info("${labelModel.tag}: Arguments de traducció actualitzats isoladament");
-        });
+        setState(() { });
       }
     }
   }
