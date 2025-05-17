@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 /// Gestor centralitzat d'events de l'aplicació
 class EventBus {
@@ -39,7 +38,7 @@ class EventBus {
   /// Emet un event a tots els subscriptors
   void emit(LdEvent pEvent) {
     if (!_ctrl.isClosed) {
-      Debug.info("EventBus: Emitting event of type ${pEvent.eType} from ${pEvent.srcTag} to targets ${pEvent.tgtTags}");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("EventBus: Emitting event of type ${pEvent.eType} from ${pEvent.srcTag} to targets ${pEvent.tgtTags}");
       _ctrl.add(pEvent);
     }
   }
@@ -55,7 +54,7 @@ class EventBus {
         tgtTags: targets,
       );
 
-      Debug.info("EventBus: Emitting targeted event of type ${event.eType} from ${event.srcTag} to targets $targets");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("EventBus: Emitting targeted event of type ${event.eType} from ${event.srcTag} to targets $targets");
       _ctrl.add(targetedEvent);
     }
   }
@@ -66,7 +65,7 @@ class EventBus {
       _componentsByEventType[eventType] = {};
     }
     _componentsByEventType[eventType]!.add(tag);
-    Debug.info("EventBus: Component $tag registrat per rebre events $eventType");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("EventBus: Component $tag registrat per rebre events $eventType");
   }
 
   /// Emet un event als components registrats per aquest tipus d'event
@@ -81,7 +80,7 @@ class EventBus {
           tgtTags: targets,
         );
         
-        Debug.info("EventBus: Emitting event of type ${event.eType} to registered components: $targets");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("EventBus: Emitting event of type ${event.eType} to registered components: $targets");
         _ctrl.add(targetedEvent);
       } else {
         // Si no hi ha components registrats, enviar a tothom
@@ -92,8 +91,8 @@ class EventBus {
   
   /// Tanca el stream controller
   void dispose() {
-    Debug.info("EventBus: Alliberant recursos ...");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("EventBus: Alliberant recursos ...");
     _ctrl.close();
-    Debug.info("EventBus: ... Recursos alliberats");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("EventBus: ... Recursos alliberats");
   }
 }

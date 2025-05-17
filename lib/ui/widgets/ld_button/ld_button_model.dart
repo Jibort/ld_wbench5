@@ -38,7 +38,7 @@ extends LdWidgetModelAbs<LdButton> {
     if (_label != value) {
       notifyListeners(() {
         _label = value;
-        Debug.info("$tag: Label canviat a '$value'");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Label canviat a '$value'");
       });
     }
   }
@@ -50,7 +50,7 @@ extends LdWidgetModelAbs<LdButton> {
     if (_positionalArgs != value) {
       notifyListeners(() {
         _positionalArgs = value;
-        Debug.info("$tag: Paràmetres posicionals canviats");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Paràmetres posicionals canviats");
       });
     }
   }
@@ -62,7 +62,7 @@ extends LdWidgetModelAbs<LdButton> {
     if (_namedArgs != value) {
       notifyListeners(() {
         _namedArgs = value;
-        Debug.info("$tag: Paràmetres nomenats canviats");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Paràmetres nomenats canviats");
       });
     }
   }
@@ -74,7 +74,7 @@ extends LdWidgetModelAbs<LdButton> {
     if (_isEnabled != value) {
       notifyListeners(() {
         _isEnabled = value;
-        Debug.info("$tag: Estat d'activació canviat a $value");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estat d'activació canviat a $value");
       });
     }
   }
@@ -89,7 +89,7 @@ extends LdWidgetModelAbs<LdButton> {
     if (_buttonType != value) {
       notifyListeners(() {
         _buttonType = value;
-        Debug.info("$tag: Tipus de botó canviat a $value");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Tipus de botó canviat a $value");
       });
     }
   }
@@ -99,14 +99,14 @@ extends LdWidgetModelAbs<LdButton> {
   LdButtonModel.fromMap(MapDyns pMap) : super.fromMap(pMap) {
     // Carregar propietats específiques de LdButtonModel
     _loadFromMap(pMap);
-    Debug.info("$tag: Model de botó creat des de mapa");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model de botó creat des de mapa");
   }
   
   /// Constructor alternatiu per compatibilitat
   LdButtonModel.forWidget(LdButton widget, MapDyns pMap) 
     : super.forWidget(widget, pMap) {
     _loadFromMap(pMap);
-    Debug.info("$tag: Model de botó creat per widget");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model de botó creat per widget");
   }
   
   /// Carrega les propietats des d'un mapa
@@ -137,7 +137,7 @@ extends LdWidgetModelAbs<LdButton> {
       );
     }
     
-    Debug.info("$tag: Propietats carregades - label='$_label', enabled=$_isEnabled, type=$_buttonType");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Propietats carregades - label='$_label', enabled=$_isEnabled, type=$_buttonType");
   }
   
   // TRADUCCIÓ ============================================

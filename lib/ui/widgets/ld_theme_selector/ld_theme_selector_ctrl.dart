@@ -10,7 +10,6 @@ import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/core/extensions/color_extensions.dart';
 
 /// Controlador per al selector de temes
@@ -38,18 +37,24 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   
   @override
   void initialize() {
-    Debug.info("$tag: Inicialitzant controlador");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Inicialitzant controlador");
     
     // Crear el model amb la configuració del widget
     final config = widget.config;
     final initialMode = config['mfInitialMode'] as ThemeMode? ?? ThemeService.s.themeMode;
     final initialTheme = config['mfInitialTheme'] as String? ?? ThemeService.s.currentThemeName;
     
-    model = LdThemeSelectorModel(
-      widget,
-      pInitialMode: initialMode,
-      pInitialTheme: initialTheme,
-    );
+    //JIQ>CLA: Eliminar quan toquin modificacions
+    //JIQ>CLA: model = LdThemeSelectorModel(
+    //JIQ>CLA:   widget,
+    //JIQ>CLA:   pInitialMode: initialMode,
+    //JIQ>CLA:   pInitialTheme: initialTheme,
+    //JIQ>CLA: );
+    model = LdThemeSelectorModel.fromMap({
+      cfTag: tag,
+      mfInitialMode: initialMode.toString(),
+      mfInitialTheme: initialTheme,
+    });
   }
   
   @override
@@ -59,7 +64,7 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   
   @override
   void onEvent(LdEvent event) {
-    Debug.info("$tag: Rebut event ${event.eType.name}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Rebut event ${event.eType.name}");
     
     // Respondre a canvis de tema globals
     if (event.eType == EventType.themeChanged) {
@@ -83,7 +88,7 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
       // Reconstruir si cal
       if (needsUpdate && mounted) {
         setState(() {
-          Debug.info("$tag: Actualitzant UI després del canvi global de tema");
+          //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Actualitzant UI després del canvi global de tema");
         });
       }
     }
@@ -91,7 +96,7 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   
   /// Canvia el mode del tema
   void _changeThemeMode(ThemeMode mode) {
-    Debug.info("$tag: Canviant mode de tema a ${mode.toString()}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Canviant mode de tema a ${mode.toString()}");
     
     // Actualitzar primer el model
     (model as LdThemeSelectorModel).themeMode = mode;
@@ -107,7 +112,7 @@ class LdThemeSelectorCtrl extends LdWidgetCtrlAbs<LdThemeSelector> {
   
   /// Canvia el tema
   void _changeTheme(String pName) {
-    Debug.info("$tag: Canviant tema a '$pName'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Canviant tema a '$pName'");
     
     // Actualitzar primer el model
     (model as LdThemeSelectorModel).themeName = pName;

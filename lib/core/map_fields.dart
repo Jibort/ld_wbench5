@@ -166,3 +166,7 @@ const Strings lstThemes = [
   themeCustom1,
   themeCustom2,
 ];
+
+//JIQ>CLA: Col·loca aquestes constants en la secció que toqui.
+const String mfInitialMode  = 'mfInitialMode';
+const String mfInitialTheme = 'mfInitialTheme';

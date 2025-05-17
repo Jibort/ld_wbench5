@@ -13,7 +13,6 @@ import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field_ctrl.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field_model.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 export 'ld_text_field_ctrl.dart';
 export 'ld_text_field_model.dart';
@@ -59,13 +58,13 @@ extends LdWidgetAbs {
     // Propietats d'EVENTS (ef)
     efOnTextChanged: onTextChanged,
   }) {
-    Debug.info("$tag: LdTextField creat amb configuració");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: LdTextField creat amb configuració");
   }
 
   /// Constructor alternatiu a partir d'un mapa
   LdTextField.fromMap(MapDyns pConfig)
   : super(pConfig: pConfig) {
-    Debug.info("$tag: LdTextField creat des d'un mapa");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: LdTextField creat des d'un mapa");
   }
 
   @override

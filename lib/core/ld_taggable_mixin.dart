@@ -31,7 +31,7 @@ mixin LdTaggableMixin {
   /// Estableix el tag com una propietat simple
   set tag(String pNewTag) {
     _tag = pNewTag;
-    Debug.info("Tag assignat: $_tag");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("Tag assignat: $_tag");
   }
   
   // FUNCIONALITAT TAG'S ==================================
@@ -49,10 +49,8 @@ mixin LdTaggableMixin {
   /// Inicialitza i retorna la GlobalKey per a widgets
   /// Només crear quan realment necessitem la key
   GlobalKey<T> _ensureGlobalKey<T extends State>() {
-    if (_globalKey == null) {
-      _globalKey = GlobalKey<T>();
-      Debug.info("$tag: GlobalKey creada sota demanda");
-    }
+    _globalKey ??= GlobalKey<T>();
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: GlobalKey creada sota demanda");
     return _globalKey! as GlobalKey<T>;
   }
   

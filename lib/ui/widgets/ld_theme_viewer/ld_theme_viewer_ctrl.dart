@@ -8,7 +8,6 @@ import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_viewer/ld_theme_viewer.dart';
 import 'package:ld_wbench5/core/extensions/color_extensions.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 /// Classe auxiliar per representar un estil de text
 class _TextItem {
@@ -51,7 +50,7 @@ extends LdWidgetCtrlAbs<LdThemeViewer> {
   
   @override
   void initialize() {
-    Debug.info("$tag: Inicialitzant controlador");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Inicialitzant controlador");
   }
   
   @override
@@ -61,13 +60,13 @@ extends LdWidgetCtrlAbs<LdThemeViewer> {
   
   @override
   void onEvent(LdEvent event) {
-    Debug.info("$tag: Rebut event ${event.eType.name}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Rebut event ${event.eType.name}");
     
     // Reconstruir quan canvia el tema
     if (event.eType == EventType.themeChanged) {
       if (mounted) {
         setState(() {
-          Debug.info("$tag: Reconstruint visualitzador després del canvi de tema");
+          //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Reconstruint visualitzador després del canvi de tema");
         });
       }
     }

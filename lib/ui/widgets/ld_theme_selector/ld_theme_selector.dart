@@ -8,7 +8,6 @@ import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector_ctrl.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 export 'ld_theme_selector_ctrl.dart';
 export 'ld_theme_selector_model.dart';
@@ -38,7 +37,7 @@ class LdThemeSelector extends LdWidgetAbs {
     'efOnModeChanged': pfnOnModeChanged,
     'efOnThemeChanged': pfnOnThemeChanged,
   }) {
-    Debug.info("$tag: Selector de temes creat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Selector de temes creat");
   }
 
   @override

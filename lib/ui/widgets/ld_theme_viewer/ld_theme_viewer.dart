@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_viewer/ld_theme_viewer_ctrl.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 export 'ld_theme_viewer_ctrl.dart';
 export 'ld_theme_viewer_model.dart';
@@ -28,7 +27,7 @@ extends LdWidgetAbs {
     cfShowColorScheme: showColorScheme,
     cfCompact: compact,
   }) {
-    Debug.info("$tag: Visualitzador de temes creat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Visualitzador de temes creat");
   }
 
   @override

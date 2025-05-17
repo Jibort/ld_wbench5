@@ -20,21 +20,21 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
 
   @override
   void initialize() {
-    Debug.info("$tag: Inicialitzant controlador d'etiqueta");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Inicialitzant controlador d'etiqueta");
     _createModel();
-    Debug.info("$tag: Model creat amb text: '${(model as LdLabelModel?)?.label ?? ''}'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model creat amb text: '${(model as LdLabelModel?)?.label ?? ''}'");
   }
 
   void _createModel() {
-    Debug.info("$tag: Creant model del Label");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Creant model del Label");
     try {
       model = LdLabelModel.fromMap(widget.config);
-      Debug.info("$tag: Model creat amb èxit. Text: '${(model as LdLabelModel).label}'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model creat amb èxit. Text: '${(model as LdLabelModel).label}'");
     } catch (e) {
       Debug.error("$tag: Error creant model: $e");
       try {
         model = LdLabelModel.fromMap({});
-        Debug.info("$tag: Model de recanvi creat");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model de recanvi creat");
       } catch (e2) {
         Debug.error("$tag: Error creant model de recanvi: $e2");
       }
@@ -43,17 +43,17 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
 
   @override
   void update() {
-    Debug.info("$tag: Actualització del controlador d'etiqueta");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Actualització del controlador d'etiqueta");
   }
 
   @override
   void onEvent(LdEvent event) {
-    Debug.info("$tag: Rebut event ${event.eType.name}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Rebut event ${event.eType.name}");
     if (event.eType == EventType.languageChanged || event.eType == EventType.themeChanged) {
-      Debug.info("$tag: Processant canvi ${event.eType.name}");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Processant canvi ${event.eType.name}");
       if (mounted) {
         setState(() {
-          Debug.info("$tag: Reconstruint després de canvi");
+          //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Reconstruint després de canvi");
         });
       }
     }
@@ -61,11 +61,11 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
 
   @override
   void onModelChanged(LdModelAbs pModel, void Function() pfnUpdate) {
-    Debug.info("$tag: Model ha canviat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model ha canviat");
     pfnUpdate();
     if (mounted) {
       setState(() {
-        Debug.info("$tag: Reconstruint després del canvi del model");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Reconstruint després del canvi del model");
       });
     }
   }
@@ -83,7 +83,7 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
       labelModel.namedArgs,
     );
 
-    Debug.info("$tag: Renderitzant RichText amb: '$translated'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Renderitzant RichText amb: '$translated'");
 
     return RichText(
       text: TextSpan(
@@ -102,7 +102,7 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
     final labelModel = model as LdLabelModel?;
     if (labelModel != null) {
       labelModel.label = pNewLabel;
-      Debug.info("$tag: Text actualitzat a '$pNewLabel'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Text actualitzat a '$pNewLabel'");
     }
   }
 
@@ -118,7 +118,7 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
         if (namedArgs != null) labelModel.namedArgs = namedArgs;
         // La clau del label no canvia, només els arguments
       });
-      Debug.info("$tag: Arguments actualitzats. Clau: '${labelModel.label}'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Arguments actualitzats. Clau: '${labelModel.label}'");
     }
   }
 
@@ -131,7 +131,7 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
     final labelModel = model as LdLabelModel?;
     if (labelModel != null) {
       labelModel.labelStyle = newStyle;
-      Debug.info("$tag: Estil de text actualitzat");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estil de text actualitzat");
     }
   }
 }

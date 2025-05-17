@@ -47,14 +47,14 @@ class L with LdTaggableMixin {
   L._() {
     tag = className;
     _loadDictionaries();
-    Debug.info("$tag: Servei inicialitzat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Servei inicialitzat");
   }
 
   // IDIOMES =============================================
   static Locale get deviceLocale => s._deviceLocale;
   static set deviceLocale(Locale locale) {
     s._deviceLocale = locale;
-    Debug.info("${s.tag}: Idioma del dispositiu detectat: ${locale.languageCode}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("${s.tag}: Idioma del dispositiu detectat: ${locale.languageCode}");
     if (s._currentLocale == null) {
       setCurrentLocale(locale);
     }
@@ -74,17 +74,17 @@ class L with LdTaggableMixin {
     String languageCode = locale.languageCode;
     if (!s._dictionaries.containsKey(languageCode)) {
       languageCode = 'es';
-      Debug.info("${s.tag}: Idioma $languageCode no disponible, usant 'es' per defecte");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("${s.tag}: Idioma $languageCode no disponible, usant 'es' per defecte");
     }
 
     Locale? oldLocale = s._currentLocale;
     if (oldLocale?.languageCode == languageCode) {
-      Debug.info("${s.tag}: L'idioma ja és $languageCode, no cal canviar");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("${s.tag}: L'idioma ja és $languageCode, no cal canviar");
       return;
     }
 
     s._currentLocale = Locale(languageCode);
-    Debug.info("${s.tag}: Idioma canviat de ${oldLocale?.languageCode ?? 'null'} a $languageCode");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("${s.tag}: Idioma canviat de ${oldLocale?.languageCode ?? 'null'} a $languageCode");
 
     List<String> textComponents = [SabinaApp.s.tag];
 
@@ -103,7 +103,7 @@ class L with LdTaggableMixin {
 
   // DICCIONARIS ==========================================
   void _loadDictionaries() {
-    Debug.info("$tag: Carregant diccionaris");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Carregant diccionaris");
 
     _dictionaries['ca'] = Dictionary.from({
       sSabina: "Sabina",
@@ -173,7 +173,7 @@ class L with LdTaggableMixin {
     if (translation == errInText) {
       Debug.warn("L.tx: Translation key '$baseKey' not found in '${locale.languageCode}' dictionary");
     } else {
-      Debug.info("L.tx: Translated '$baseKey' to '$translation' in '${locale.languageCode}'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("L.tx: Translated '$baseKey' to '$translation' in '${locale.languageCode}'");
     }
 
     // Substituir valors posicionals

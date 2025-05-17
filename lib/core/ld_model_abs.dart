@@ -41,23 +41,23 @@ abstract class LdModelAbs with LdTaggableMixin {
   // FUNCIONALITAT OBSERVADORS ============================
   void attachObserver(LdModelObserverIntf pObs) {
     _observers.add(pObs);
-    Debug.info("$tag: Observador assignat. Total: ${_observers.length}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Observador assignat. Total: ${_observers.length}");
   }
 
   /// Mètode sobrecarregat per acceptar funcions directament
   void attachObserverFunction(FnModelObs pObserverFn) {
     final wrapper = _FunctionObserverWrapper(pObserverFn);
     _observers.add(wrapper);
-    Debug.info("$tag: Observador funció assignat. Total: ${_observers.length}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Observador funció assignat. Total: ${_observers.length}");
   }
 
   void detachObserver([LdModelObserverIntf? pObs]) {
     if (pObs != null) {
       _observers.remove(pObs);
-      Debug.info("$tag: Observador específic desvinculat. Restants: ${_observers.length}");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Observador específic desvinculat. Restants: ${_observers.length}");
     } else {
       _observers.clear();
-      Debug.info("$tag: Tots els observadors desvinculats");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Tots els observadors desvinculats");
     }
   }
 
@@ -67,7 +67,7 @@ abstract class LdModelAbs with LdTaggableMixin {
       obs is _FunctionObserverWrapper && 
       obs.function == pObserverFn
     );
-    Debug.info("$tag: Observador funció desvinculat. Restants: ${_observers.length}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Observador funció desvinculat. Restants: ${_observers.length}");
   }
 
   void notifyListeners(void Function() action, [bool pOnlyWithObs = false]) {
@@ -75,7 +75,7 @@ abstract class LdModelAbs with LdTaggableMixin {
       action();
     }
     if (_observers.isNotEmpty) {
-      Debug.info("$tag: Notificant ${_observers.length} observador(s) del canvi");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Notificant ${_observers.length} observador(s) del canvi");
       for (final observer in _observers) {
         observer.onModelChanged(this, action);
       }

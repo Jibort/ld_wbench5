@@ -9,7 +9,6 @@ import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/utils/str_full_set.dart';
 
 /// Model de dades del widget LdAppBar.
@@ -22,7 +21,7 @@ extends LdWidgetModelAbs<LdAppBar> {
   String get titleKey {
     if (_titleKey.t != null && _titleKey.isKey) {
       String translated = _titleKey.tx!;
-      Debug.info("$tag: Títol traduït: '$translated' de clau '${_titleKey.t}'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Títol traduït: '$translated' de clau '${_titleKey.t}'");
       return translated;
     }
     return _titleKey.t ?? errInText;
@@ -32,7 +31,7 @@ extends LdWidgetModelAbs<LdAppBar> {
   set titleKey(String pTitleKey) {
     notifyListeners(() {
       _titleKey.t = pTitleKey;
-      Debug.info("$tag: Clau/text de títol establert a '$pTitleKey'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Clau/text de títol establert a '$pTitleKey'");
     });
   }
 
@@ -43,7 +42,7 @@ extends LdWidgetModelAbs<LdAppBar> {
   String? get subTitleKey {
     if (_subTitleKey.t != null && _subTitleKey.isKey) {
       String translated = _subTitleKey.tx!;
-      Debug.info("$tag: Subtítol traduït: '$translated' de clau '${_subTitleKey.t}'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Subtítol traduït: '$translated' de clau '${_subTitleKey.t}'");
       return translated;
     }
     return _subTitleKey.t;
@@ -53,7 +52,7 @@ extends LdWidgetModelAbs<LdAppBar> {
   set subTitleKey(String? pSubTitleKey) {
     notifyListeners(() {
       _subTitleKey.t = pSubTitleKey;
-      Debug.info("$tag: Clau/text de subtítol establert a '$pSubTitleKey'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Clau/text de subtítol establert a '$pSubTitleKey'");
     });
   }
   
@@ -62,17 +61,17 @@ extends LdWidgetModelAbs<LdAppBar> {
     notifyListeners(() {
       _titleKey.t = pTitleKey;
       _subTitleKey.t = pSubTitleKey;
-      Debug.info("$tag: Títol i subtítol establerts a '$pTitleKey' i '$pSubTitleKey'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Títol i subtítol establerts a '$pTitleKey' i '$pSubTitleKey'");
     });
   }
 
   /// Actualitza les traduccions quan canvia l'idioma
   void updateTranslations() {
     notifyListeners(() {
-      Debug.info("$tag: Textos actualitzats per canvi d'idioma");
-      Debug.info("$tag: Títol actualitzat: '$titleKey'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Textos actualitzats per canvi d'idioma");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Títol actualitzat: '$titleKey'");
       if (subTitleKey != null) {
-        Debug.info("$tag: Subtítol actualitzat: '$subTitleKey'");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Subtítol actualitzat: '$subTitleKey'");
       }
     });
   }
@@ -82,7 +81,7 @@ extends LdWidgetModelAbs<LdAppBar> {
     : super.forWidget(widget, {}) {
     _titleKey.t = pTitleKey;
     _subTitleKey.t = pSubTitleKey;
-    Debug.info("$tag: Model creat amb títol '$pTitleKey' i subtítol '$pSubTitleKey'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model creat amb títol '$pTitleKey' i subtítol '$pSubTitleKey'");
   }
 
   /// Constructor des d'un mapa de valors.
@@ -97,7 +96,7 @@ extends LdWidgetModelAbs<LdAppBar> {
     super.fromMap(pMap);
     titleKey = pMap[mfTitle] as String? ?? pMap[cfTitleKey] as String? ?? "";
     subTitleKey = pMap[mfSubTitle] as String? ?? pMap[cfSubTitleKey] as String?;
-    Debug.info("$tag: Model carregat des de mapa amb títol='$titleKey'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model carregat des de mapa amb títol='$titleKey'");
   }
 
   /// Retorna un mapa amb els membres del model.

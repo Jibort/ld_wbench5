@@ -10,7 +10,6 @@ import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label_ctrl.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 /// Widget d'etiqueta amb suport per a traducció i interpolació
 class LdLabel extends LdWidgetAbs {
@@ -41,7 +40,7 @@ class LdLabel extends LdWidgetAbs {
             cfLabelNamedArgs: pNamedArgs,
           },
         ) {
-    Debug.info("$tag: LdLabel creat amb text '$pLabel'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: LdLabel creat amb text '$pLabel'");
   }
 
   /// Constructor a partir d'un mapa de configuració

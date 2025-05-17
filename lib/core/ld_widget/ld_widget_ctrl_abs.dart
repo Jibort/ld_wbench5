@@ -17,7 +17,6 @@ import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/lifecycle_interface.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador base pels widgets.
 abstract   class LdWidgetCtrlAbs<T extends LdWidgetAbs>
@@ -47,7 +46,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
         _model!.attachObserver(this);
       }
       
-      Debug.info("$tag: Model actualitzat");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model actualitzat");
     }
   }
   
@@ -69,12 +68,12 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     if (_isVisible != value && mounted) {
       setState(() {
         _isVisible = value;
-        Debug.info("$tag: Visibilitat canviada a $value");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Visibilitat canviada a $value");
       });
     } else if (_isVisible != value) {
       // Si no està muntat, només canviem el valor
       _isVisible = value;
-      Debug.info("$tag: Visibilitat canviada a $value (sense reconstrucció)");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Visibilitat canviada a $value (sense reconstrucció)");
     }
   }
 
@@ -101,7 +100,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
         if (!value && hasFocus) {
           _focusNode.unfocus();
         }
-        Debug.info("$tag: Capacitat de focus canviada a $value");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Capacitat de focus canviada a $value");
       });
     } else if (_canFocus != value) {
       // Si no està muntat, només canviem el valor
@@ -109,7 +108,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
       if (!value && hasFocus) {
         _focusNode.unfocus();
       }
-      Debug.info("$tag: Capacitat de focus canviada a $value (sense reconstrucció)");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Capacitat de focus canviada a $value (sense reconstrucció)");
     }
   }
   
@@ -127,7 +126,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
         if (!value && hasFocus) {
           _focusNode.unfocus();
         }
-        Debug.info("$tag: Estat d'activació canviat a $value");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estat d'activació canviat a $value");
       });
     } else if (_isEnabled != value) {
       // Si no està muntat, només canviem el valor
@@ -135,7 +134,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
       if (!value && hasFocus) {
         _focusNode.unfocus();
       }
-      Debug.info("$tag: Estat d'activació canviat a $value (sense reconstrucció)");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estat d'activació canviat a $value (sense reconstrucció)");
     }
   }
   
@@ -143,7 +142,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   void requestFocus() {
     if (canFocus && isEnabled && isVisible) {
       _focusNode.requestFocus();
-      Debug.info("$tag: Focus demanat");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Focus demanat");
     }
   }
   
@@ -178,38 +177,38 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     
     if (needsUpdate && mounted) {
       setState(() {
-        Debug.info("$tag: Estat del widget actualitzat");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estat del widget actualitzat");
       });
     } else if (needsUpdate) {
-      Debug.info("$tag: Estat del widget actualitzat (sense reconstrucció)");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estat del widget actualitzat (sense reconstrucció)");
     }
   }
   
   /// Toggle per canviar la visibilitat
   void toggleVisibility() {
-    Debug.info("$tag: Cridant a toggleVisibility()");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Cridant a toggleVisibility()");
     if (mounted) {
       setState(() {
         _isVisible = !_isVisible;
-        Debug.info("$tag: Visibilitat alternada a $_isVisible");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Visibilitat alternada a $_isVisible");
       });
     } else {
       _isVisible = !_isVisible;
-      Debug.info("$tag: Visibilitat alternada a $_isVisible (sense reconstrucció)");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Visibilitat alternada a $_isVisible (sense reconstrucció)");
     }
   }
   
   /// Toggle per canviar l'estat actiu
   void toggleEnabled() {
-    Debug.info("$tag: Cridant a toggleEnabled()");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Cridant a toggleEnabled()");
     if (mounted) {
       setState(() {
         _isEnabled = !_isEnabled;
-        Debug.info("$tag: Estat d'activació alternat a $_isEnabled");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estat d'activació alternat a $_isEnabled");
       });
     } else {
       _isEnabled = !_isEnabled;
-      Debug.info("$tag: Estat d'activació alternat a $_isEnabled (sense reconstrucció)");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estat d'activació alternat a $_isEnabled (sense reconstrucció)");
     }
   }
   
@@ -227,9 +226,9 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     // Configurar listener de focus per debugging
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
-        Debug.info("$tag: Ha rebut el focus");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Ha rebut el focus");
       } else {
-        Debug.info("$tag: Ha perdut el focus");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Ha perdut el focus");
       }
     });
   }
@@ -248,7 +247,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     _createModelIfNeeded();
     
     initialize();
-    Debug.info("$tag: Controlador inicialitzat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Controlador inicialitzat");
   }
   
   /// Carrega la configuració des del widget
@@ -260,7 +259,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     _canFocus = config[cfCanFocus] as bool? ?? true;
     _isEnabled = config[cfIsEnabled] as bool? ?? true;
     
-    Debug.info("$tag: Configuració carregada: visible=$_isVisible, canFocus=$_canFocus, enabled=$_isEnabled");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Configuració carregada: visible=$_isVisible, canFocus=$_canFocus, enabled=$_isEnabled");
   }
   
   /// Crea el model del widget si és necessari
@@ -278,7 +277,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
         event.eType == EventType.themeChanged || 
         event.eType == EventType.rebuildUI || 
         event.isTargetedAt(tag)) {
-      Debug.info("$tag: Processant event ${event.eType.name}");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Processant event ${event.eType.name}");
       onEvent(event);
     }
   }
@@ -290,7 +289,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    Debug.info("$tag: Dependències actualitzades");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Dependències actualitzades");
     update();
   }
   
@@ -301,7 +300,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     
     // Verificar si la configuració ha canviat
     if (_hasConfigChanged(oldWidget)) {
-      Debug.info("$tag: Configuració actualitzada, recarregant");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Configuració actualitzada, recarregant");
       _loadConfigFromWidget();
       
       // Forçar reconstrucció si és necessari
@@ -322,7 +321,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     for (final key in newConfig.keys) {
       if (key.startsWith('cf') && key != cfTag) {
         if (oldConfig[key] != newConfig[key]) {
-          Debug.info("$tag: Canvi detectat en propietat $key: ${oldConfig[key]} -> ${newConfig[key]}");
+          //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Canvi detectat en propietat $key: ${oldConfig[key]} -> ${newConfig[key]}");
           hasChanged = true;
           break;
         }
@@ -335,7 +334,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   /// Allibera els recursos
   @override
   void dispose() {
-    Debug.info("$tag: Alliberant recursos del controlador...");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Alliberant recursos del controlador...");
     
     // Cridar cleanup del widget per alliberar el mapa
     widget.cleanup();
@@ -353,13 +352,13 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     }
     
     super.dispose();
-    Debug.info("$tag: Recursos del controlador alliberats");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Recursos del controlador alliberats");
   }
   
   /// Notificació de canvi en un model
   @override
   void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
-    Debug.info("$tag: Model ha canviat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model ha canviat");
     
     // Executar la funció d'actualització
     pfUpdate();
@@ -367,7 +366,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     // Reconstruir si està muntat
     if (mounted) {
       setState(() {
-        Debug.info("$tag: Reconstruint després del canvi del model");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Reconstruint després del canvi del model");
       });
     }
   }
@@ -375,7 +374,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   /// Construeix el widget
   @override
   Widget build(BuildContext context) {
-    Debug.info("$tag: Construint widget. isVisible=$_isVisible");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Construint widget. isVisible=$_isVisible");
     
     // Si el widget no és visible, retornem un SizedBox buit
     if (!_isVisible) {

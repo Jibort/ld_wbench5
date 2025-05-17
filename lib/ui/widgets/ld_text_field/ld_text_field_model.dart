@@ -9,7 +9,6 @@ import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 
 /// Model de dades del widget LdTextField
@@ -23,7 +22,7 @@ extends LdWidgetModelAbs<LdTextField> {
     if (_text != value) {
       notifyListeners(() {
         _text = value;
-        Debug.info("$tag: Text canviat a '$value'");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Text canviat a '$value'");
       });
     }
   }
@@ -51,7 +50,7 @@ extends LdWidgetModelAbs<LdTextField> {
             pMap[mfInitialText] as String? ?? 
             "";  // Valor per defecte que prevé null
     
-    Debug.info("$tag: Model carregat des de mapa amb text='$_text'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model carregat des de mapa amb text='$_text'");
   }
 
   @override
@@ -104,7 +103,7 @@ extends LdWidgetModelAbs<LdTextField> {
   void clear() {
     notifyListeners(() {
       _text = "";
-      Debug.info("$tag: Model netejat");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model netejat");
     });
   }
 }

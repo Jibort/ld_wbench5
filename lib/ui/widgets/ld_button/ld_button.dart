@@ -9,10 +9,7 @@ import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/services/L.dart';
-import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button_ctrl.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 export 'package:ld_wbench5/ui/widgets/ld_button/ld_button_ctrl.dart';
 export 'package:ld_wbench5/ui/widgets/ld_button/ld_button_model.dart';
@@ -37,14 +34,14 @@ class LdButton extends LdWidgetAbs {
           cfButtonStyle: style,
           efOnPressed: onPressed,
         }) {
-    Debug.info("$tag: text pla: '$text', text traduït: '${(text??errInText).tx}'");
-    Debug.info("$tag: LdButton creat amb configuració");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: text pla: '$text', text traduït: '${(text??errInText).tx}'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: LdButton creat amb configuració");
   }
 
   // CONSTRUCTOR FROM MAP ==================================
   LdButton.fromMap(MapDyns configMap)
       : super(pConfig: configMap) {
-    Debug.info("$tag: LdButton creat des d'un mapa");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: LdButton creat des d'un mapa");
   }
 
   // CONTROLADOR ASSOCIAT ==================================

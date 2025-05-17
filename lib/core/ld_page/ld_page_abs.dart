@@ -13,7 +13,6 @@ import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/maps_service.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 export 'ld_page_ctrl_abs.dart';
 export 'ld_page_model_abs.dart';
@@ -38,7 +37,7 @@ implements LdModelObserverIntf {
     final fullConfig = _buildFullConfig(tag, pConfig ?? MapDyns());
     _mapId = MapsService.s.registerMap(tag, fullConfig, kMapTypeWidget);
     
-    Debug.info("$tag: Creant pàgina amb mapa (ID: $_mapId)");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Creant pàgina amb mapa (ID: $_mapId)");
   }
 
   static MapDyns _buildFullConfig(String tag, MapDyns config) {
@@ -51,7 +50,7 @@ implements LdModelObserverIntf {
   /// Allibera recursos quan la pàgina és eliminada
   void cleanup() {
     MapsService.s.releaseMap(_mapId);
-    Debug.info("$tag: Recursos de la pàgina alliberats");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Recursos de la pàgina alliberats");
   }
 
   /// Obté el mapa de configuració

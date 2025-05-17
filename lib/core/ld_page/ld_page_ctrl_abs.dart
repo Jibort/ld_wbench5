@@ -13,7 +13,6 @@ import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_abs.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/lifecycle_interface.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador base abstracte per a les pàgines.
 abstract   class LdPageCtrlAbs<T extends LdPageAbs>
@@ -44,7 +43,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
         _model!.attachObserver(this);
       }
       
-      Debug.info("$tag: Model de pàgina actualitzat");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model de pàgina actualitzat");
     }
   }
   
@@ -72,7 +71,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     _createModelIfNeeded();
     
     initialize();
-    Debug.info("$tag: Controlador de pàgina inicialitzat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Controlador de pàgina inicialitzat");
   }
   
   /// Crea el model de la pàgina si és necessari
@@ -90,7 +89,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
         event.eType == EventType.themeChanged || 
         event.eType == EventType.rebuildUI || 
         event.isTargetedAt(tag)) {
-      Debug.info("$tag: Processant event ${event.eType.name}");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Processant event ${event.eType.name}");
       onEvent(event);
     }
   }
@@ -102,7 +101,7 @@ implements LdLifecycleIntf, LdModelObserverIntf {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    Debug.info("$tag: Dependències actualitzades");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Dependències actualitzades");
     update();
   }
   
@@ -113,13 +112,13 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     
     // Verificar si necessitem actualitzar quelcom de la pàgina
     // Per defecte, les pàgines no tenen una configuració tan dinàmica com els widgets
-    Debug.info("$tag: Pàgina actualitzada");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Pàgina actualitzada");
   }
   
   /// Allibera els recursos
   @override
   void dispose() {
-    Debug.info("$tag: Alliberant recursos de la pàgina...");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Alliberant recursos de la pàgina...");
     
     // Cancelar subscripció a events
     EventBus.s.cancel(_subcEvent);
@@ -132,13 +131,13 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     }
     
     super.dispose();
-    Debug.info("$tag: Recursos de la pàgina alliberats");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Recursos de la pàgina alliberats");
   }
   
   /// Notificació de canvi en un model
   @override
   void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
-    Debug.info("$tag.onModelChanged(): executant ...");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag.onModelChanged(): executant ...");
     
     // Executar l'actualització sempre
     pfUpdate();
@@ -146,17 +145,17 @@ implements LdLifecycleIntf, LdModelObserverIntf {
     // Però només reconstruir si està muntat
     if (mounted) {
       setState(() {
-        Debug.info("$tag.onModelChanged(): Reconstruint widget");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag.onModelChanged(): Reconstruint widget");
       });
     }
     
-    Debug.info("$tag.onModelChanged(): ... executat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag.onModelChanged(): ... executat");
   }
 
   /// Construeix la pàgina
   @override
   Widget build(BuildContext context) {
-    Debug.info("$tag: Construint pàgina");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Construint pàgina");
     return buildPage(context);
   }
   

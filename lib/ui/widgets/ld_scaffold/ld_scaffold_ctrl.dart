@@ -11,7 +11,6 @@ import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador per al LdScaffold
 class LdScaffoldCtrl extends LdWidgetCtrlAbs<LdScaffold> {
@@ -20,7 +19,7 @@ class LdScaffoldCtrl extends LdWidgetCtrlAbs<LdScaffold> {
   
   @override
   void initialize() {
-    Debug.info("$tag: Inicialitzant controlador del scaffold");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Inicialitzant controlador del scaffold");
   }
   
   @override
@@ -30,27 +29,27 @@ class LdScaffoldCtrl extends LdWidgetCtrlAbs<LdScaffold> {
   
   @override
   void onEvent(LdEvent event) {
-    Debug.info("$tag: Rebut esdeveniment ${event.eType.name}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Rebut esdeveniment ${event.eType.name}");
     
     // Gestionar canvis d'idioma
     if (event.eType == EventType.languageChanged) {
-      Debug.info("$tag: Processant esdeveniment de canvi d'idioma");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Processant esdeveniment de canvi d'idioma");
       
       // Forçar una reconstrucció del Scaffold
       if (mounted) {
         setState(() {
-          Debug.info("$tag: Forçant reconstrucció del Scaffold amb el nou idioma");
+          //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Forçant reconstrucció del Scaffold amb el nou idioma");
         });
       }
     }
     
     // Gestionar reconstrucció global de la UI
     if (event.eType == EventType.rebuildUI) {
-      Debug.info("$tag: Processant esdeveniment de reconstrucció de la UI");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Processant esdeveniment de reconstrucció de la UI");
       
       if (mounted) {
         setState(() {
-          Debug.info("$tag: Reconstruint el Scaffold");
+          //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Reconstruint el Scaffold");
         });
       }
     }
@@ -58,7 +57,7 @@ class LdScaffoldCtrl extends LdWidgetCtrlAbs<LdScaffold> {
   
   @override
   Widget buildContent(BuildContext context) {
-    Debug.info("$tag: Construint Scaffold");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Construint Scaffold");
     
     // Obtenir configuració del widget
     final config = widget.config;

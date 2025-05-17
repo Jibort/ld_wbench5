@@ -7,7 +7,6 @@ import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/ui/widgets/ld_theme_selector/ld_theme_selector.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 /// Model de dades per al selector de temes
 class LdThemeSelectorModel extends LdWidgetModelAbs<LdThemeSelector> {
@@ -18,7 +17,7 @@ class LdThemeSelectorModel extends LdWidgetModelAbs<LdThemeSelector> {
     if (_themeMode != mode) {
       notifyListeners(() {
         _themeMode = mode;
-        Debug.info("$tag: Mode de tema canviat a ${mode.toString()}");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Mode de tema canviat a ${mode.toString()}");
       });
     }
   }
@@ -30,12 +29,12 @@ class LdThemeSelectorModel extends LdWidgetModelAbs<LdThemeSelector> {
     if (_themeName != pName) {
       notifyListeners(() {
         _themeName = pName;
-        Debug.info("$tag: Tema canviat a $pName}");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Tema canviat a $pName}");
       });
     }
   }
   
-  /// Constructor
+  /// Constructor Obsolet
   LdThemeSelectorModel(
     super.pWidget, {
     required ThemeMode pInitialMode,
@@ -43,9 +42,14 @@ class LdThemeSelectorModel extends LdWidgetModelAbs<LdThemeSelector> {
   }) {
     _themeMode = pInitialMode;
     _themeName = pInitialTheme;
-    Debug.info("$tag: Model inicialitzat amb mode ${pInitialMode.toString()} i tema $pInitialTheme");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model inicialitzat amb mode ${pInitialMode.toString()} i tema $pInitialTheme");
   }
   
+  /// Cosntructor actualitzat
+  LdThemeSelectorModel.fromMap(LdMap pMap): super.fromMap(pMap) {
+    fromMap(pMap);
+  }
+
   /// Retorna un mapa amb els membres del model
   @override
   MapDyns toMap() {

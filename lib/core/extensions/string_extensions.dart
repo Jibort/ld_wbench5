@@ -64,7 +64,6 @@
 
 import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/services/L.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 typedef Strings = List<String>;
 
@@ -89,7 +88,7 @@ extension StringExtensions on String {
       if (key != null) {
         final translated = L.tx(key, posArgs, namedArgs);
         result = result.replaceAll(key, translated);
-        Debug.info("tx: substituint '$key' per '$translated'");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("tx: substituint '$key' per '$translated'");
       }
     }
 
@@ -100,12 +99,12 @@ extension StringExtensions on String {
   /// Aplica format reemplaçant {0}, {1}, etc. amb els arguments proporcionats
   String format(Strings args) {
     String result = this;
-    Debug.info("Format: text original = '$result', args = $args");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("Format: text original = '$result', args = $args");
     for (int i = 0; i < args.length; i++) {
       String placeholder = '{$i}';
       String replacement = args[i];
       result = result.replaceAll(placeholder, replacement);
-      Debug.info("Format: reemplaçant '$placeholder' per '$replacement', resultat = '$result'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("Format: reemplaçant '$placeholder' per '$replacement', resultat = '$result'");
     }
     return result;
   }

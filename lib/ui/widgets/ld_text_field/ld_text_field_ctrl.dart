@@ -28,7 +28,7 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   
   @override
   void initialize() {
-    Debug.info("$tag: Inicialitzant controlador");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Inicialitzant controlador");
     
     // Crear el model amb la configuració del widget
     _createModel();
@@ -37,31 +37,31 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
     final textModel = model as LdTextFieldModel?;
     final initialText = textModel?.text ?? "";
     
-    Debug.info("$tag: Text inicial del model: '$initialText'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Text inicial del model: '$initialText'");
     
     _textController = TextEditingController(text: initialText);
     
     // Configurar listener per mantenir sincronitzat el model amb el textController
     _textController.addListener(_onTextChange);
     
-    Debug.info("$tag: TextEditingController creat amb text: '${_textController.text}'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: TextEditingController creat amb text: '${_textController.text}'");
   }
   
   /// Crea el model del TextField
   void _createModel() {
-    Debug.info("$tag: Creant model del TextField");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Creant model del TextField");
     
     try {
       // Crear el model amb la configuració del widget
       model = LdTextFieldModel.fromMap(widget.config);
       
-      Debug.info("$tag: Model creat amb èxit. Text: '${(model as LdTextFieldModel).text}'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model creat amb èxit. Text: '${(model as LdTextFieldModel).text}'");
     } catch (e) {
       Debug.error("$tag: Error creant model: $e");
       // Crear un model buit per defecte en cas d'error
       try {
         model = LdTextFieldModel.fromMap({});
-        Debug.info("$tag: Model de recanvi creat");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model de recanvi creat");
       } catch (e2) {
         Debug.error("$tag: Error creant model de recanvi: $e2");
       }
@@ -77,7 +77,7 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
     final textModel = model as LdTextFieldModel?;
     
     if (textModel != null && text != textModel.text) {
-      Debug.info("$tag: Text canviat des del teclat a '$text'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Text canviat des del teclat a '$text'");
       
       // Actualitzar el model amb el nou text
       textModel.updateField(mfText, text);
@@ -113,13 +113,13 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
       );
       _isUpdatingFromModel = false;
       
-      Debug.info("$tag: TextController actualitzat a '$modelText'");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: TextController actualitzat a '$modelText'");
     }
   }
   
   /// Afegeix text directament
   void addText(String text) {
-    Debug.info("$tag: Afegint text '$text' directament");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Afegint text '$text' directament");
     final textModel = model as LdTextFieldModel?;
     if (textModel != null) {
       final newText = textModel.text + text;
@@ -129,7 +129,7 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   
   /// Afegeix text al principi
   void prependText(String prefix) {
-    Debug.info("$tag: Afegint prefix '$prefix' directament");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Afegint prefix '$prefix' directament");
     final textModel = model as LdTextFieldModel?;
     if (textModel != null) {
       final newText = prefix + textModel.text;
@@ -139,7 +139,7 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   
   /// Neteja el text
   void clearText() {
-    Debug.info("$tag: Netejant text");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Netejant text");
     final textModel = model as LdTextFieldModel?;
     if (textModel != null) {
       textModel.updateField(mfText, "");
@@ -154,11 +154,11 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   
   @override
   void onEvent(LdEvent event) {
-    Debug.info("$tag: Rebut event ${event.eType.name}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Rebut event ${event.eType.name}");
     
     // Gestionar els events que ens interessen
     if (event.eType == EventType.languageChanged) {
-      Debug.info("$tag: Processant canvi d'idioma");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Processant canvi d'idioma");
       if (mounted) {
         setState(() {
           // Els texts traduïts s'actualitzaran automàticament
@@ -169,7 +169,7 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
   
   @override
   void onModelChanged(LdModelAbs pModel, void Function() updateFunction) {
-    Debug.info("$tag: Model ha canviat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model ha canviat");
     
     // Executar la funció d'actualització
     updateFunction();
@@ -180,7 +180,7 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
     // Reconstruir si està muntat
     if (mounted) {
       setState(() {
-        Debug.info("$tag: Reconstruint després del canvi del model");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Reconstruint després del canvi del model");
       });
     }
   }

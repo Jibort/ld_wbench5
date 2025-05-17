@@ -23,7 +23,7 @@ class TimeModel extends LdModelAbs {
   void updateTime(DateTime newTime) {
     _currentTime = newTime;
     notifyListeners(() {
-      Debug.info("$tag: Hora actualitzada a ${formatTime(newTime)}");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Hora actualitzada a ${formatTime(newTime)}");
     });
   }
   
@@ -60,7 +60,7 @@ class TimeService with LdTaggableMixin {
   TimeService._() {
     tag = className;
     _model.tag = "${tag}_Model";
-    Debug.info("$tag: Inicialitzant servei d'hora");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Inicialitzant servei d'hora");
     initialize();
   }
   
@@ -83,7 +83,7 @@ class TimeService with LdTaggableMixin {
   void dispose() {
     _timer?.cancel();
     _timer = null;
-    Debug.info("$tag: Servei aturat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Servei aturat");
   }
   
   /// Actualitza l'hora localment basant-se en l'última hora rebuda del servidor
@@ -99,7 +99,7 @@ class TimeService with LdTaggableMixin {
   /// Obtenir l'hora del servidor (simulat)
   /// En una implementació real, es faria una crida a un servidor NTP o similar
   Future<void> fetchTimeFromServer() async {
-    Debug.info("$tag: Sol·licitant hora del servidor...");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Sol·licitant hora del servidor...");
     
     try {
       // WorldTimeAPI proporciona l'hora actual segons la zona horària
@@ -111,7 +111,7 @@ class TimeService with LdTaggableMixin {
         final data = jsonDecode(response.body);
         final dateTime = DateTime.parse(data['datetime']);
         
-        Debug.info("$tag: Hora rebuda del servidor: ${TimeModel.formatTime(dateTime)}");
+        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Hora rebuda del servidor: ${TimeModel.formatTime(dateTime)}");
         _model.updateTime(dateTime);
       } else {
         Debug.error("$tag: Error en obtenir hora del servidor. Codi: ${response.statusCode}");

@@ -32,7 +32,7 @@ extends  LdModelAbs {
     
     // Carregar les propietats filtrades
     fromMap(pMap);
-    Debug.info("$tag: Model creat a partir de mapa");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model creat a partir de mapa");
   }
   
   /// Constructor alternatiu amb widget específic
@@ -56,7 +56,7 @@ extends  LdModelAbs {
       fromMap(modelProperties);
     }
     
-    Debug.info("$tag: Model creat per al widget ${pWidget.tag}");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model creat per al widget ${pWidget.tag}");
   }
   
   /// Constructor obsolet
@@ -98,7 +98,7 @@ extends  LdModelAbs {
       notifyListeners(() {
         fromMap(modelProperties);
       });
-      Debug.info("$tag: Model actualitzat amb noves propietats");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model actualitzat amb noves propietats");
     }
   }
   
@@ -121,7 +121,7 @@ extends  LdModelAbs {
       setField(pKey: fieldKey, pValue: value);
     });
     
-    Debug.info("$tag: Camp actualitzat: $fieldKey = $value");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Camp actualitzat: $fieldKey = $value");
   }
   
   /// Obté múltiples camps del model
@@ -168,7 +168,7 @@ extends  LdModelAbs {
         }
       });
       
-      Debug.info("$tag: Múltiples camps actualitzats: ${modelFields.keys.toList()}");
+      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Múltiples camps actualitzats: ${modelFields.keys.toList()}");
     }
   }
   
@@ -187,14 +187,14 @@ extends  LdModelAbs {
     }
     
     // Implementació base - pot ser sobreescrit per lògica de persistència específica
-    Debug.info("$tag: Model de pàgina guardat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model de pàgina guardat");
     return true;
   }
   
   /// Mètode per restaurar el model des de persistència
   Future<bool> load(String identifier) async {
     // Implementació base - pot ser sobreescrit per lògica de càrrega específica
-    Debug.info("$tag: Model de pàgina carregat amb identificador: $identifier");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model de pàgina carregat amb identificador: $identifier");
     return true;
   }
 

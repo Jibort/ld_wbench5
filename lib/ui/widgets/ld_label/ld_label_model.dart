@@ -10,7 +10,6 @@ import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/core/L10n/string_tx.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 /// Model per al widget LdLabel
 class LdLabelModel extends LdWidgetModelAbs {
@@ -31,13 +30,13 @@ class LdLabelModel extends LdWidgetModelAbs {
   List<String> get positionalArgs => config[cfLabelPosArgs] as List<String>? ?? [];
   set positionalArgs(List<String> args) {
     config[cfLabelPosArgs] = args;
-    Debug.info("$tag: positionalArgs actualitzats a: $args");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: positionalArgs actualitzats a: $args");
   }
 
   LdMap<String> get namedArgs => config[cfLabelNamedArgs] as LdMap<String>? ?? const {};
   set namedArgs(LdMap<String> args) {
     config[cfLabelNamedArgs] = args;
-    Debug.info("$tag: namedArgs actualitzats a: $args");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: namedArgs actualitzats a: $args");
   }
 
   // TEXT BASE I INTERPOLACIÓ =========================
@@ -50,11 +49,11 @@ class LdLabelModel extends LdWidgetModelAbs {
     final result = StringTx.resolveText(base, positionalArgs, namedArgs);
     
     // Debug detallat
-    Debug.info("$tag.label:");
-    Debug.info("  - Base text: '$base'");
-    Debug.info("  - Positional args: $positionalArgs");
-    Debug.info("  - Named args: $namedArgs");
-    Debug.info("  - Result: '$result'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag.label:");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Base text: '$base'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Positional args: $positionalArgs");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Named args: $namedArgs");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Result: '$result'");
     
     return result;
   }
@@ -62,7 +61,7 @@ class LdLabelModel extends LdWidgetModelAbs {
   /// Actualitza el text base (clau o literal)
   set label(String pLabel) {
     config[cfLabel] = pLabel;
-    Debug.info("$tag: Text base actualitzat a: '$pLabel'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Text base actualitzat a: '$pLabel'");
   }
 
   // MÈTODES AUXILIARS ===============================
@@ -78,9 +77,9 @@ class LdLabelModel extends LdWidgetModelAbs {
       this.namedArgs = namedArgs;
     }
     
-    Debug.info("$tag: Arguments d'interpolació actualitzats");
-    Debug.info("  - Text base conservat: '$baseText'");
-    Debug.info("  - Nous args posicionals: $positionalArgs");
-    Debug.info("  - Nous args nomenats: $namedArgs");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Arguments d'interpolació actualitzats");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Text base conservat: '$baseText'");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Nous args posicionals: $positionalArgs");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Nous args nomenats: $namedArgs");
   }
 }

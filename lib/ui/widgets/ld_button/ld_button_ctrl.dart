@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/services/L.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
 
 class LdButtonCtrl extends LdWidgetCtrlAbs<LdButton> {
@@ -17,7 +16,7 @@ class LdButtonCtrl extends LdWidgetCtrlAbs<LdButton> {
   // MÈTODE D'INICIALITZACIÓ ===============================
   @override
   void initialize() {
-    Debug.info("$tag: Inicialització del controlador LdButton");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Inicialització del controlador LdButton");
     if (model == null) {
       model = LdButtonModel.fromMap(widget.config);
     }
@@ -43,7 +42,7 @@ class LdButtonCtrl extends LdWidgetCtrlAbs<LdButton> {
 
   // GESTIÓ DE L'ACCIÓ =====================================
   void _handlePressed() {
-    Debug.info("$tag: Botó premut");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Botó premut");
     final callback = cWidget.config[efOnPressed];
     if (callback is VoidCallback) {
       callback();

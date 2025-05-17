@@ -5,14 +5,13 @@
 import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
-import 'package:ld_wbench5/utils/debug.dart';
 
 /// Model pel widget LdScaffold.
 /// Aquest model és bàsicament buit, però existeix per complir amb l'arquitectura.
 class LdScaffoldModel extends LdWidgetModelAbs<LdScaffold> {
   /// Constructor
   LdScaffoldModel(super.pWidget) {
-    Debug.info("$tag: Model del Scaffold creat");
+    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model del Scaffold creat");
   }
   
   @override
