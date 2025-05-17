@@ -54,6 +54,17 @@ class LdLabel extends LdWidgetAbs {
   LdLabelCtrl? get wCtrl => ctrl as LdLabelCtrl?;
 
   // MÈTODES D'ACTUALITZACIÓ ==============================
+  /// Actualitza només els arguments de traducció, sense reconstruir el parent
+  void setTranslationArgsIsolated({
+    List<String>? positionalArgs,
+    LdMap<String>? namedArgs,
+  }) {
+    (ctrl as LdLabelCtrl?)?.updateTranslationParametersOnly(
+      positionalArgs,
+      namedArgs,
+    );
+  }
+  
   /// Assigna arguments de traducció
   void setTranslationArgs({
     Strings? positionalArgs,

@@ -17,6 +17,7 @@ import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
+import 'package:ld_wbench5/ui/widgets/ld_label/ld_label_ctrl.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
@@ -64,7 +65,19 @@ implements LdModelObserverIntf {
   /// Observer per al comptador
   late final FnModelObs _obsCounter;
 
-  /// SOLUCIÓ MILLORADA: Observer que conserva el text base
+  /// Observer per al comptador
+  late final FnModelObs _obsLocale;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Programar una única actualització després del primer frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateControllerReferences();
+    });
+  }
+
   @override
   void initialize() {
     Debug.info("$tag: Inicialitzant controlador");
@@ -89,40 +102,40 @@ implements LdModelObserverIntf {
           pfnUpdate();
           
           // Actualitzar els arguments del LdLabel
-          setState(() {
-            labTime!.setTranslationArgs(positionalArgs: [time]);
-          });
+          // IMPORTANT: No cridar setState() aquí, delegar-ho al controlador del LdLabel
+          labTime!.setTranslationArgsIsolated(positionalArgs: [time]);
         }
       }
     };
-
-    // SOLUCIÓ CORREGIDA: Observer que respecta la interfície LdModelObserverIntf
-    TimeService.s.model.attachObserverFunction(_obsTimer);
-
-    // OBSERVER PER AL COMPTADOR
+    
     _obsCounter = (LdModelAbs pModel, void Function() pfnUpdate) {
+      if (labCounter != null) {
+        // Executar la funció d'actualització del model
+        pfnUpdate();
+        
+        // Actualitzar els arguments del LdLabel
+        setState(() {
+          labCounter!.setTranslationArgs(positionalArgs: [ "${(pModel as TestPageModel).counter}" ]);
+        });
+      }
+    };
+
+    _obsLocale = (LdModelAbs pModel, void Function() pfnUpdate) {
       if (pModel == model && mounted) {
-        final count = (model as TestPageModel).counter.toString();
+        final locale = L.getCurrentLocale().languageCode;
         
-        Debug.info("$tag: Comptador observer activat. Nou valor: '$count'");
-        
-        if (labCounter != null) {
-          // Executar la funció d'actualització del model
+        if (labLocale != null) {
           pfnUpdate();
-          
-          // Actualitzar els arguments del LdLabel
           setState(() {
-            labCounter!.setTranslationArgs(positionalArgs: [count]);
+            labLocale!.setTranslationArgs(positionalArgs: [locale]);
           });
-          
-          Debug.info("$tag: LdLabel comptador actualitzat amb valor '$count'");
         }
       }
     };
 
-    // CONNECTAR L'OBSERVER FUNCTION
+    TimeService.s.model.attachObserverFunction(_obsTimer);
     model!.attachObserverFunction(_obsCounter);
-
+    model!.attachObserverFunction(_obsLocale);
     Debug.info("$tag: Model de la pàgina creat");
   }
   
@@ -130,20 +143,9 @@ implements LdModelObserverIntf {
   void dispose() {
     Debug.info("$tag: Alliberant recursos");
     
-    // Desregistrar els widgets de tots els models externs
-    if (labCounter != null) {
-      (model as TestPageModel?)?.detachObserverFunction(_obsTimer);
-    }
-    
-    if (labLocale != null) {
-      (model as TestPageModel?)?.detachObserver(labLocale!);
-    }
-    
-    if (labTime != null) {
-      // Desregistrar del model d'hora
-      TimeService.s.model.detachObserver(labTime!);
-      TimeService.s.model.detachObserver(this);
-    }
+    TimeService.s.model.detachObserverFunction(_obsTimer);
+    model?.detachObserverFunction(_obsCounter);
+    model?.detachObserverFunction(_obsLocale);
     
     super.dispose();
   }
@@ -174,13 +176,15 @@ implements LdModelObserverIntf {
 
   @override
   void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
+    if (pModel == TimeService.s.model) return;
+
     Debug.info("$tag.onModelChanged(): executant ...");
     
     // Executar l'actualització sempre
     pfUpdate();
     
-    // Reconstruir si està muntat
-    if (mounted) {
+    // IMPORTANT: No reconstruir per canvis de TimeService
+    if (mounted && pModel != TimeService.s.model) {
       setState(() {
         Debug.info("$tag.onModelChanged(): Reconstruint widget");
       });
@@ -188,14 +192,11 @@ implements LdModelObserverIntf {
     
     Debug.info("$tag.onModelChanged(): ... executat");
   }
-  
-    @override
+
+  @override
   Widget buildPage(BuildContext context) {
-    // Inicialitzem per assegurar-nos que tenim els controladors dels botons
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updateControllerReferences();
-    });
-    
+    Debug.info("$tag: INICI buildPage - Stack trace: ${StackTrace.current}");
+
     final pageModel = model as TestPageModel?;
     Debug.info("$tag: Construint pàgina amb model: títol=${pageModel?.title}, subtítol=${pageModel?.subTitle}");
     
@@ -212,7 +213,7 @@ implements LdModelObserverIntf {
         pPosArgs: [pageModel.counter.toString()],
         style: Theme.of(context).textTheme.bodyMedium,
       );
-      model!.attachObserver(labCounter!);
+      // model!.attachObserver(labCounter!);
     }
     
     if (labLocale == null && pageModel != null) {
@@ -223,21 +224,21 @@ implements LdModelObserverIntf {
         pPosArgs: [L.getCurrentLocale().languageCode],
         style: Theme.of(context).textTheme.bodyMedium,
       );
-      model!.attachObserver(labLocale!);
+      // model!.attachObserver(labLocale!);
     }
     
     // Crear l'etiqueta d'hora si encara no existeix
     labTime ??= LdLabel(
-        key: ValueKey(tagLabTime), 
-        pTag: tagLabTime,
-        pLabel: L.sCurrentTime,
-        pPosArgs: [TimeService.s.model.formattedTime],  // Inicialitzem amb l'hora actual
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      );
-
+      key: ValueKey(tagLabTime), 
+      pTag: tagLabTime,
+      pLabel: L.sCurrentTime,
+      pPosArgs: [TimeService.s.model.formattedTime],
+      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+    );
+    
     // Creem una referència al TextField (amb Key per evitar que es recreï)
     final textField = LdTextField(
       key: const ValueKey('my_text_field'),
@@ -279,6 +280,8 @@ implements LdModelObserverIntf {
       onPressed: toggleLanguageButtonEnabled,
     );
     
+    Debug.info("$tag: FI buildPage");
+
     return LdScaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),

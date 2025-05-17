@@ -122,6 +122,23 @@ class LdLabelCtrl extends LdWidgetCtrlAbs<LdLabel> {
     }
   }
 
+  // Afegir aquest mètode per actualitzar arguments de manera isolada
+  void updateTranslationParametersOnly(List<String>? positionalArgs, LdMap<String>? namedArgs) {
+    final labelModel = model as LdLabelModel?;
+    if (labelModel != null) {
+      // Important: NO cridar setState(), només actualitzar el model
+      if (positionalArgs != null) labelModel.positionalArgs = positionalArgs;
+      if (namedArgs != null) labelModel.namedArgs = namedArgs;
+      
+      // Forçar una reconstrucció NOMÉS d'aquest widget
+      if (mounted) {
+        setState(() {
+          Debug.info("${labelModel.tag}: Arguments de traducció actualitzats isoladament");
+        });
+      }
+    }
+  }
+
   TextStyle? getCurrentLabelStyle() {
     final labelModel = model as LdLabelModel?;
     return labelModel?.labelStyle;
