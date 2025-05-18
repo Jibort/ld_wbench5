@@ -1,13 +1,14 @@
 // lib/ui/widgets/ld_foldable_container/ld_foldable_container_ctrl.dart
 // Controlador del widget LdFoldableContainer
 // Created: 2025/05/17 ds. CLA
-// Updated: 2025/05/17 ds. GEM - Implementaci  inicial del controlador.
-// Updated: 2025/05/18 ds. GEM - Gesti  de l'estat expandit/col·lapsat i animaci .
-// Updated: 2025/05/18 ds. GEM - Implementaci  de persistència d'estat amb mapa estàtic.
+// Updated: 2025/05/17 ds. GEM - Implementació inicial del controlador.
+// Updated: 2025/05/18 ds. GEM - Gestió de l'estat expandit/col·lapsat i animació.
+// Updated: 2025/05/18 ds. GEM - Implementació de persistència d'estat amb mapa estàtic.
 // Updated: 2025/05/18 ds. GEM - Restauració de focus després d'expandir.
 // Updated: 2025/05/18 ds. GEM - Correcció de WidgetStateProperty.resolveWith i colors.
 // Updated: 2025/05/18 ds. GEM - Implementació de AutomaticKeepAliveClientMixin i logs per a depuració de scroll.
 // Updated: 2025/05/19 dg. CLA - Correcció de dependències i implementació de persistència centralitzada
+// Updated: 2025/05/20 dl. CLA - Correcció d'implementació de AutomaticKeepAliveClientMixin
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
@@ -27,17 +28,20 @@ import 'package:ld_wbench5/utils/debug.dart';
 class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with AutomaticKeepAliveClientMixin {
 
   // MEMBRES ==============================================
-  /// Duraci  de l'animaci  d'expansi .
+  /// Duració de l'animació d'expansió.
   late final Duration _animationDuration;
   /// Node de focus que podria necessitar ser restaurat.
   FocusNode? _lastFocusedNode;
 
-  /// Indica si el contingut est  expandit (llegint directament del model).
+  /// Indica si el contingut està expandit (llegint directament del model).
   bool get isExpanded => (model as LdFoldableContainerModel?)?.isExpanded ?? true; // Ús segur amb ??
 
   /// Accés ràpid al model amb tipus segur.
   LdFoldableContainerModel? get containerModel => model as LdFoldableContainerModel?;
 
+  /// Determina si el mixin AutomaticKeepAliveClientMixin ha de mantenir l'estat del widget
+  @override
+  bool get wantKeepAlive => true;
 
   // CONSTRUCTORS/DESTRUCTORS ============================
   /// Constructor.
@@ -45,27 +49,33 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
 
   @override
   void initState() {
+    // IMPORTANT: Sempre cridar super.initState() PRIMER per al mixin
     super.initState();
     Debug.info("$tag: initState");
-    // Eliminar qualsevol crida a updateKeepAlive()
-  }
-
-  @override
-  void initialize() {
-    Debug.info("$tag: Inicialitzant controlador.");
-    // Obtenir la duraci  de l'animaci  o establir valor per defecte
+    
+    // Obtenir la duració de l'animació o establir valor per defecte
     _animationDuration = widget.config[cfAnimationDuration] as Duration?
         ?? const Duration(milliseconds: 300);
 
     _createModel(); // Crear o restaurar el model amb estat persistent.
-
-    // Assegurar-se que l'estat es manté viu a ListViews
-    updateKeepAlive(); // Cal cridar-ho desprós de decidir si cal KeepAlive.
-
-     Debug.info("$tag: Inicialització completada. isExpanded: ${containerModel?.isExpanded}");
+    
+    // No cal cridar updateKeepAlive() aquí, es cridarà automàticament
+    // quan canviï el valor de wantKeepAlive
   }
 
-  /// Crea o restaura el model do contenidor plegable.
+  /// Implementació del mètode initialize de LdLifecycleIntf
+  @override
+  void initialize() {
+    Debug.info("$tag: Inicialitzant controlador.");
+    
+    // Obtenir la duració de l'animació o establir valor per defecte
+    _animationDuration = widget.config[cfAnimationDuration] as Duration?
+        ?? const Duration(milliseconds: 300);
+
+    _createModel(); // Crear o restaurar el model amb estat persistent.
+  }
+
+  /// Crea o restaura el model del contenidor plegable.
   void _createModel() {
     Debug.info("$tag: Creant/Restaurant model del contenidor plegable.");
     try {
@@ -76,38 +86,38 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
       final initialExpanded = savedExpandedState ?? 
         (widget.config[cfInitialExpanded] as bool? ?? true);
 
-      // Construir o mapa mínim necessari per ao model
+      // Construir el mapa mínim necessari per al model
       MapDyns modelConfig = MapDyns();
-      modelConfig[cfTag] = tag; // Sempre incloure o tag
-      modelConfig[mfIsExpanded] = initialExpanded; // Estat inicial (mf) - Usamos o valor resolt (persistent o config)
+      modelConfig[cfTag] = tag; // Sempre incloure el tag
+      modelConfig[mfIsExpanded] = initialExpanded; // Estat inicial (mf) - Usem el valor resolt (persistent o config)
 
-      // Afegir otras cf/mf rellevants da configuració do widget si existen
+      // Afegir altres cf/mf rellevants de la configuració del widget si existeixen
       if (widget.config.containsKey(mfTitleKey)) modelConfig[mfTitleKey] = widget.config[mfTitleKey];
       if (widget.config.containsKey(mfSubtitleKey)) modelConfig[mfSubtitleKey] = widget.config[mfSubtitleKey];
 
-      // Crear o modelo a partir do mapa.
+      // Crear el model a partir del mapa.
       model = LdFoldableContainerModel.fromMap(modelConfig);
-      Debug.info("$tag: Model creat/restaurat com éxito. isExpanded: ${containerModel?.isExpanded}");
+      Debug.info("$tag: Model creat/restaurat amb èxit. isExpanded: ${containerModel?.isExpanded}");
 
-      // Actualizar o estado persistente na primeira creación se non existia
+      // Actualitzar l'estat persistent en la primera creació si no existia
       if (savedExpandedState == null) {
         StatePersistenceService.s.setValue(persistentKey, initialExpanded);
-        Debug.info("$tag: Estat inicial de persistencia '$persistentKey' establert a $initialExpanded.");
+        Debug.info("$tag: Estat inicial de persistència '$persistentKey' establert a $initialExpanded.");
       }
 
     } catch (e) {
-      // Se hai un error (p.ex., configuración invàlida), crear un modelo de recanvi com valores por defecto.
-      Debug.error("$tag: Error creando modelo desde config: $e. Creando modelo de recambio.");
+      // Si hi ha un error (p.ex., configuració invàlida), crear un model de recanvi amb valors per defecte.
+      Debug.error("$tag: Error creant model des de config: $e. Creant model de recanvi.");
       try {
         MapDyns fallbackConfig = MapDyns();
         fallbackConfig[cfTag] = tag;
-        fallbackConfig[mfIsExpanded] = false; // Estado por defecto false
+        fallbackConfig[mfIsExpanded] = false; // Estat per defecte false
         model = LdFoldableContainerModel.fromMap(fallbackConfig);
-        Debug.warn("$tag: Modelo de recambio creado com éxito.");
-        // Actualizar o estado persistente para o modelo de recambio
+        Debug.warn("$tag: Model de recanvi creat amb èxit.");
+        // Actualitzar l'estat persistent per al model de recanvi
         StatePersistenceService.s.setValue(StatePersistenceService.makeKey(tag, mfIsExpanded), false);
       } catch (e2) {
-        Debug.fatal("$tag: Error fatal creando modelo de recambio: $e2"); // Se incluso o fallback falla, é fatal.
+        Debug.fatal("$tag: Error fatal creant model de recanvi: $e2"); // Si inclús el fallback falla, és fatal.
       }
     }
   }
@@ -123,7 +133,7 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
   }
 
   @override
-  void didUpdateWidget(covariant LdFoldableContainer  oldWidget) {
+  void didUpdateWidget(covariant LdFoldableContainer oldWidget) {
      super.didUpdateWidget(oldWidget);
      Debug.info("$tag: didUpdateWidget");
      // Aquest mètode es crida quan el widget associat canvia (p.ex., els paràmetres del constructor).
@@ -131,9 +141,9 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
      // actualitzar el model o l'estat intern si calgués.
      // La gestió base a LdWidgetCtrlAbs ja carrega la configuració (cf*).
      _createModel(); // Re-creem/actualitzem el model si la configuració ha canviat.
-     updateKeepAlive(); // Assegurar que keepAlive es manté actualitzat amb el nou widget si la lògica canviés.
+     // No necessitem cridar updateKeepAlive() aquí, es cridarà automàticament
+     // quan canviï el valor de wantKeepAlive
   }
-
 
   @override
   void update() {
@@ -152,7 +162,7 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
        Debug.info("$tag: Processant event ${event.eType.name}. Forçant reconstrucció via setState.");
       if (mounted) {
         setState(() {
-           // La reconstrucció (buildContent) s'encarregarà do reflectir els canvis de tema/idioma.
+           // La reconstrucció (buildContent) s'encarregarà de reflectir els canvis de tema/idioma.
         });
       }
     }
@@ -161,123 +171,124 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
 
   @override
   void onModelChanged(LdModelAbs pModel, void Function() pfnUpdate) {
-    // Aquest mètode es crida quan o model associado (LdFoldableContainerModel) canvia.
-    Debug.info("$tag: Model do contenidor ha canviat. Executant actualització de UI.");
-    pfnUpdate(); // Executa a función de actualización proporcionada (normalmente setState na base)
+    // Aquest mètode es crida quan el model associat (LdFoldableContainerModel) canvia.
+    Debug.info("$tag: Model del contenidor ha canviat. Executant actualització de UI.");
+    pfnUpdate(); // Executa la funció d'actualització proporcionada (normalment setState a la base)
 
-    // Non fai falta chamar a setState explícitamente aquí despois de pfnUpdate() se a base xa o fai.
+    // No fa falta cridar a setState explícitament aquí després de pfnUpdate() si la base ja ho fa.
     // if (mounted) { setState(() {}); }
   }
 
-
   // FUNCIONALITAT D'INTERACCIÓ ==========================
-  /// Establece o estado de expansión do contenedor e actualiza o estado persistente.
+  /// Estableix l'estat d'expansió del contenidor i actualitza l'estat persistent.
   void setExpanded(bool expanded) {
     final model = containerModel;
     if (model != null && model.isExpanded != expanded) {
       Debug.info("$tag: setExpanded($expanded).");
-      // Gardar o estado do foco actual antes do cambio
+      // Guardar l'estat del focus actual abans del canvi
       final currentFocus = FocusManager.instance.primaryFocus;
       if (currentFocus != null) {
         _lastFocusedNode = currentFocus;
-        Debug.info("$tag: Foco gardado: ${_lastFocusedNode?.runtimeType}");
+        Debug.info("$tag: Focus guardat: ${_lastFocusedNode?.runtimeType}");
       }
 
-      // Cambiar o estado de expansión do modelo. Isto notifica ao controlador via onModelChanged.
+      // Canviar l'estat d'expansió del model. Això notifica al controlador via onModelChanged.
       model.isExpanded = expanded;
 
-      // Actualizar o estado persistente do contenedor no mapa estático da pàgina
+      // Actualitzar l'estat persistent del contenidor al servei de persistència
       final persistentKey = StatePersistenceService.makeKey(tag, mfIsExpanded);
       StatePersistenceService.s.setValue(persistentKey, expanded);
-      Debug.info("$tag: Estado persistente '$persistentKey' actualizado a $expanded.");
+      Debug.info("$tag: Estat persistent '$persistentKey' actualitzat a $expanded.");
 
 
-      // Se estamos expandindo, restaurar foco despois dun retraso para permitir que a UI se reconstrua.
+      // Si estem expandint, restaurar focus després d'un retard per permetre que la UI es reconstrueixi.
       if (expanded && _lastFocusedNode != null) {
         Future.delayed(_animationDuration, () {
           if (mounted && _lastFocusedNode != null && _lastFocusedNode!.canRequestFocus) {
             _lastFocusedNode!.requestFocus();
-            Debug.info("$tag: Foco restaurado.");
-            _lastFocusedNode = null; // Limpiar a referencia unha vez restaurado
+            Debug.info("$tag: Focus restaurat.");
+            _lastFocusedNode = null; // Netejar la referència un cop restaurat
           } else {
-             Debug.warn("$tag: Non se puido restaurar o foco.");
+             Debug.warn("$tag: No s'ha pogut restaurar el focus.");
           }
         });
       } else if (!expanded) {
-         // Se estamos colapsando, limpar o foco se está dentro deste contenedor
+         // Si estem col·lapsant, netejar el focus si està dins d'aquest contenidor
          if (currentFocus != null && 
             currentFocus.context != null && 
             currentFocus.context!.findAncestorStateOfType<State<LdFoldableContainer>>() == this) {
             currentFocus.unfocus();
-            Debug.info("$tag: Foco dins del contenidor col·lapsat. Eliminant focus.");
+            Debug.info("$tag: Focus dins del contenidor col·lapsat. Eliminant focus.");
          }
-          _lastFocusedNode = null; // Limpar referencia cando colapsamos
+          _lastFocusedNode = null; // Netejar referència quan col·lapsem
       }
 
-
-      // Chamar o callback onExpansionChanged se existe.
+      // Cridar el callback onExpansionChanged si existeix.
       final onExpansionChangedCallback = widget.config[efOnExpansionChanged] as Function(bool)?;
       if (onExpansionChangedCallback != null) {
         onExpansionChangedCallback(expanded);
-        Debug.info("$tag: Executando callback onExpansionChanged con estado $expanded.");
+        Debug.info("$tag: Executant callback onExpansionChanged amb estat $expanded.");
       }
     } else {
-       Debug.info("$tag: setExpanded($expanded) chamado, pero o estado xa é $expanded. Non facemos nada.");
+       Debug.info("$tag: setExpanded($expanded) cridat, però l'estat ja és $expanded. No fem res.");
     }
   }
 
-  /// Alterna o estado de expansión do contenedor.
+  /// Alterna l'estat d'expansió del contenidor.
   void toggleExpanded() {
-    Debug.info("$tag: Alternando estado de expansión.");
+    Debug.info("$tag: Alternant estat d'expansió.");
     setExpanded(!isExpanded);
   }
 
-  /// Gesti  da pressi  na cabeceira.
+  /// Gestió de la pressió a la capçalera.
   void _handleHeaderTap() {
-    Debug.info("$tag: Cabeceira do contenedor premida.");
-    // Se a interacci  est  habilitada, alternar o estado
+    Debug.info("$tag: Capçalera del contenidor premuda.");
+    // Si la interacció està habilitada, alternar l'estat
     if (widget.config[cfEnableInteraction] as bool? ?? true) {
       toggleExpanded();
     }
 
-    // Chamar o callback onHeaderTap se existe.
+    // Cridar el callback onHeaderTap si existeix.
     final onHeaderTapCallback = widget.config[efOnHeaderTap] as VoidCallback?;
     if (onHeaderTapCallback != null) {
       onHeaderTapCallback();
-       Debug.info("$tag: Executando callback onHeaderTap.");
+       Debug.info("$tag: Executant callback onHeaderTap.");
     }
   }
 
 
-  // CONSTRUCIÓN DO WIDGET VISUAL =========================
+  // CONSTRUCCIÓ DEL WIDGET VISUAL =========================
+  @override
+  Widget build(BuildContext context) {
+    // IMPORTANT: Cridar super.build(context) per a què el mixin AutomaticKeepAliveClientMixin funcioni correctament
+    super.build(context);
+    
+    // Delegar la construcció del contingut al mètode buildContent
+    return buildContent(context);
+  }
+  
   @override
   Widget buildContent(BuildContext context) {
-    Debug.info("$tag: Construíndo contido. isVisible=$isVisible, isEnabled=$isEnabled, isExpanded=${containerModel?.isExpanded}.");
-
-    // Assegurar-se que o estado se mantén vivo.
-    // A pesar do nome do mixin, `wantKeepAlive` non se chama automaticamente.
-    // Debes chamar `updateKeepAlive()` no teu método `build` ou onde o estado relevante cambie.
-    super.build(context); // <-- Chamar super.build(context) para que updateKeepAlive() funcione.
-
+    Debug.info("$tag: Construint contingut. isVisible=$isVisible, isEnabled=$isEnabled, isExpanded=${containerModel?.isExpanded}.");
 
     final config = widget.config;
-    final model = containerModel; // Usamos o getter seguro
+    final model = containerModel; // Usem el getter segur
 
-    // Se non hai modelo, mostrar contedor buido ou recuperar-lo (a recuperación faise en _createModel)
+    // Si no hi ha model, mostrar contenidor buit o recuperar-lo (la recuperació es fa en _createModel)
     if (model == null) {
-      Debug.warn("$tag: Modelo non disponible. Mostrando contedor de recambio.");
+      Debug.warn("$tag: Model no disponible. Mostrant contenidor de recanvi.");
       return Container(
         height: 50,
         width: double.infinity,
-        color: Colors.red.withOpacity(0.3), // Cor para depuraci  visualmente clara
-        child: Center(child: Text("Erro: Modelo non cargado\n($tag)", textAlign: TextAlign.center, style: TextStyle(color: Colors.white))),
+        color: Colors.red.withOpacity(0.3), // Color per a depuració visualment clara
+        child: const Center(child: Text("Error: Model no carregat", textAlign: TextAlign.center, style: TextStyle(color: Colors.white))),
       );
     }
 
-    // Obter o tema actual
+    // Obtenir el tema actual
     final theme = Theme.of(context);
 
-    // Obter configuración da UI
+    // Obtenir configuració de la UI
     final headerHeight = config[cfHeaderHeight] as double? ?? 56.0;
     final headerBackgroundColor = config[cfHeaderBackgroundColor] as Color? ?? theme.colorScheme.surface;
     final contentBackgroundColor = config[cfContentBackgroundColor] as Color? ?? theme.colorScheme.surface;
@@ -294,14 +305,14 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
     final contentPadding = config[cfContentPadding] as EdgeInsetsGeometry? ?? const EdgeInsets.all(16.0);
 
 
-    // Widget cabeceira personalizada ou cabeceira por defecto
+    // Widget capçalera personalitzada o capçalera per defecte
     final headerWidget = config[cfHeader] as Widget?;
 
-    // Construír a cabeceira
+    // Construir la capçalera
     final header = headerWidget ??
         GestureDetector(
           onTap: _handleHeaderTap,
-          behavior: HitTestBehavior.opaque, // Permite detectar taps na área transparente do contenedor
+          behavior: HitTestBehavior.opaque, // Permet detectar taps a l'àrea transparent del contenidor
           child: Container(
             height: headerHeight,
             decoration: BoxDecoration(
@@ -310,7 +321,7 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
                   ? BorderRadius.only(
                       topLeft: Radius.circular(borderRadius),
                       topRight: Radius.circular(borderRadius),
-                      bottomLeft: Radius.circular(model.isExpanded ? 0 : borderRadius), // Bordes redondeados abaixo só cando colapsado
+                      bottomLeft: Radius.circular(model.isExpanded ? 0 : borderRadius), // Bordes rodons a sota només quan està col·lapsat
                       bottomRight: Radius.circular(model.isExpanded ? 0 : borderRadius),
                     )
                   : null,
@@ -323,37 +334,37 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
             padding: headerPadding,
             child: Row(
               children: [
-                // Espacio para título e subtítulo
+                // Espai per a títol i subtítol
                 Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Título
+                      // Títol
                       if (model.titleKey != null)
                         Text(
-                          model.titleKey!.tx(), // Obtemos o título traducido do modelo
+                          model.titleKey!.tx(), // Obtenim el títol traduït del model
                           style: titleStyle,
-                          overflow: TextOverflow.ellipsis, // Evitar desbordamento
+                          overflow: TextOverflow.ellipsis, // Evitar desbordament
                         ),
-                      // Subtítulo
+                      // Subtítol
                       if (model.subtitleKey != null)
                         Text(
-                          model.subtitleKey!.tx(), // Obtemos o subtítulo traducido do modelo
+                          model.subtitleKey!.tx(), // Obtenim el subtítol traduït del model
                           style: subtitleStyle,
-                          overflow: TextOverflow.ellipsis, // Evitar desbordamento
+                          overflow: TextOverflow.ellipsis, // Evitar desbordament
                         ),
                     ],
                   ),
                 ),
-                // Accións da cabeceira
+                // Accions de la capçalera
                 ...headerActions,
-                // Botón de expansión
+                // Botó d'expansió
                 IconButton(
                   icon: Icon(model.isExpanded ? expansionIcon : collapsedIcon),
-                  onPressed: () => toggleExpanded(), // Alternar estado ao premer o icono
+                  onPressed: () => toggleExpanded(), // Alternar estat al prémer la icona
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(), // Eliminar padding/tamaño mínimo
+                  constraints: const BoxConstraints(), // Eliminar padding/tamany mínim
                   splashRadius: 20,
                 ),
               ],
@@ -361,26 +372,26 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
           ),
         );
 
-    // Widget contido
+    // Widget contingut
     final contentWidget = config[cfContent] as Widget? ?? const SizedBox.shrink();
 
-    // Construír o contedor com animación
+    // Construir el contenidor amb animació
     return Column(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch, // Ocupar todo o ancho dispoñible
+      crossAxisAlignment: CrossAxisAlignment.stretch, // Ocupar tot l'ample disponible
       children: [
-        // Cabeceira (sempre visible)
+        // Capçalera (sempre visible)
         header,
-        // Contido (com animación de altura)
+        // Contingut (amb animació d'altura)
         AnimatedContainer(
           duration: _animationDuration,
           curve: Curves.easeInOut,
-          // Altura: 0 cando colapsado, ou altura automática cando expandido.
-          // Usamos unha altura finita (double.infinity) com SingleChildScrollView para evitar erros
-          // 'unbounded constraints' com AnimatedContainer.
-          height: model.isExpanded ? null : 0.0, // Usamos null para altura automática cando expandido
+          // Altura: 0 quan col·lapsat, o altura automàtica quan expandit.
+          // Usem una altura finita (double.infinity) amb SingleChildScrollView per evitar errors
+          // 'unbounded constraints' amb AnimatedContainer.
+          height: model.isExpanded ? null : 0.0, // Usem null per altura automàtica quan expandit
 
-          clipBehavior: Clip.antiAlias, // Recortar contido que desborde durante a animación
+          clipBehavior: Clip.antiAlias, // Retallar contingut que desbordi durant l'animació
           decoration: BoxDecoration(
             color: contentBackgroundColor,
             borderRadius: showBorder
@@ -393,21 +404,21 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
                 ? Border(
                     left: BorderSide(color: borderColor, width: borderWidth),
                     right: BorderSide(color: borderColor, width: borderWidth),
-                    bottom: BorderSide(color: borderColor, width: borderWidth), // Borde na parte inferior do contido
+                    bottom: BorderSide(color: borderColor, width: borderWidth), // Borde a la part inferior del contingut
                   )
                 : null,
           ),
-          // Usamos Visibility para controlar a visibilidade do contido sen descartar a árbore de widgets
+          // Usem Visibility per controlar la visibilitat del contingut sense descartar l'arbre de widgets
           child: Visibility(
-            visible: model.isExpanded, // Visible se está expandido
-            maintainState: true, // Manteñen o estado dos widgets internos
-            maintainAnimation: true, // Manteñen as animacións dos widgets internos
-            maintainSize: false, // Non reservan espazo cando non visible (as animacións manexan a altura)
-            child: SingleChildScrollView( // Engadir scroll ao contido para evitar desbordamento se é moi grande
-              physics: model.isExpanded ? null : const NeverScrollableScrollPhysics(), // Deshabilitar scroll cando colapsado
+            visible: model.isExpanded, // Visible si està expandit
+            maintainState: true, // Mantenim l'estat dels widgets interns
+            maintainAnimation: true, // Mantenim les animacions dels widgets interns
+            maintainSize: false, // No reservem espai quan no és visible (les animacions manegen l'altura)
+            child: SingleChildScrollView( // Afegir scroll al contingut per evitar desbordament si és molt gran
+              physics: model.isExpanded ? null : const NeverScrollableScrollPhysics(), // Deshabilitar scroll quan està col·lapsat
               child: Padding(
                 padding: contentPadding,
-                child: contentWidget, // O widget de contido proporcionado ao constructor
+                child: contentWidget, // El widget de contingut proporcionat al constructor
               ),
             ),
           ),
@@ -415,7 +426,4 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
       ],
     );
   }
-
-  @override
-  bool get wantKeepAlive => true;
 }
