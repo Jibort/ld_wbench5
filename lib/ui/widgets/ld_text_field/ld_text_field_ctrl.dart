@@ -212,7 +212,6 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // El TextField amb l'etiqueta
         TextField(
           controller: _textController,
           focusNode: focusNode,

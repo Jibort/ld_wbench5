@@ -50,7 +50,6 @@ class LdFoldableContainer extends LdWidgetAbs {
     cfHeaderHeight: headerHeight,
     cfHeaderBackgroundColor: headerBackgroundColor,
     cfContentBackgroundColor: contentBackgroundColor,
-    cfIsExpanded: initialExpanded,
     cfHeaderActions: headerActions,
     cfTitleStyle: titleStyle,
     cfSubtitleStyle: subtitleStyle,
@@ -86,6 +85,12 @@ class LdFoldableContainer extends LdWidgetAbs {
   /// Indica si el contenidor està expandit
   bool get isExpanded => containerCtrl?.isExpanded ?? true;
   
+  /// Estableix l'estat d'expansió del contenidor.
+  void  setExpanded(bool pIsExpanded) 
+  => (pIsExpanded)
+    ? expand()
+    : collapse();
+
   /// Expandeix el contenidor
   void expand() => containerCtrl?.setExpanded(true);
   
