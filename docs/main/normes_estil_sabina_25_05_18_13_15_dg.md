@@ -59,6 +59,9 @@ implements LdModelObserverIntf {
 ### Seccions de Codi
 Agrupar lògicament amb capçaleres:
 ```dart
+// MEMBRES ESTÀTICS =====================================
+// GETTERS/SETTERS ESTÀTICS =============================
+// GETTERS/SETTERS ESTÀTICS =============================
 // MEMBRES ==============================================
 // CONSTRUCTORS/DESTRUCTORS =============================
 // GETTERS/SETTERS ======================================
@@ -509,6 +512,147 @@ try {
   fallbackConfig[mfText] = ""; // Text buit per defecte
   
   model = LdTextFieldModel.fromMap(fallbackConfig);
+}
+```
+
+## 17. Animacions i Contenidors Plegables ⭐️
+
+### Preservació de Widgets Durant Animacions
+En components amb animacions d'expansió/contracció, **SEMPRE** preservar els mateixos widgets fills en ambdós estats per evitar reconstruccions:
+
+```dart
+// ✅ CORRECTE - Pre-construir el contingut
+final contentChild = Padding(
+  padding: contentPadding,
+  child: content,
+);
+
+// AnimatedContainer amb el contingut
+AnimatedContainer(
+  duration: _animationDuration,
+  height: containerModel.isExpanded ? maxExpandedHeight : 0.0,
+  child: AnimatedOpacity(
+    opacity: containerModel.isExpanded ? 1.0 : 0.0,
+    // IMPORTANT: Mateix widget en ambdós casos
+    child: IgnorePointer(
+      ignoring: !containerModel.isExpanded,
+      child: contentChild, // Sempre el mateix widget
+    ),
+  ),
+)
+
+// ❌ INCORRECTE - Widgets diferents segons estat
+AnimatedContainer(
+  duration: _animationDuration,
+  height: containerModel.isExpanded ? null : 0.0,
+  child: containerModel.isExpanded
+    ? content // Widget A
+    : SizedBox.shrink(), // Widget B (diferent!)
+)
+```
+
+### Animació d'Alçada Segura
+**MAI** utilitzar `null` com a valor d'alçada en un AnimatedContainer:
+
+```dart
+// ✅ CORRECTE - Alçada finita per a AnimatedContainer
+AnimatedContainer(
+  duration: _animationDuration,
+  // Valor finit específic, no null
+  height: containerModel.isExpanded ? 300.0 : 0.0,
+  // ...
+)
+
+// ❌ INCORRECTE - Alçada null
+AnimatedContainer(
+  duration: _animationDuration,
+  // null no pot interpolar-se amb valors finits!
+  height: containerModel.isExpanded ? null : 0.0,
+  // ...
+)
+```
+
+### Scroll Individual per Continguts Expandibles
+Per contenidors plegables amb contingut potencialment gran, afegir un SingleChildScrollView:
+
+```dart
+// ✅ CORRECTE - Scroll individual per contingut
+AnimatedContainer(
+  duration: _animationDuration,
+  height: containerModel.isExpanded ? maxExpandedHeight : 0.0,
+  child: ClipRect(
+    child: SingleChildScrollView(
+      // Permet scroll dins del contenidor
+      child: contentChild,
+    ),
+  ),
+)
+```
+
+### Preservació i Restauració de Focus
+En components amb animacions, implementar mecanismes per preservar i restaurar el focus:
+
+```dart
+// ✅ CORRECTE - Preservació i restauració de focus
+// En el mètode que controla l'expansió
+void setExpanded(bool expanded) {
+  // Desar l'estat del focus actual
+  final currentFocus = FocusManager.instance.primaryFocus;
+  if (currentFocus != null) {
+    _lastFocusedNode = currentFocus as FocusNode?;
+  }
+  
+  // Canviar l'estat d'expansió
+  (model as LdFoldableContainerModel).isExpanded = expanded;
+  
+  // Si estem expandint, restaurar focus després d'un retard
+  if (expanded && _lastFocusedNode != null) {
+    Future.delayed(_animationDuration, () {
+      if (mounted && _lastFocusedNode != null) {
+        _lastFocusedNode!.requestFocus();
+      }
+    });
+  }
+}
+```
+
+### Auto-Recuperació de Models
+Implementar mecanismes de recuperació automàtica per a models perduts:
+
+```dart
+// ✅ CORRECTE - Recuperació automàtica de models
+@override
+Widget buildContent(BuildContext context) {
+  // Verificar si el model existeix
+  if (model == null) {
+    // Intentar reparar
+    _createBackupModel();
+    
+    // Mostrar widget temporal
+    return Container(
+      height: 50,
+      width: double.infinity,
+      child: Center(child: Text("Recuperant contingut...")),
+    );
+  }
+  
+  // Continuar amb el model verificat
+  // ...
+}
+
+// Mètode auxiliar per crear un model de recanvi
+void _createBackupModel() {
+  if (model == null && mounted) {
+    // Crear model amb configuració mínima
+    model = LdFoldableContainerModel.fromMap({
+      cfTag: tag,
+      mfIsExpanded: widget.config[mfIsExpanded] as bool? ?? true,
+      // Altres propietats essencials...
+    });
+    
+    // Forçar reconstrucció
+    setState(() {});
+  }
 }
 ```
 

@@ -8,6 +8,7 @@ import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_ctrl_abs.dart';
 import 'package:ld_wbench5/core/extensions/color_extensions.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/services/theme_service.dart';
@@ -18,12 +19,17 @@ import 'package:ld_wbench5/ui/widgets/ld_foldable_container/ld_foldable_containe
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
 import 'package:ld_wbench5/ui/widgets/ld_text_field/ld_text_field.dart';
+import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador per a la pàgina de proves 2
 class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
   // MEMBRES ==============================================
   /// Referència a contenidors plegables per a manipulació programàtica
   final Map<String, LdFoldableContainer> _foldableContainers = {};
+  
+  // PERSISTÈNCIA D'ESTAT =================================
+  /// Map per desar l'estat entre reconstruccions
+  static final MapDyns _persistentState = MapDyns();
   
   // CONSTRUCTORS/DESTRUCTORS ============================
   /// Constructor
@@ -36,54 +42,100 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
     final titleKey = config[cfTitleKey] as String? ?? config[mfTitle] as String? ?? L.sAppSabina;
     final subTitleKey = config[cfSubTitleKey] as String? ?? config[mfSubTitle] as String?;
     
-    model = TestPage2Model(
-      pPage: cPage,
-      pTitleKey: titleKey,
-      pSubTitleKey: subTitleKey,
-    );
+    // Recuperar valors persistents o crear nous
+    if (_persistentState.isEmpty) {
+      // Primera inicialització - guardar valors per defecte
+      model = TestPage2Model(
+        pPage: cPage,
+        pTitleKey: titleKey,
+        pSubTitleKey: subTitleKey,
+      );
+      
+      // Inicialitzar valors per defecte
+      _persistentState['saved_text_field_value'] = "";
+      _persistentState[mfCounter] = 0;
+      
+      Debug.info("$tag: Creat nou model de pàgina");
+    } else {
+      // Restauració d'un estat previ
+      try {
+        // Recuperar l'estat del model
+        model = TestPage2Model.fromMap(cPage, _persistentState);
+        Debug.info("$tag: Restaurat model de pàgina des d'estat persistent");
+      } catch (e) {
+        // Si hi ha error en restaurar, crear un nou model
+        Debug.error("$tag: Error restaurant model: $e");
+        model = TestPage2Model(
+          pPage: cPage,
+          pTitleKey: titleKey,
+          pSubTitleKey: subTitleKey,
+        );
+      }
+    }
   }
   
   @override
   void update() {
-    // Actualitzar estat si és necessari
-    // Per ara només actualitzem l'UI, sense cap lògica addicional
     if (mounted) {
-      setState(() {
-        // Reconstruïm l'UI
-      });
+      setState(() {});
     }
   }
   
   @override
   void dispose() {
+    // Només guardar l'estat si el model no és null
+    if (model != null) {
+      // Desar l'estat actual per a futures reconstruccions
+      _saveState();
+    }
+    
     super.dispose();
   }
 
+  /// Guarda l'estat actual per a futures reconstruccions
+  void _saveState() {
+    final currentModel = model as TestPage2Model?;
+    if (currentModel != null) {
+      // Convertir el model a un mapa i guardar-lo
+      final modelMap = currentModel.toMap();
+      
+      // Només actualitzar els camps que existeixen (no sobreescriure tot)
+      for (final entry in modelMap.entries) {
+        _persistentState[entry.key] = entry.value;
+      }
+      
+      Debug.info("$tag: Estat del model desat per a persistència");
+    }
+  }
+
   @override
-  void onEvent(LdEvent pEvent) {
+  void onEvent(LdEvent event) {
     // Gestionar diferents tipus d'events
-    if (pEvent.eType == EventType.languageChanged || 
-        pEvent.eType == EventType.rebuildUI) {
+    if (event.eType == EventType.languageChanged || 
+        event.eType == EventType.themeChanged || 
+        event.eType == EventType.rebuildUI) {
+      
+      // Guardar l'estat abans de la reconstrucció
+      _saveState();
       
       // Només reconstruir si està muntat
       if (mounted) {
-        setState(() {
-          // Forçem reconstrucció de l'UI
-        });
+        setState(() {});
       }
     }
   }
 
   @override
-  void onModelChanged(LdModelAbs pModel, void Function() pfUpdate) {
-    // Executar l'actualització sempre
-    pfUpdate();
+  void onModelChanged(LdModelAbs pModel, void Function() pfnUpdate) {
+    // Executar l'acció d'actualització
+    pfnUpdate();
+    
+    // Guardar l'estat quan canvia el model
+    _saveState();
     
     // Reconstruir si està muntat
     if (mounted) {
-      setState(() {
-        // Reconstruïm el widget
-      });
+      setState(() {});
     }
   }
 
@@ -93,6 +145,9 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
     if (pageModel == null) {
       return const Center(child: CircularProgressIndicator());
     }
+    
+    // Actualitzar l'estat persistit amb les dades actuals del model
+    _persistentState[mfCounter] = pageModel.counter;
     
     // Netegem referències antigues als contenidors
     _foldableContainers.clear();
@@ -106,52 +161,54 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
+        // Utilitzem ListView en lloc de SingleChildScrollView per millor rendiment
+        child: ListView(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Contenidor dels components bàsics
-              _buildBasicComponentsSection(context),
-              
-              const SizedBox(height: 16),
-              
-              // Contenidor dels components d'entrada i formularis
-              _buildInputComponentsSection(context),
-              
-              const SizedBox(height: 16),
-              
-              // Contenidor dels components de temes i estils
-              _buildThemeComponentsSection(context),
-              
-              const SizedBox(height: 16),
-              
-              // Contenidor dels components avançats
-              _buildAdvancedComponentsSection(context),
-              
-              const SizedBox(height: 16),
-              
-              // Contenidor per a configuracions de LdFoldableContainer
-              _buildFoldableContainerDemoSection(context),
-              
-              const SizedBox(height: 16),
-              
-              // Botó per expandir/contreure tots els contenidors
-              LdButton(
-                text: "Toggle All Containers",
-                onPressed: _toggleAllContainers,
-              ),
-              
-              // Espai extra al final per assegurar que hi ha suficient espai 
-              // quan el teclat està visible
-              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-            ],
-          ),
+          children: [
+            // Contenidor dels components bàsics
+            _buildBasicComponentsSection(context),
+            
+            const SizedBox(height: 16),
+            
+            // Contenidor dels components d'entrada i formularis
+            _buildInputComponentsSection(context),
+            
+            // Comentem temporalment aquests contenidors per identificar el problema
+            // const SizedBox(height: 16),
+            
+            // // Contenidor dels components de temes i estils
+            // _buildThemeComponentsSection(context),
+            
+            // const SizedBox(height: 16),
+            
+            // // Contenidor dels components avançats
+            // _buildAdvancedComponentsSection(context),
+            
+            // const SizedBox(height: 16),
+            
+            // // Contenidor per a configuracions de LdFoldableContainer
+            // _buildFoldableContainerDemoSection(context),
+            
+            const SizedBox(height: 16),
+            
+            // Botó per expandir/contreure tots els contenidors
+            LdButton(
+              text: "Toggle All Containers",
+              onPressed: _toggleAllContainers,
+            ),
+            
+            // Espai extra al final
+            const SizedBox(height: 60),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          (model as TestPage2Model?)?.incrementCounter();
+          if (model != null) {
+            (model as TestPage2Model).incrementCounter();
+            // Actualitzar també l'estat persistent directament per seguretat
+            _persistentState[mfCounter] = (model as TestPage2Model).counter;
+          }
         },
         child: const Icon(Icons.add),
       ),
@@ -169,6 +226,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
       initialExpanded: true,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // LdLabel
           LdLabel(
@@ -181,7 +239,11 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
           // LdButton
           LdButton(
             text: L.sChangeLanguage,
-            onPressed: () => L.toggleLanguage(),
+            onPressed: () {
+              // Guardar estat abans de canviar l'idioma
+              _saveState();
+              L.toggleLanguage();
+            },
           ),
           
           const SizedBox(height: 8),
@@ -189,7 +251,11 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
           // LdButton amb tema diferent
           LdButton(
             text: L.sChangeTheme,
-            onPressed: () => ThemeService.s.toggleTheme(),
+            onPressed: () {
+              // Guardar estat abans de canviar el tema
+              _saveState();
+              ThemeService.s.toggleTheme();
+            },
           ),
           
           const SizedBox(height: 8),
@@ -197,7 +263,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
           // Comptador
           LdLabel(
             pLabel: L.sCounter,
-            pPosArgs: [(model as TestPage2Model?)?.counter.toString() ?? "0"],
+            pPosArgs: [(_persistentState[mfCounter] ?? 0).toString()],
             style: Theme.of(context).textTheme.bodyLarge,
           ),
         ],
@@ -212,6 +278,9 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
   
   /// Construeix la secció de components d'entrada
   Widget _buildInputComponentsSection(BuildContext context) {
+    // Recuperar el text guardat si existeix
+    final savedText = _persistentState['saved_text_field_value'] as String? ?? "";
+    
     final container = LdFoldableContainer(
       pTag: "InputComponentsContainer",
       titleKey: "Components d'Entrada",
@@ -219,12 +288,24 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
       headerBackgroundColor: Theme.of(context).colorScheme.primary.setOpacity(0.1),
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // LdTextField
           LdTextField(
+            pTag: "TestTextField",
+            initialText: savedText,
             label: L.sTextField,
             helpText: L.sTextFieldHelp,
+            onTextChanged: (newText) {
+              // Actualitzar directament l'estat persistent
+              _persistentState['saved_text_field_value'] = newText;
+            },
           ),
+          
+          const SizedBox(height: 16),
+          
+          // Mostrar el valor desat
+          Text("Text desat: \"$savedText\""),
           
           const SizedBox(height: 16),
           
@@ -250,6 +331,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
       initialExpanded: false,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Aquí s'integraran els components de tema
           const Text("Components de tema en desenvolupament..."),
@@ -273,6 +355,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
       initialExpanded: false,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           // Aquí s'integraran els components avançats
           const Text("Components avançats en desenvolupament..."),
@@ -294,110 +377,13 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
       titleKey: "Demo de Contenidors Plegables",
       subtitleKey: "Diferents estils i configuracions",
       headerBackgroundColor: Colors.purple.setOpacity(0.2),
+      initialExpanded: false,
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Estil personalitzat 1: sense vora
-          LdFoldableContainer(
-            pTag: "CustomStyle1",
-            titleKey: "Estil Sense Vora",
-            subtitleKey: "Amb text i icones personalitzats",
-            showBorder: false,
-            headerBackgroundColor: Theme.of(context).colorScheme.primary.setOpacity(0.1),
-            expansionIcon: Icons.keyboard_arrow_up,
-            collapsedIcon: Icons.keyboard_arrow_down,
-            content: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text("Aquest contenidor no té vora i utilitza icones personalitzades per a l'expansió."),
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Estil personalitzat 2: vora arrodonida
-          LdFoldableContainer(
-            pTag: "CustomStyle2",
-            titleKey: "Estil Amb Vora Arrodonida",
-            borderRadius: 16.0,
-            borderColor: Colors.orange,
-            borderWidth: 2.0,
-            headerBackgroundColor: Colors.orange.setOpacity(0.1),
-            contentBackgroundColor: Colors.orange.setOpacity(0.05),
-            content: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text("Aquest contenidor té una vora arrodonida amb color personalitzat."),
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Estil personalitzat 3: amb accions a la capçalera
-          LdFoldableContainer(
-            pTag: "CustomStyle3",
-            titleKey: "Amb Accions a la Capçalera",
-            headerBackgroundColor: Colors.blue.setOpacity(0.1),
-            headerActions: [
-              IconButton(
-                icon: const Icon(Icons.favorite),
-                onPressed: () {
-                  // Executar acció quan es premi el botó
-                },
-                splashRadius: 20,
-              ),
-              IconButton(
-                icon: const Icon(Icons.info_outline),
-                onPressed: () {
-                  // Executar acció quan es premi el botó
-                },
-                splashRadius: 20,
-              ),
-            ],
-            content: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text("Aquest contenidor té botons d'acció a la capçalera."),
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Estil personalitzat 4: amb capçalera personalitzada
-          LdFoldableContainer(
-            pTag: "CustomStyle4",
-            header: Container(
-              height: 56.0,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              decoration: BoxDecoration(
-                color: Colors.green.setOpacity(0.2),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8.0),
-                  topRight: Radius.circular(8.0),
-                ),
-                border: Border.all(color: Colors.green, width: 1.0),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.star, color: Colors.green),
-                  const SizedBox(width: 8.0),
-                  const Expanded(
-                    child: Text(
-                      "Capçalera Totalment Personalitzada",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.expand_more),
-                    onPressed: () {
-                      // Acció del botó personalitzada
-                    },
-                  ),
-                ],
-              ),
-            ),
-            content: const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text("Aquest contenidor té una capçalera completament personalitzada."),
-            ),
-          ),
+          // Aquí anirien diferents exemples de contenidors
+          const Text("Exemples de contenidors en desenvolupament..."),
         ],
       ),
     );

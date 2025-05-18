@@ -16,6 +16,9 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> {
   // MEMBRES ==============================================
   /// Duració de l'animació d'expansió
   late final Duration _animationDuration;
+
+  /// Node de focus que podria necessitar ser restaurat
+  FocusNode? _lastFocusedNode;
   
   /// Indica si el contingut està expandit
   bool get isExpanded => (model as LdFoldableContainerModel?)?.isExpanded ?? true;
@@ -45,7 +48,7 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> {
         modelConfig[mfTitleKey] = titleKey;
       }
       
-      final subtitleKey = widget.config[cfSubTitleKey] as String?;
+      final subtitleKey = widget.config[mfSubtitleKey] as String?;
       if (subtitleKey != null) {
         modelConfig[mfSubtitleKey] = subtitleKey;
       }
@@ -88,7 +91,23 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> {
   void setExpanded(bool expanded) {
     final containerModel = model as LdFoldableContainerModel?;
     if (containerModel != null && containerModel.isExpanded != expanded) {
+      // Desar l'estat del focus actual
+      final currentFocus = FocusManager.instance.primaryFocus;
+      if (currentFocus != null) {
+        _lastFocusedNode = currentFocus;
+      }
+      
+      // Canviar l'estat d'expansió
       containerModel.isExpanded = expanded;
+      
+      // Si estem expandint, restaurar focus després d'un retard
+      if (expanded && _lastFocusedNode != null) {
+        Future.delayed(_animationDuration, () {
+          if (mounted && _lastFocusedNode != null && _lastFocusedNode!.canRequestFocus) {
+            _lastFocusedNode!.requestFocus();
+          }
+        });
+      }
       
       // Cridar el callback onExpansionChanged si existeix
       final callback = widget.config[efOnExpansionChanged] as Function(bool)?;
@@ -213,12 +232,13 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> {
       ),
     );
     
-    // Widget contingut o widget buit
-    final content = config[cfContent] as Widget? ?? const SizedBox.shrink();
+    // Widget contingut
+    final contentWidget = config[cfContent] as Widget? ?? const SizedBox.shrink();
     
     // Construir el contenidor amb animació
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Capçalera (sempre visible)
         header,
@@ -228,6 +248,7 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> {
           duration: _animationDuration,
           curve: Curves.easeInOut,
           height: containerModel.isExpanded ? null : 0.0,
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             color: contentBackgroundColor,
             borderRadius: showBorder ? BorderRadius.only(
@@ -240,17 +261,14 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> {
               bottom: BorderSide(color: borderColor, width: borderWidth),
             ) : null,
           ),
-          padding: EdgeInsets.zero,
-          child: ClipRect(
-            child: AnimatedOpacity(
-              opacity: containerModel.isExpanded ? 1.0 : 0.0,
-              duration: _animationDuration,
-              child: containerModel.isExpanded
-                ? Padding(
-                    padding: contentPadding,
-                    child: content,
-                  )
-                : const SizedBox.shrink(),
+          child: Visibility(
+            visible: containerModel.isExpanded,
+            maintainState: true,
+            maintainAnimation: true,
+            maintainSize: false,
+            child: Padding(
+              padding: contentPadding,
+              child: contentWidget,
             ),
           ),
         ),
