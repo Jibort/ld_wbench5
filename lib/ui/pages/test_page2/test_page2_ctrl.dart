@@ -14,12 +14,12 @@ import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_page/ld_page_ctrl_abs.dart';
 import 'package:ld_wbench5/core/extensions/color_extensions.dart';
 import 'package:ld_wbench5/core/ld_typedefs.dart';
-import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/services/theme_service.dart';
 import 'package:ld_wbench5/ui/pages/test_page2/test_page2.dart';
 import 'package:ld_wbench5/ui/widgets/ld_app_bar/ld_app_bar.dart';
 import 'package:ld_wbench5/ui/widgets/ld_button/ld_button.dart';
+import 'package:ld_wbench5/ui/widgets/ld_check_box/ld_check_box.dart';
 import 'package:ld_wbench5/ui/widgets/ld_foldable_container/ld_foldable_container.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label.dart';
 import 'package:ld_wbench5/ui/widgets/ld_scaffold/ld_scaffold.dart';
@@ -373,21 +373,35 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
   }
 
   /// Construeix la secció de components d'entrada
+  // lib/ui/pages/test_page2/test_page2_ctrl.dart
+// Modificar el mètode _buildInputComponentsSection per afegir una demostració de LdCheckBox
+
+  // lib/ui/pages/test_page2/test_page2_ctrl.dart
+  // Modificar el mètode _buildInputComponentsSection per afegir una demostració de LdCheckBox
   Widget _buildInputComponentsSection(BuildContext context) {
-     const containerTag = "InputComponentsContainer";
-     // -- LLEGIR L'ESTAT PERSISTENT --
-     final initialExpanded = _persistentState["${containerTag}_$mfIsExpanded"] as bool?
-                              ?? true; // Valor per defecte si no hi ha estat guardat
+    const containerTag = "InputComponentsContainer";
+    // -- LLEGIR L'ESTAT PERSISTENT --
+    final initialExpanded = _persistentState["${containerTag}_$mfIsExpanded"] as bool?
+                            ?? true; // Valor per defecte si no hi ha estat guardat
 
     // Recuperar el text guardat si existeix
-    final savedText = _persistentState['saved_text_field_value'] as String?
-        ?? "";
+    final savedText = _persistentState['saved_text_field_value'] as String? ?? "";
+    
+    // Recuperar estats dels checkboxes
+    final savedCheckbox1 = _persistentState['saved_checkbox1_value'] as bool? ?? false;
+    final savedCheckbox2 = _persistentState['saved_checkbox2_value'] as bool? ?? true;
+    final savedCheckbox3 = _persistentState['saved_checkbox3_value'] as bool? ?? false;
+    final savedCheckbox4 = _persistentState['saved_checkbox4_value'] as bool? ?? false;
+    
+    // Tema actual per colors i estils
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     final container = LdFoldableContainer(
       pTag: containerTag,
-      titleKey: "##sInputComponents", // Utilitzem clau de traducció
-      subtitleKey: "##sInputComponentsSubtitle", // Utilitzem clau de traducció
-      headerBackgroundColor: Theme.of(context).colorScheme.primary.setOpacity(0.1),
+      titleKey: L.sInputComponents, // Utilitzem la constant directament
+      subtitleKey: L.sInputComponentsSubtitle, // Utilitzem la constant directament
+      headerBackgroundColor: colorScheme.primary.setOpacity(0.1),
       initialExpanded: initialExpanded, // <--- UTILITZEM SEMPRE L'ESTAT LLEGIT
       content: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -403,33 +417,231 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
               // Actualitzar directament l'estat persistent del TextField
               _persistentState['saved_text_field_value'] = newText;
               Debug.info("$tag: Estat persistent del TextField actualitzat a \"$newText\".");
-               // No cal setState aquí si el TextField està ben implementat
-               // per notificar canvis que afectin la UI que mostra 'Text desat'.
-               // Si 'Text desat' NO s'actualitza, podríem necessitar un setState aquí
-               // o fer que 'Text desat' observi _persistentState.
             },
           ),
 
           const SizedBox(height: 16),
 
-          // Mostrar el valor desat (aquest text no es tradueix, es per debug/visualització ràpida de l'estat persistent)
-          Text("Text desat: \"${_persistentState['saved_text_field_value'] ?? ""}\""),
+          // Mostrar el valor desat del TextField
+          LdLabel(
+            pLabel: "Text desat: \"${_persistentState['saved_text_field_value'] ?? ""}\"",
+            style: theme.textTheme.bodyMedium,
+          ),
 
+          const SizedBox(height: 24),
+
+          // Secció de demostració de LdCheckBox
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerLow, // Utilitzar color de tema per al fons
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: colorScheme.outline.setOpacity(0.5)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                LdLabel(
+                  pLabel: "Demostració de LdCheckBox:",
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: colorScheme.primary, // Usar color primari per al títol
+                  ),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Checkbox #1 - Bàsic amb position left (per defecte)
+                LdCheckBox(
+                  pTag: "TestCheckBox1",
+                  initialChecked: savedCheckbox1,
+                  labelText: "Opció amb CheckBox a l'esquerra",
+                  onToggled: (value) {
+                    // Persistir l'estat del checkbox
+                    _persistentState['saved_checkbox1_value'] = value;
+                    Debug.info("$tag: Checkbox1 canviat a $value");
+                  },
+                ),
+                
+                const Divider(height: 16),
+                
+                // Checkbox #2 - Amb position right
+                LdCheckBox(
+                  pTag: "TestCheckBox2",
+                  initialChecked: savedCheckbox2,
+                  labelText: "Opció amb CheckBox a la dreta",
+                  checkPosition: CheckPosition.right,
+                  onToggled: (value) {
+                    _persistentState['saved_checkbox2_value'] = value;
+                    Debug.info("$tag: Checkbox2 canviat a $value");
+                  },
+                ),
+                
+                const Divider(height: 16),
+                
+                // Checkbox #3 - Amb icona leading i tooltip
+                LdCheckBox(
+                  pTag: "TestCheckBox3",
+                  initialChecked: savedCheckbox3,
+                  labelText: "Opció amb icona i info",
+                  leadingIcon: Icons.info_outline,
+                  infoTextKey: "Text informatiu d'ajuda per aquesta opció",
+                  showInfoIcon: true,
+                  onToggled: (value) {
+                    _persistentState['saved_checkbox3_value'] = value;
+                    Debug.info("$tag: Checkbox3 canviat a $value");
+                  },
+                  onInfoTapped: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: LdLabel(pLabel: "Has premut la icona d'informació"),
+                        duration: const Duration(seconds: 2),
+                        backgroundColor: colorScheme.primary,
+                      ),
+                    );
+                  },
+                ),
+                
+                const Divider(height: 16),
+                
+                // Checkbox #4 - Amb traducció i interpolació
+                LdCheckBox(
+                  pTag: "TestCheckBox4",
+                  initialChecked: savedCheckbox4,
+                  labelText: L.sCounter, // Usem la constant directament
+                  labelPosArgs: [((model as TestPage2Model?)?.counter ?? 0).toString()], // Arguments per interpolació
+                  onToggled: (value) {
+                    _persistentState['saved_checkbox4_value'] = value;
+                    Debug.info("$tag: Checkbox4 canviat a $value");
+                  },
+                ),
+              ],
+            ),
+          ),
+          
           const SizedBox(height: 16),
-
-          // Aquí s'afegiran més components d'entrada en el futur
-           LdLabel(
-            pLabel: "##sMoreInputComponents", // Utilitzem clau de traducció
-            style: Theme.of(context).textTheme.bodyMedium,
+          
+          // Secció d'estat i accions
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainer, // Un altre to de color de superfície
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: colorScheme.outline.setOpacity(0.5)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Títol de la secció d'estat
+                LdLabel(
+                  pLabel: "Estats dels checkboxes:",
+                  style: theme.textTheme.titleSmall,
+                ),
+                
+                const SizedBox(height: 8),
+                
+                // Mostrar l'estat dels checkboxes amb icones
+                Row(
+                  children: [
+                    Icon(
+                      savedCheckbox1 ? Icons.check_box : Icons.check_box_outline_blank,
+                      color: savedCheckbox1 ? colorScheme.primary : colorScheme.outline,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    LdLabel(
+                      pLabel: "Checkbox1: ${savedCheckbox1 ? "Marcat" : "Desmarcat"}",
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 4),
+                
+                Row(
+                  children: [
+                    Icon(
+                      savedCheckbox2 ? Icons.check_box : Icons.check_box_outline_blank,
+                      color: savedCheckbox2 ? colorScheme.primary : colorScheme.outline,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    LdLabel(
+                      pLabel: "Checkbox2: ${savedCheckbox2 ? "Marcat" : "Desmarcat"}",
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 4),
+                
+                Row(
+                  children: [
+                    Icon(
+                      savedCheckbox3 ? Icons.check_box : Icons.check_box_outline_blank,
+                      color: savedCheckbox3 ? colorScheme.primary : colorScheme.outline,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    LdLabel(
+                      pLabel: "Checkbox3: ${savedCheckbox3 ? "Marcat" : "Desmarcat"}",
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 4),
+                
+                Row(
+                  children: [
+                    Icon(
+                      savedCheckbox4 ? Icons.check_box : Icons.check_box_outline_blank,
+                      color: savedCheckbox4 ? colorScheme.primary : colorScheme.outline,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    LdLabel(
+                      pLabel: "Checkbox4: ${savedCheckbox4 ? "Marcat" : "Desmarcat"}",
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Botó per actualitzar els arguments del checkbox #4 quan canvia el contador
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Incrementem el comptador (ja tenim un altre botó que també ho fa)
+                    if (model != null) {
+                      (model as TestPage2Model).incrementCounter();
+                    }
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: LdLabel(pLabel: "Actualitzar arguments del checkbox #4"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary,
+                    foregroundColor: colorScheme.onPrimary,
+                  ),
+                ),              
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 24),
+          
+          // Text informatiu de més components en desenvolupament (ja existent)
+          LdLabel(
+            pLabel: L.sMoreInputComponents, // Utilitzem la constant directament
+            style: theme.textTheme.bodyMedium,
           ),
         ],
       ),
       // -- ACTUALITZAR L'ESTAT PERSISTENT QUAN CANVIA --
-       onExpansionChanged: (expanded) {
-         Debug.info("$tag: Estat d'expansió de $containerTag canviat a $expanded via UI.");
-         _persistentState["${containerTag}_$mfIsExpanded"] = expanded;
-         // No cal setState aquí
-       },
+      onExpansionChanged: (expanded) {
+        Debug.info("$tag: Estat d'expansió de $containerTag canviat a $expanded via UI.");
+        _persistentState["${containerTag}_$mfIsExpanded"] = expanded;
+        // No cal setState aquí
+      },
     );
     // Guardar referència per a manipulació programàtica (per _toggleAllContainers)
     _foldableContainers[containerTag] = container;
@@ -474,44 +686,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
     return container;
   }
 
-  /// Construeix la secció de components avançats
-  Widget _buildAdvancedComponentsSection(BuildContext context) {
-     const containerTag = "AdvancedComponentsContainer";
-     // -- LLEGIR L'ESTAT PERSISTENT --
-     final initialExpanded = _persistentState["${containerTag}_$mfIsExpanded"] as bool?
-                              ?? false; // Valor per defecte si no hi ha estat guardat
-
-    final container = LdFoldableContainer(
-      pTag: containerTag,
-      titleKey: "##sAdvancedComponents", // Utilitzem clau de traducció
-      subtitleKey: "##sAdvancedComponentsSubtitle", // Utilitzem clau de traducció
-      headerBackgroundColor: Theme.of(context).colorScheme.error.setOpacity(0.1),
-      initialExpanded: initialExpanded, // <--- UTILITZEM SEMPRE L'ESTAT LLEGIT
-      content: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Aquí s'integraran els components avançats
-          LdLabel(
-            pLabel: "##sAdvancedComponentsPlaceholder", // Utilitzem clau de traducció
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
-      ),
-      // -- ACTUALITZAR L'ESTAT PERSISTENT QUAN CANVIA --
-       onExpansionChanged: (expanded) {
-         Debug.info("$tag: Estat d'expansió de $containerTag canviat a $expanded via UI.");
-         _persistentState["${containerTag}_$mfIsExpanded"] = expanded;
-         // No cal setState aquí
-       },
-    );
-    // Guardar referència per a manipulació programàtica (per _toggleAllContainers)
-    _foldableContainers[containerTag] = container;
-
-    return container;
-  }
-
-  /// Construeix la secció de demostració de LdFoldableContainer amb contenidors anidats
+  
   Widget _buildFoldableContainerDemoSection(BuildContext context) {
      const containerTag = "FoldableContainerDemoContainer";
      // -- LLEGIR L'ESTAT PERSISTENT DEL CONTENIDOR PARE --
@@ -562,6 +737,44 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
     return container;
   }
 
+/// Construeix la secció de components avançats
+  Widget _buildAdvancedComponentsSection(BuildContext context) {
+     const containerTag = "AdvancedComponentsContainer";
+     // -- LLEGIR L'ESTAT PERSISTENT --
+     final initialExpanded = _persistentState["${containerTag}_$mfIsExpanded"] as bool?
+                              ?? false; // Valor per defecte si no hi ha estat guardat
+
+    final container = LdFoldableContainer(
+      pTag: containerTag,
+      titleKey: "##sAdvancedComponents", // Utilitzem clau de traducció
+      subtitleKey: "##sAdvancedComponentsSubtitle", // Utilitzem clau de traducció
+      headerBackgroundColor: Theme.of(context).colorScheme.error.setOpacity(0.1),
+      initialExpanded: initialExpanded, // <--- UTILITZEM SEMPRE L'ESTAT LLEGIT
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Aquí s'integraran els components avançats
+          LdLabel(
+            pLabel: "##sAdvancedComponentsPlaceholder", // Utilitzem clau de traducció
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
+      ),
+      // -- ACTUALITZAR L'ESTAT PERSISTENT QUAN CANVIA --
+       onExpansionChanged: (expanded) {
+         Debug.info("$tag: Estat d'expansió de $containerTag canviat a $expanded via UI.");
+         _persistentState["${containerTag}_$mfIsExpanded"] = expanded;
+         // No cal setState aquí
+       },
+    );
+    // Guardar referència per a manipulació programàtica (per _toggleAllContainers)
+    _foldableContainers[containerTag] = container;
+
+    return container;
+  }
+
+  /// Construeix la secció de demostració de LdFoldableContainer amb contenidors anidats
   /// Mètode auxiliar per construir un contenidor anidat i gestionar la seva persistència
   Widget _buildNestedContainer(BuildContext context, String tag, String titleKey, String subtitleKey, String contentKey) {
      // -- LLEGIR L'ESTAT PERSISTENT DEL CONTENIDOR ANIDAT --
@@ -602,8 +815,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
 
     return container;
   }
-
-
+ 
   /// Canvia l'estat d'expansió de tots els contenidors
   void _toggleAllContainers() {
     // Per a cada contenidor registrat, alterna l'estat d'expansió
@@ -638,4 +850,5 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
      // NOTA: L'estat d'expansió dels contenidors anidats NO es controla amb aquest botó,
      // només els contenidors de primer nivell al mapa _foldableContainers.
   }
+
 }
