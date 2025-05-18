@@ -49,6 +49,9 @@ import 'package:ld_wbench5/utils/debug.dart';
 ```
 
 ### Declaracions de Classe
+Dedicar una línia independent a '[abstract] class', 'extends', 'with', 'on' i 'implements' en la
+declaració d'una classe.
+
 Alinear a la columna lliure més a la dreta:
 ```dart
 class      TestPageCtrl 

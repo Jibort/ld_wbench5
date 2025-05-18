@@ -7,14 +7,16 @@
 // Updated: 2025/05/18 ds. GEM - Restauració de focus després d'expandir.
 // Updated: 2025/05/18 ds. GEM - Correcció de WidgetStateProperty.resolveWith i colors.
 // Updated: 2025/05/18 ds. GEM - Implementació de AutomaticKeepAliveClientMixin i logs per a depuració de scroll.
+// Updated: 2025/05/19 dg. CLA - Correcció de dependències i implementació de persistència centralitzada
 
 import 'package:flutter/material.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
-import 'package:ld_wbench5/core/map_fields.dart'; // Importar constants
-import 'package:ld_wbench5/core/extensions/string_extensions.dart'; // Per .tx()
+import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/core/extensions/string_extensions.dart';
+import 'package:ld_wbench5/services/state_persistance_service.dart';
 import 'package:ld_wbench5/ui/widgets/ld_foldable_container/ld_foldable_container.dart';
 import 'package:ld_wbench5/ui/widgets/ld_foldable_container/ld_foldable_container_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
@@ -22,7 +24,7 @@ import 'package:ld_wbench5/utils/debug.dart';
 /// Controlador del widget LdFoldableContainer.
 /// Gestiona l'estat expandit/col·lapsat, l'animació i la interacció.
 /// Utilitza AutomaticKeepAliveClientMixin per preservar l'estat en ListViews.
-class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with AutomaticKeepAliveClientMixin { // <-- Afegit Mixin
+class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with AutomaticKeepAliveClientMixin {
 
   // MEMBRES ==============================================
   /// Duraci  de l'animaci  d'expansi .
@@ -33,8 +35,8 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
   /// Indica si el contingut est  expandit (llegint directament del model).
   bool get isExpanded => (model as LdFoldableContainerModel?)?.isExpanded ?? true; // Ús segur amb ??
 
-   /// Accés ràpid al model amb tipus segur.
-   LdFoldableContainerModel? get containerModel => model as LdFoldableContainerModel?; // Getter afegit per comoditat
+  /// Accés ràpid al model amb tipus segur.
+  LdFoldableContainerModel? get containerModel => model as LdFoldableContainerModel?;
 
 
   // CONSTRUCTORS/DESTRUCTORS ============================
@@ -62,63 +64,57 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
      Debug.info("$tag: Inicialització completada. isExpanded: ${containerModel?.isExpanded}");
   }
 
-   /// Crea o restaura el model do contenidor plegable.
-   /// Intenta carregar l'estat inicial des del mapa de persistència global.
-   void _createModel() {
-     Debug.info("$tag: Creant/Restaurant model del contenidor plegable.");
-     try {
-       // Obtenir l'estat inicial des del mapa de persistència global,
-       // o des de la configuració del widget com a fallback si no existeix a la persistència.
-       // Utilitzem el tag do contenidor com a part da clave no mapa persistent.
-       final persistentKey = "${tag}_$mfIsExpanded";
-       final savedExpandedState = TestPage2Ctrl._persistentState[persistentKey] as bool?; // Llegim des do mapa estàtic da pàgina
+  /// Crea o restaura el model do contenidor plegable.
+  /// Intenta carregar l'estat inicial des del mapa de persistència global.
+  void _createModel() {
+    Debug.info("$tag: Creant/Restaurant model del contenidor plegable.");
+    try {
+      // Obtenir l'estat inicial des del servei de persistència,
+      // o des de la configuració del widget com a fallback si no existeix.
+      final persistentKey = StatePersistenceService.makeKey(tag, mfIsExpanded);
+      final savedExpandedState = StatePersistenceService.s.getValue<bool>(persistentKey);
 
-       // El valor initialExpanded da configuració do widget només s'usa si NO hi ha estat guardat.
-       final initialExpandedFromConfig = widget.config[cfInitialExpanded] as bool? ?? true;
+      // El valor initialExpanded da configuració do widget només s'usa si NO hi ha estat guardat.
+      final initialExpandedFromConfig = widget.config[cfInitialExpanded] as bool? ?? true;
 
-       // Prioritzem l'estat guardat, si existeix.
-       final initialExpanded = savedExpandedState ?? initialExpandedFromConfig;
+      // Prioritzem l'estat guardat, si existeix.
+      final initialExpanded = savedExpandedState ?? initialExpandedFromConfig;
 
-       // Construir o mapa mínim necessari per ao model
-       MapDyns modelConfig = MapDyns();
-       modelConfig[cfTag] = tag; // Sempre incloure o tag
-       modelConfig[mfIsExpanded] = initialExpanded; // Estat inicial (mf) - Usamos o valor resolt (persistent o config)
+      // Construir o mapa mínim necessari per ao model
+      MapDyns modelConfig = MapDyns();
+      modelConfig[cfTag] = tag; // Sempre incloure o tag
+      modelConfig[mfIsExpanded] = initialExpanded; // Estat inicial (mf) - Usamos o valor resolt (persistent o config)
 
-       // Afegir outras cf/mf rellevants da configuració do widget si existen
-       if (widget.config.containsKey(mfTitleKey)) modelConfig[mfTitleKey] = widget.config[mfTitleKey];
-       if (widget.config.containsKey(mfSubtitleKey)) modelConfig[mfSubtitleKey] = widget.config[mfSubtitleKey];
-       // Podriamos afegir outras configuracions (cf) ao mapa do modelo se o model as necesitase
+      // Afegir outras cf/mf rellevants da configuració do widget si existen
+      if (widget.config.containsKey(mfTitleKey)) modelConfig[mfTitleKey] = widget.config[mfTitleKey];
+      if (widget.config.containsKey(mfSubtitleKey)) modelConfig[mfSubtitleKey] = widget.config[mfSubtitleKey];
 
+      // Crear o modelo a partir do mapa.
+      model = LdFoldableContainerModel.fromMap(modelConfig);
+      Debug.info("$tag: Model creat/restaurat com éxito. isExpanded: ${containerModel?.isExpanded}");
 
-       // Crear o modelo a partir do mapa.
-       model = LdFoldableContainerModel.fromMap(modelConfig);
-       Debug.info("$tag: Model creat/restaurat com éxito. isExpanded: ${containerModel?.isExpanded}");
+      // Actualizar o estado persistente na primeira creación se non existia
+      if (savedExpandedState == null) {
+        StatePersistenceService.s.setValue(persistentKey, initialExpanded);
+        Debug.info("$tag: Estat inicial de persistencia '$persistentKey' establert a $initialExpanded.");
+      }
 
-       // Actualizar o estado persistente na primeira creación se non existia
-       if (savedExpandedState == null) {
-          TestPage2Ctrl._persistentState[persistentKey] = initialExpanded;
-          Debug.info("$tag: Estat inicial de persistencia '$persistentKey' establert a $initialExpanded.");
-       }
-
-
-     } catch (e) {
-       // Se hai un error (p.ex., configuración invàlida), crear un modelo de recanvi com valores por defecto.
-       Debug.error("$tag: Error creando modelo desde config: $e. Creando modelo de recambio.");
-       try {
-          MapDyns fallbackConfig = MapDyns();
-          fallbackConfig[cfTag] = tag;
-          fallbackConfig[mfIsExpanded] = false; // Estado por defecto false
-          model = LdFoldableContainerModel.fromMap(fallbackConfig);
-          Debug.warn("$tag: Modelo de recambio creado com éxito.");
-           // Actualizar o estado persistente para o modelo de recambio
-          TestPage2Ctrl._persistentState["${tag}_$mfIsExpanded"] = false;
-       } catch (e2) {
-          Debug.fatal("$tag: Error fatal creando modelo de recambio: $e2"); // Se incluso o fallback falla, é fatal.
-       }
-     }
-   }
-
-
+    } catch (e) {
+      // Se hai un error (p.ex., configuración invàlida), crear un modelo de recanvi com valores por defecto.
+      Debug.error("$tag: Error creando modelo desde config: $e. Creando modelo de recambio.");
+      try {
+        MapDyns fallbackConfig = MapDyns();
+        fallbackConfig[cfTag] = tag;
+        fallbackConfig[mfIsExpanded] = false; // Estado por defecto false
+        model = LdFoldableContainerModel.fromMap(fallbackConfig);
+        Debug.warn("$tag: Modelo de recambio creado com éxito.");
+        // Actualizar o estado persistente para o modelo de recambio
+        StatePersistenceService.s.setValue(StatePersistenceService.makeKey(tag, mfIsExpanded), false);
+      } catch (e2) {
+        Debug.fatal("$tag: Error fatal creando modelo de recambio: $e2"); // Se incluso o fallback falla, é fatal.
+      }
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -194,9 +190,10 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
       // Cambiar o estado de expansión do modelo. Isto notifica ao controlador via onModelChanged.
       model.isExpanded = expanded;
 
-       // Actualizar o estado persistente do contenedor no mapa estático da pàgina
-       TestPage2Ctrl._persistentState["${tag}_$mfIsExpanded"] = expanded;
-       Debug.info("$tag: Estado persistente '$tag_$mfIsExpanded' actualizado a $expanded.");
+      // Actualizar o estado persistente do contenedor no mapa estático da pàgina
+      final persistentKey = StatePersistenceService.makeKey(tag, mfIsExpanded);
+      StatePersistenceService.s.setValue(persistentKey, expanded);
+      Debug.info("$tag: Estado persistente '$persistentKey' actualizado a $expanded.");
 
 
       // Se estamos expandindo, restaurar foco despois dun retraso para permitir que a UI se reconstrua.
