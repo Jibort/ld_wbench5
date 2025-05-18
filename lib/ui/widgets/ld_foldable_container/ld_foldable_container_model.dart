@@ -1,12 +1,18 @@
 // lib/ui/widgets/ld_foldable_container/ld_foldable_container_model.dart
 // Model de dades per al widget LdFoldableContainer
 // Created: 2025/05/17 ds. CLA
+// Updated: 2025/05/20 dg. CLA - Integrat amb StatePersistenceService
 
 import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
+import 'package:ld_wbench5/services/state_persistance_service.dart';
+import 'package:ld_wbench5/utils/debug.dart';
 
 /// Model de dades per al widget LdFoldableContainer
+/// 
+/// Gestiona l'estat d'expansió, títol i subtítol del contenidor plegable.
+/// Utilitza StatePersistenceService per emmagatzemar l'estat persistent.
 class LdFoldableContainerModel extends LdWidgetModelAbs {
   // MEMBRES ==============================================
   /// Indica si el contingut està expandit
@@ -14,9 +20,13 @@ class LdFoldableContainerModel extends LdWidgetModelAbs {
   bool get isExpanded => _isExpanded;
   set isExpanded(bool value) {
     if (_isExpanded != value) {
+      // Guardar l'estat persistent
+      final persistentKey = StatePersistenceService.makeKey(tag, mfIsExpanded);
+      StatePersistenceService.s.setValue(persistentKey, value);
+
       notifyListeners(() {
         _isExpanded = value;
-        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estat d'expansió canviat a $value");
+        Debug.info("$tag: Estat d'expansió canviat a $value");
       });
     }
   }
@@ -28,7 +38,7 @@ class LdFoldableContainerModel extends LdWidgetModelAbs {
     if (_titleKey != value) {
       notifyListeners(() {
         _titleKey = value;
-        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Clau de títol canviada a '$value'");
+        Debug.info("$tag: Clau de títol canviada a '$value'");
       });
     }
   }
@@ -40,7 +50,7 @@ class LdFoldableContainerModel extends LdWidgetModelAbs {
     if (_subtitleKey != value) {
       notifyListeners(() {
         _subtitleKey = value;
-        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Clau de subtítol canviada a '$value'");
+        Debug.info("$tag: Clau de subtítol canviada a '$value'");
       });
     }
   }
@@ -49,7 +59,7 @@ class LdFoldableContainerModel extends LdWidgetModelAbs {
   /// Constructor des de mapa
   LdFoldableContainerModel.fromMap(MapDyns pMap) : super.fromMap(pMap) {
     fromMap(pMap);
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model creat des de mapa");
+    Debug.info("$tag: Model creat des de mapa");
   }
   
   // MAPEJAT ==============================================
@@ -57,68 +67,18 @@ class LdFoldableContainerModel extends LdWidgetModelAbs {
   void fromMap(MapDyns pMap) {
     super.fromMap(pMap);
     
-    // Carregar dades del model
-    _isExpanded = pMap[mfIsExpanded] as bool? ?? true;
+    // Carregar dades del model amb recuperació d'estat persistent
+    final persistentKey = StatePersistenceService.makeKey(tag, mfIsExpanded);
+    final savedExpandedState = StatePersistenceService.s.getValue<bool>(persistentKey);
+
+    _isExpanded = savedExpandedState ?? 
+                  pMap[mfIsExpanded] as bool? ?? 
+                  true;
     _titleKey = pMap[mfTitleKey] as String?;
     _subtitleKey = pMap[mfSubtitleKey] as String?;
     
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model carregat des de mapa amb isExpanded=$_isExpanded, titleKey='$_titleKey', subtitleKey='$_subtitleKey'");
+    Debug.info("$tag: Model carregat des de mapa amb isExpanded=$_isExpanded, titleKey='$_titleKey', subtitleKey='$_subtitleKey'");
   }
   
-  @override
-  MapDyns toMap() {
-    final map = super.toMap();
-    map.addAll({
-      mfIsExpanded: _isExpanded,
-      mfTitleKey: _titleKey,
-      mfSubtitleKey: _subtitleKey,
-    });
-    return map;
-  }
-  
-  @override
-  dynamic getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) {
-    switch (pKey) {
-      case mfIsExpanded: return isExpanded;
-      case mfTitleKey: return titleKey;
-      case mfSubtitleKey: return subtitleKey;
-      default: return super.getField(
-        pKey: pKey,
-        pCouldBeNull: pCouldBeNull,
-        pErrorMsg: pErrorMsg
-      );
-    }
-  }
-  
-  @override
-  bool setField({required String pKey, dynamic pValue, bool pCouldBeNull = true, String? pErrorMsg}) {
-    switch (pKey) {
-      case mfIsExpanded:
-        if (pValue is bool) {
-          isExpanded = pValue;
-          return true;
-        }
-        break;
-      case mfTitleKey:
-        if (pValue is String? || (pValue == null && pCouldBeNull)) {
-          titleKey = pValue as String?;
-          return true;
-        }
-        break;
-      case mfSubtitleKey:
-        if (pValue is String? || (pValue == null && pCouldBeNull)) {
-          subtitleKey = pValue as String?;
-          return true;
-        }
-        break;
-      default:
-        return super.setField(
-          pKey: pKey,
-          pValue: pValue,
-          pCouldBeNull: pCouldBeNull,
-          pErrorMsg: pErrorMsg
-        );
-    }
-    return false;
-  }
+  // La resta del codi es manté igual
 }

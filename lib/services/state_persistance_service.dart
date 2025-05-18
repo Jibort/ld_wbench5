@@ -2,13 +2,11 @@
 // Servei centralitzat de persistència d'estat per widgets i pàgines
 // Created: 2025/05/19 dg. CLA
 
-import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Servei per a la persistència d'estat entre reconstruccions d'UI
-class StatePersistenceService
-with  LdTaggableMixin {
+class StatePersistenceService {
   // MEMBRES ESTÀTICS =====================================
   /// Instància singleton
   static final StatePersistenceService _inst = StatePersistenceService._();
@@ -23,8 +21,7 @@ with  LdTaggableMixin {
   // CONSTRUCTORS/DESTRUCTORS =============================
   /// Constructor privat
   StatePersistenceService._() {
-    tag = className;
-    Debug.info("$tag: Servei inicialitzat");
+    Debug.info("StatePersistenceService: Servei inicialitzat");
   }
   
   // GETTERS/SETTERS ======================================
@@ -40,7 +37,7 @@ with  LdTaggableMixin {
   /// Desa un valor associat a una clau
   void setValue<T>(String pKey, T? pValue) {
     _persistentState[pKey] = pValue;
-    Debug.info("$tag: Valor per a '$pKey' desat");
+    Debug.info("StatePersistenceService: Valor per a '$pKey' desat");
   }
   
   /// Comprova si existeix un valor per a una clau
@@ -51,20 +48,20 @@ with  LdTaggableMixin {
   /// Elimina un valor
   void removeValue(String pKey) {
     _persistentState.remove(pKey);
-    Debug.info("$tag: Valor per a '$pKey' eliminat");
+    Debug.info("StatePersistenceService: Valor per a '$pKey' eliminat");
   }
   
   /// Neteja tots els valors
   void clear() {
     _persistentState.clear();
-    Debug.info("$tag: Tots els valors eliminats");
+    Debug.info("StatePersistenceService: Tots els valors eliminats");
   }
   
   /// Estableix un valor només si no existeix
   void setValueIfAbsent<T>(String pKey, T pValue) {
     if (!hasValue(pKey)) {
       setValue(pKey, pValue);
-      Debug.info("$tag: Valor per defecte per a '$pKey' establert");
+      Debug.info("StatePersistenceService: Valor per defecte per a '$pKey' establert");
     }
   }
   

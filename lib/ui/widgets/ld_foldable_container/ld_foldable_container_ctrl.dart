@@ -45,8 +45,9 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
 
   @override
   void initState() {
-     super.initState();
-     Debug.info("$tag: initState");
+    super.initState();
+    Debug.info("$tag: initState");
+    // Eliminar qualsevol crida a updateKeepAlive()
   }
 
   @override
@@ -65,27 +66,22 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
   }
 
   /// Crea o restaura el model do contenidor plegable.
-  /// Intenta carregar l'estat inicial des del mapa de persistència global.
   void _createModel() {
     Debug.info("$tag: Creant/Restaurant model del contenidor plegable.");
     try {
-      // Obtenir l'estat inicial des del servei de persistència,
-      // o des de la configuració del widget com a fallback si no existeix.
       final persistentKey = StatePersistenceService.makeKey(tag, mfIsExpanded);
       final savedExpandedState = StatePersistenceService.s.getValue<bool>(persistentKey);
-
-      // El valor initialExpanded da configuració do widget només s'usa si NO hi ha estat guardat.
-      final initialExpandedFromConfig = widget.config[cfInitialExpanded] as bool? ?? true;
-
-      // Prioritzem l'estat guardat, si existeix.
-      final initialExpanded = savedExpandedState ?? initialExpandedFromConfig;
+      
+      // Prioritzar aquest ordre específic
+      final initialExpanded = savedExpandedState ?? 
+        (widget.config[cfInitialExpanded] as bool? ?? true);
 
       // Construir o mapa mínim necessari per ao model
       MapDyns modelConfig = MapDyns();
       modelConfig[cfTag] = tag; // Sempre incloure o tag
       modelConfig[mfIsExpanded] = initialExpanded; // Estat inicial (mf) - Usamos o valor resolt (persistent o config)
 
-      // Afegir outras cf/mf rellevants da configuració do widget si existen
+      // Afegir otras cf/mf rellevants da configuració do widget si existen
       if (widget.config.containsKey(mfTitleKey)) modelConfig[mfTitleKey] = widget.config[mfTitleKey];
       if (widget.config.containsKey(mfSubtitleKey)) modelConfig[mfSubtitleKey] = widget.config[mfSubtitleKey];
 
@@ -127,7 +123,7 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
   }
 
   @override
-  void didUpdateWidget(covariant T oldWidget) {
+  void didUpdateWidget(covariant LdFoldableContainer  oldWidget) {
      super.didUpdateWidget(oldWidget);
      Debug.info("$tag: didUpdateWidget");
      // Aquest mètode es crida quan el widget associat canvia (p.ex., els paràmetres del constructor).
@@ -209,10 +205,12 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
         });
       } else if (!expanded) {
          // Se estamos colapsando, limpar o foco se está dentro deste contenedor
-          if (currentFocus != null && currentFocus.context != null && context != null && currentFocus.context!.findAncestorStateOfType<State<LdFoldableContainer>>() == this) {
-             currentFocus.unfocus();
-             Debug.info("$tag: Foco dentro do contenedor colapsado. Eliminando foco.");
-          }
+         if (currentFocus != null && 
+            currentFocus.context != null && 
+            currentFocus.context!.findAncestorStateOfType<State<LdFoldableContainer>>() == this) {
+            currentFocus.unfocus();
+            Debug.info("$tag: Foco dins del contenidor col·lapsat. Eliminant focus.");
+         }
           _lastFocusedNode = null; // Limpar referencia cando colapsamos
       }
 
@@ -254,7 +252,7 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
   // CONSTRUCIÓN DO WIDGET VISUAL =========================
   @override
   Widget buildContent(BuildContext context) {
-    Debug.info("$tag: Construíndo contido. isVisible=${widget.isVisible}, isEnabled=${widget.isEnabled}, isExpanded=${containerModel?.isExpanded}.");
+    Debug.info("$tag: Construíndo contido. isVisible=$isVisible, isEnabled=$isEnabled, isExpanded=${containerModel?.isExpanded}.");
 
     // Assegurar-se que o estado se mantén vivo.
     // A pesar do nome do mixin, `wantKeepAlive` non se chama automaticamente.
@@ -419,6 +417,5 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
   }
 
   @override
-  bool get wantKeepAlive => containerModel?.isExpanded ?? false; // Manter vivo se está expandido (ou sempre true se se quere). Decidimos manter vivo SÓ SE est  expandido.
-
+  bool get wantKeepAlive => true;
 }
