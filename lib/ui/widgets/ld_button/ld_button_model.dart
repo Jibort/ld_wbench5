@@ -95,12 +95,48 @@ extends LdWidgetModelAbs<LdButton> {
   }
   
   // CONSTRUCTORS/DESTRUCTORS =============================
-  /// Constructor des d'un mapa - seguint el patró correcte
-  LdButtonModel.fromMap(MapDyns pMap) : super.fromMap(pMap) {
-    // Carregar propietats específiques de LdButtonModel
-    _loadFromMap(pMap);
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model de botó creat des de mapa");
+  /// Constructor des d'un mapa - CORREGIT
+LdButtonModel.fromMap(MapDyns pMap) : super.fromMap(pMap) {
+  // Verificar que pMap no sigui null
+  if (pMap.isEmpty) {
+    _label = '';
+    _isEnabled = true;
+    _buttonType = ButtonType.elevated;
+    return;
   }
+  
+  // Carregar propietats des del mapa amb valors per defecte
+  _label = pMap[cfLabel] as String? ?? '';
+  _isEnabled = pMap[cfIsEnabled] as bool? ?? true;
+  
+  // Per a les propietats opcionals, només assignar si existeixen
+  if (pMap[cfPositionalArgs] != null) {
+    _positionalArgs = List<String>.from(pMap[cfPositionalArgs] as List<dynamic>);
+  }
+  
+  if (pMap[cfNamedArgs] != null) {
+    _namedArgs = LdMap<String>();
+    final sourceMap = pMap[cfNamedArgs] as Map;
+    sourceMap.forEach((key, value) {
+      _namedArgs![key.toString()] = value.toString();
+    });
+  }
+  
+  // Carregar tipus de botó amb valor per defecte
+  final typeString = pMap[cfButtonType] as String?;
+  if (typeString != null) {
+    try {
+      _buttonType = ButtonType.values.firstWhere(
+        (e) => e.toString() == 'ButtonType.$typeString',
+        orElse: () => ButtonType.elevated,
+      );
+    } catch (_) {
+      _buttonType = ButtonType.elevated;
+    }
+  } else {
+    _buttonType = ButtonType.elevated;
+  }
+}
   
   /// Constructor alternatiu per compatibilitat
   LdButtonModel.forWidget(LdButton widget, MapDyns pMap) 

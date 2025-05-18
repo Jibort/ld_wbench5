@@ -32,7 +32,10 @@ extends LdWidgetModelAbs<LdTextField> {
   // ignore: use_super_parameters
   LdTextFieldModel.fromMap(MapDyns pMap) : super.fromMap(pMap) {
     // Carregar propietats específiques de LdTextFieldModel
-    text = pMap[mfText];
+    final textValue = pMap[mfText] as String? ?? 
+           pMap[mfInitialText] as String? ?? 
+           "";
+    text = textValue; 
   }
 
   /// Constructor alternatiu per compatibilitat

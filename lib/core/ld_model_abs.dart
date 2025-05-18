@@ -107,9 +107,21 @@ abstract class LdModelAbs with LdTaggableMixin {
   }
 
   @mustCallSuper
-  void fromMap(MapDyns pMap) {
-    tag = pMap[cfTag];
+void fromMap(MapDyns pMap) {
+  // Verificar que pMap no sigui null
+  if (pMap.isEmpty) {
+    return;
   }
+  
+  // Si cfTag existeix al mapa, actualitzem el tag
+  // Si no, mantenim el tag existent o generem un nou
+  String? tagFromMap = pMap[cfTag] as String?;
+  if (tagFromMap != null) {
+    tag = tagFromMap;
+  } else if (tag.isEmpty) {
+    tag = generateTag();
+  }
+}
 
   @mustCallSuper
   dynamic getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) =>

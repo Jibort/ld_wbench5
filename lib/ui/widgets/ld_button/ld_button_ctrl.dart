@@ -16,9 +16,33 @@ class LdButtonCtrl extends LdWidgetCtrlAbs<LdButton> {
   // MÈTODE D'INICIALITZACIÓ ===============================
   @override
   void initialize() {
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Inicialització del controlador LdButton");
+    // Crear el model amb la configuració del widget
     if (model == null) {
-      model = LdButtonModel.fromMap(widget.config);
+      // Assegurar-nos que el mapa de configuració té les propietats mínimes
+      final modelConfig = {
+        cfTag: tag, // Sempre utilitzar tag del controlador
+        cfLabel: widget.config[cfLabel] as String? ?? '',
+        cfIsEnabled: widget.config[cfIsEnabled] as bool? ?? true,
+        cfButtonType: 'elevated', // Valor per defecte
+      };
+      
+      // Afegir altres propietats opcionals només si no són nul·les
+      final positionalArgs = widget.config[cfPositionalArgs];
+      if (positionalArgs != null) {
+        modelConfig[cfPositionalArgs] = positionalArgs;
+      }
+      
+      final namedArgs = widget.config[cfNamedArgs];
+      if (namedArgs != null) {
+        modelConfig[cfNamedArgs] = namedArgs;
+      }
+      
+      final buttonType = widget.config[cfButtonType];
+      if (buttonType != null) {
+        modelConfig[cfButtonType] = buttonType;
+      }
+      
+      model = LdButtonModel.fromMap(modelConfig);
     }
   }
 

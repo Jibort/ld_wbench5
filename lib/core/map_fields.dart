@@ -170,3 +170,33 @@ const Strings lstThemes = [
 //JIQ>CLA: Col·loca aquestes constants en la secció que toqui.
 const String mfInitialMode  = 'mfInitialMode';
 const String mfInitialTheme = 'mfInitialTheme';
+
+// Constants per LdFoldableContainer (cf)
+const String cfHeader = 'cf_header';
+const String cfContent = 'cf_content';
+const String cfIsExpanded = 'cf_is_expanded';
+const String cfHeaderHeight = 'cf_header_height';
+const String cfHeaderBackgroundColor = 'cf_header_background_color';
+const String cfContentBackgroundColor = 'cf_content_background_color';
+const String cfHeaderActions = 'cf_header_actions';
+const String cfTitleStyle = 'cf_title_style';
+const String cfSubtitleStyle = 'cf_subtitle_style';
+const String cfBorderRadius = 'cf_border_radius';
+const String cfBorderColor = 'cf_border_color';
+const String cfBorderWidth = 'cf_border_width';
+const String cfShowBorder = 'cf_show_border';
+const String cfExpansionIcon = 'cf_expansion_icon';
+const String cfCollapsedIcon = 'cf_collapsed_icon';
+const String cfHeaderPadding = 'cf_header_padding';
+const String cfContentPadding = 'cf_content_padding';
+const String cfEnableInteraction = 'cf_enable_interaction';
+const String cfAnimationDuration = 'cf_animation_duration';
+
+// Constants per LdFoldableContainer (mf)
+const String mfIsExpanded = 'mf_is_expanded';
+const String mfTitleKey = 'mf_title_key';
+const String mfSubtitleKey = 'mf_subtitle_key';
+
+// Constants per LdFoldableContainer (ef)
+const String efOnExpansionChanged = 'ef_on_expansion_changed';
+const String efOnHeaderTap = 'ef_on_header_tap';

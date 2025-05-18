@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_ctrl_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/core/extensions/string_extensions.dart';
@@ -58,16 +59,20 @@ class LdTextFieldCtrl extends LdWidgetCtrlAbs<LdTextField> {
       //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model creat amb èxit. Text: '${(model as LdTextFieldModel).text}'");
     } catch (e) {
       Debug.error("$tag: Error creant model: $e");
-      // Crear un model buit per defecte en cas d'error
+      // Crear un model de recanvi amb un text per defecte
       try {
-        model = LdTextFieldModel.fromMap({});
+        // Només cal garantir que mfText té un valor
+        MapDyns fallbackConfig = MapDyns();
+        fallbackConfig[mfText] = "";
+        
+        model = LdTextFieldModel.fromMap(fallbackConfig);
         //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Model de recanvi creat");
       } catch (e2) {
         Debug.error("$tag: Error creant model de recanvi: $e2");
       }
     }
   }
-  
+
   /// S'executa quan canvia el text al textController
   void _onTextChange() {
     // Evitar actualitzacions circulars

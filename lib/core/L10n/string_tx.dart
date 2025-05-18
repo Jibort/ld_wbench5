@@ -111,6 +111,29 @@ class StringTx {
     return result;
   }
 
+  /// Aplica només interpolació sense traduir
+  static String applyInterpolation(String text, [List<String>? pPosArgs, MapStrings? pNamedArgs]) {
+    String result = text;
+    
+    // Substituir paràmetres posicionals {0}, {1}, etc.
+    if (pPosArgs != null) {
+      for (int i = 0; i < pPosArgs.length; i++) {
+        final placeholder = '{$i}';
+        final replacement = pPosArgs[i];
+        result = result.replaceAll(placeholder, replacement);
+      }
+    }
+
+    // Substituir {nom} per valors anomenats
+    if (pNamedArgs != null) {
+      for (final entry in pNamedArgs.entries) {
+        result = result.replaceAll('{${entry.key}}', entry.value);
+      }
+    }
+
+    return result;
+  }
+
   /// Funció de hash
   @override
   int get hashCode => isTranslatable ? _key.hashCode : _text.hashCode;

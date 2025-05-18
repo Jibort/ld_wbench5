@@ -3,6 +3,7 @@
 // Updated: 2025/05/15 dc. GPT(JIQ)
 
 import 'package:flutter/material.dart';
+import 'package:ld_wbench5/core/L10n/string_tx.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/event_bus/event_bus.dart';
@@ -155,15 +156,22 @@ class L with LdTaggableMixin {
     });
   }
 
-// TRADUCCIÓ ===========================================
+  // TRADUCCIÓ ===========================================
   static String tx(
     String key, [
       Strings? posArgs = const [], 
       LdMap<String>? namedArgs = const {}
     ]) 
-  { posArgs ??= const [];
+  { 
+    posArgs ??= const [];
     namedArgs ??= const {};
 
+    // Si no és una clau de traducció (no comença amb ##), només aplicar interpolació
+    if (!key.startsWith("##")) {
+      return StringTx.applyInterpolation(key, posArgs, namedArgs);
+    }
+
+    // És una clau de traducció
     Locale locale = getCurrentLocale();
     Dictionary? dictionary = s._dictionaries[locale.languageCode];
     String baseKey = key.extractKey;
@@ -176,17 +184,8 @@ class L with LdTaggableMixin {
       //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("L.tx: Translated '$baseKey' to '$translation' in '${locale.languageCode}'");
     }
 
-    // Substituir valors posicionals
-    for (int i = 0; i < posArgs.length; i++) {
-      translation = translation.replaceAll('{$i}', posArgs[i]);
-    }
-
-    // Substituir valors amb nom
-    namedArgs.forEach((k, v) {
-      translation = translation.replaceAll('{$k}', v);
-    });
-
-    return translation;
+    // Aplicar interpolació a la traducció
+    return StringTx.applyInterpolation(translation, posArgs, namedArgs);
   }
 
   // TOGGLE ==============================================

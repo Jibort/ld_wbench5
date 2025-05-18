@@ -62,6 +62,7 @@
 //   String get txAuto => StringTx.tx(this, null, null);
 // }
 
+import 'package:ld_wbench5/core/L10n/string_tx.dart';
 import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/services/L.dart';
 
@@ -75,22 +76,32 @@ final RegExp _regex = RegExp(r'##\w+');
 extension StringExtensions on String {
   // TRADUCCIÓ AMB INTERPOLACIÓ ===========================
   /// Tradueix les claus dins la cadena i hi aplica interpolació
+  /// Tradueix les claus dins la cadena i hi aplica interpolació
   String tx([
     Strings? posArgs = const [],
     MapStrings? namedArgs = const {} ]) 
-  { String result = this;
+  { 
+    String result = this;
 
     // Detectar claus de traducció dins el text (ex: ##CLAU)
     final matches = _regex.allMatches(result).toList();
 
-    for (final match in matches) {
-      final key = match.group(0);
-      if (key != null) {
-        final translated = L.tx(key, posArgs, namedArgs);
-        result = result.replaceAll(key, translated);
-        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("tx: substituint '$key' per '$translated'");
+    if (matches.isNotEmpty) {
+      // Si hi ha claus de traducció, traduir-les
+      for (final match in matches) {
+        final key = match.group(0);
+        if (key != null) {
+          // Traduir només aquesta clau específica
+          final translated = L.tx(key, posArgs, namedArgs);
+          // Substituir només aquesta clau específica
+          result = result.replaceAll(key, translated);
+        }
       }
     }
+    
+    // Si no hi ha claus de traducció o després de substituir totes les claus,
+    // apliquem els arguments a tot el resultat per qualsevol interpolació
+    result = StringTx.applyInterpolation(result, posArgs, namedArgs);
 
     return result;
   }

@@ -9,7 +9,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/L.dart';
-import 'package:ld_wbench5/ui/pages/test_page/test_page.dart';
+import 'package:ld_wbench5/ui/pages/test_page2/test_page2.dart';
 import 'package:ld_wbench5/ui/ui_consts.dart';
 import 'package:ld_wbench5/core/event_bus/event_bus.dart';
 import 'package:ld_wbench5/core/event_bus/ld_event.dart';
@@ -113,7 +113,7 @@ with    WidgetsBindingObserver {
           theme: ThemeService.s.lightTheme,
           darkTheme: ThemeService.s.darkTheme,
           themeMode: _themeMode,
-          home: TestPage(pTitleKey: L.sAppSabina, pSubTitleKey: L.sWelcome),
+          home: TestPage2(pTitleKey: L.sAppSabina, pSubTitleKey: L.sWelcome),
         );
         
         return app;
