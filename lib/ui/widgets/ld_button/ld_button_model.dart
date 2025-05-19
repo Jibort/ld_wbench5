@@ -38,7 +38,7 @@ extends LdWidgetModelAbs<LdButton> {
     if (_label != value) {
       notifyListeners(() {
         _label = value;
-        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Label canviat a '$value'");
+        // Debug.info("$tag: Label canviat a '$value'");
       });
     }
   }
@@ -46,11 +46,12 @@ extends LdWidgetModelAbs<LdButton> {
   /// Paràmetres posicionals per a la traducció {0}, {1}, etc.
   List<String>? _positionalArgs;
   List<String>? get positionalArgs => _positionalArgs;
+  /// Estableix els paràmetres posicionals
   set positionalArgs(List<String>? value) {
     if (_positionalArgs != value) {
       notifyListeners(() {
         _positionalArgs = value;
-        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Paràmetres posicionals canviats");
+        // Debug.info("$tag: Paràmetres posicionals canviats");
       });
     }
   }
@@ -58,11 +59,12 @@ extends LdWidgetModelAbs<LdButton> {
   /// Paràmetres nomenats per a la traducció {name}, {count}, etc.
   LdMap<String>? _namedArgs;
   LdMap<String>? get namedArgs => _namedArgs;
+  /// Estableix els paràmetres nomenats
   set namedArgs(LdMap<String>? value) {
     if (_namedArgs != value) {
       notifyListeners(() {
         _namedArgs = value;
-        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Paràmetres nomenats canviats");
+        // Debug.info("$tag: Paràmetres nomenats canviats");
       });
     }
   }
@@ -70,11 +72,12 @@ extends LdWidgetModelAbs<LdButton> {
   /// Si el botó està habilitat
   bool _isEnabled = true;
   bool get isEnabled => _isEnabled;
+  /// Estableix si el botó està habilitat
   set isEnabled(bool value) {
     if (_isEnabled != value) {
       notifyListeners(() {
         _isEnabled = value;
-        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Estat d'activació canviat a $value");
+        // Debug.info("$tag: Estat d'activació canviat a $value");
       });
     }
   }
@@ -85,11 +88,12 @@ extends LdWidgetModelAbs<LdButton> {
   /// Tipus de botó
   ButtonType _buttonType = ButtonType.elevated;
   ButtonType get buttonType => _buttonType;
+  /// Estableix el tipus de botó
   set buttonType(ButtonType value) {
     if (_buttonType != value) {
       notifyListeners(() {
         _buttonType = value;
-        //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Tipus de botó canviat a $value");
+        // Debug.info("$tag: Tipus de botó canviat a $value");
       });
     }
   }

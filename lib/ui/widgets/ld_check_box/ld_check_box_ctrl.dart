@@ -117,7 +117,8 @@ class LdCheckBoxCtrl extends LdWidgetCtrlAbs<LdCheckBox> {
   /// Gestió del toggle de l'estat del checkbox quan l'usuari interacciona (toca).
   void _handleTap() {
     Debug.info("$tag: Checkbox premut.");
-    // Alternar l'estat del model. El model notificarà als seus observadors (aquest controlador).
+    
+    // Alternar l'estat del model. El model notificarà als seus observadors
     checkboxModel?.toggle();
 
     // Cridar el callback onToggled si existeix, passant el nou estat.
@@ -125,6 +126,13 @@ class LdCheckBoxCtrl extends LdWidgetCtrlAbs<LdCheckBox> {
     if (onToggledCallback != null && checkboxModel != null) {
       onToggledCallback(checkboxModel!.isChecked);
       Debug.info("$tag: Executant callback onToggled amb estat ${checkboxModel!.isChecked}.");
+    }
+
+    // Forçar actualització si està muntat
+    if (mounted) {
+      setState(() {
+        Debug.info("$tag: Actualitzant UI després del canvi d'estat.");
+      });
     }
   }
 
@@ -165,10 +173,10 @@ class LdCheckBoxCtrl extends LdWidgetCtrlAbs<LdCheckBox> {
   // CONSTRUCCIÓ DEL WIDGET VISUAL =======================
   @override
   Widget buildContent(BuildContext context) {
-    // Aquest mètode construeix la UI visible del widget.
+    // Si no hi ha model, mostrar un contenidor buit
     final model = checkboxModel;
     if (model == null) {
-      Debug.warn("$tag: Model is null, cannot build content. Showing empty box.");
+      Debug.warn("$tag: Model no disponible, mostrant SizedBox buit");
       return const SizedBox.shrink();
     }
 
@@ -220,7 +228,7 @@ class LdCheckBoxCtrl extends LdWidgetCtrlAbs<LdCheckBox> {
         // Col·locar el Checkbox a l'esquerra o a la dreta segons model.checkPosition
         if (model.checkPosition == CheckPosition.left) ...[
           Checkbox(
-            value: model.isChecked,
+            value: model.isChecked, // Usem directament l'estat del model
             onChanged: (bool? newValue) {
               _handleTap();
             },
@@ -254,7 +262,7 @@ class LdCheckBoxCtrl extends LdWidgetCtrlAbs<LdCheckBox> {
         if (model.checkPosition == CheckPosition.right) ...[
           const SizedBox(width: 8.0),
           Checkbox(
-            value: model.isChecked,
+            value: model.isChecked, // Usem directament l'estat del model
             onChanged: (bool? newValue) {
               _handleTap();
             },

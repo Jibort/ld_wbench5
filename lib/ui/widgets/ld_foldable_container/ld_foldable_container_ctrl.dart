@@ -19,7 +19,6 @@ import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/core/extensions/string_extensions.dart';
 import 'package:ld_wbench5/services/state_persistance_service.dart';
 import 'package:ld_wbench5/ui/widgets/ld_foldable_container/ld_foldable_container.dart';
-import 'package:ld_wbench5/ui/widgets/ld_foldable_container/ld_foldable_container_model.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 /// Controlador del widget LdFoldableContainer.
@@ -29,7 +28,7 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
 
   // MEMBRES ==============================================
   /// Duració de l'animació d'expansió.
-  late final Duration _animationDuration;
+  Duration _animationDuration = const Duration(milliseconds: 300);
   /// Node de focus que podria necessitar ser restaurat.
   FocusNode? _lastFocusedNode;
 
@@ -53,11 +52,8 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
     super.initState();
     Debug.info("$tag: initState");
     
-    // Obtenir la duració de l'animació o establir valor per defecte
-    _animationDuration = widget.config[cfAnimationDuration] as Duration?
-        ?? const Duration(milliseconds: 300);
-
-    _createModel(); // Crear o restaurar el model amb estat persistent.
+    // Inicialitzar el model i altres tasques
+    initialize();
     
     // No cal cridar updateKeepAlive() aquí, es cridarà automàticament
     // quan canviï el valor de wantKeepAlive
@@ -69,8 +65,9 @@ class LdFoldableContainerCtrl extends LdWidgetCtrlAbs<LdFoldableContainer> with 
     Debug.info("$tag: Inicialitzant controlador.");
     
     // Obtenir la duració de l'animació o establir valor per defecte
+    // Fer-ho només una vegada
     _animationDuration = widget.config[cfAnimationDuration] as Duration?
-        ?? const Duration(milliseconds: 300);
+          ?? const Duration(milliseconds: 300);
 
     _createModel(); // Crear o restaurar el model amb estat persistent.
   }
