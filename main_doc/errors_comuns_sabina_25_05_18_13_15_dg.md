@@ -88,7 +88,7 @@ _obsTimer = (LdModelAbs pModel, void Function() pfnUpdate) {
 ### 5. Imports amb Paths Relatius
 ```dart
 // ❌ ERROR RECURRENT
-import '../../../utils/debug.dart';
+import '../../utils/debug.dart';
 
 // ✅ CORRECTE - Sempre package complet
 import 'package:ld_wbench5/utils/debug.dart';
