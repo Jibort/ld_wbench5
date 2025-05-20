@@ -317,7 +317,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
           // LdLabel
           LdLabel(
             pLabel: "##sWelcome",
-            style: Theme.of(context).textTheme.titleMedium,
+            pStyle: Theme.of(context).textTheme.titleMedium,
           ),
 
           const SizedBox(height: 8),
@@ -354,7 +354,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
           LdLabel(
             pLabel: L.sCounter,
             pPosArgs: [(_persistentState[mfCounter] ?? 0).toString()],
-            style: Theme.of(context).textTheme.bodyLarge,
+            pStyle: Theme.of(context).textTheme.bodyLarge,
           ),
         ],
       ),
@@ -425,7 +425,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
           // Mostrar el valor desat del TextField
           LdLabel(
             pLabel: "Text desat: \"${_persistentState['saved_text_field_value'] ?? ""}\"",
-            style: theme.textTheme.bodyMedium,
+            pStyle: theme.textTheme.bodyMedium,
           ),
 
           const SizedBox(height: 24),
@@ -443,7 +443,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
               children: [
                 LdLabel(
                   pLabel: "Demostració de LdCheckBox:",
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  pStyle: theme.textTheme.titleMedium?.copyWith(
                     color: colorScheme.primary, // Usar color primari per al títol
                   ),
                 ),
@@ -534,7 +534,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
                 // Títol de la secció d'estat
                 LdLabel(
                   pLabel: "Estats dels checkboxes:",
-                  style: theme.textTheme.titleSmall,
+                  pStyle: theme.textTheme.titleSmall,
                 ),
                 
                 const SizedBox(height: 8),
@@ -550,7 +550,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
                     const SizedBox(width: 8),
                     LdLabel(
                       pLabel: "Checkbox1: ${savedCheckbox1 ? "Marcat" : "Desmarcat"}",
-                      style: theme.textTheme.bodyMedium,
+                      pStyle: theme.textTheme.bodyMedium,
                     ),
                   ],
                 ),
@@ -567,7 +567,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
                     const SizedBox(width: 8),
                     LdLabel(
                       pLabel: "Checkbox2: ${savedCheckbox2 ? "Marcat" : "Desmarcat"}",
-                      style: theme.textTheme.bodyMedium,
+                      pStyle: theme.textTheme.bodyMedium,
                     ),
                   ],
                 ),
@@ -584,7 +584,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
                     const SizedBox(width: 8),
                     LdLabel(
                       pLabel: "Checkbox3: ${savedCheckbox3 ? "Marcat" : "Desmarcat"}",
-                      style: theme.textTheme.bodyMedium,
+                      pStyle: theme.textTheme.bodyMedium,
                     ),
                   ],
                 ),
@@ -601,7 +601,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
                     const SizedBox(width: 8),
                     LdLabel(
                       pLabel: "Checkbox4: ${savedCheckbox4 ? "Marcat" : "Desmarcat"}",
-                      style: theme.textTheme.bodyMedium,
+                      pStyle: theme.textTheme.bodyMedium,
                     ),
                   ],
                 ),
@@ -632,7 +632,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
           // Text informatiu de més components en desenvolupament (ja existent)
           LdLabel(
             pLabel: L.sMoreInputComponents, // Utilitzem la constant directament
-            style: theme.textTheme.bodyMedium,
+            pStyle: theme.textTheme.bodyMedium,
           ),
         ],
       ),
@@ -669,7 +669,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
           // Aquí s'integraran els components de tema
            LdLabel(
             pLabel: "##sThemeComponentsPlaceholder", // Utilitzem clau de traducció
-            style: Theme.of(context).textTheme.bodyMedium,
+            pStyle: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),
@@ -706,7 +706,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
         children: [
           LdLabel(
             pLabel: "##sFoldableContainerDemoPlaceholder", // Utilitzem clau de traducció
-            style: Theme.of(context).textTheme.bodyMedium,
+            pStyle: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 16),
 
@@ -757,7 +757,7 @@ class TestPage2Ctrl extends LdPageCtrlAbs<TestPage2> {
           // Aquí s'integraran els components avançats
           LdLabel(
             pLabel: "##sAdvancedComponentsPlaceholder", // Utilitzem clau de traducció
-            style: Theme.of(context).textTheme.bodyMedium,
+            pStyle: Theme.of(context).textTheme.bodyMedium,
           ),
         ],
       ),

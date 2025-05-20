@@ -1,85 +1,70 @@
 // lib/ui/widgets/ld_label/ld_label.dart
 // Widget d'etiqueta amb suport per a traducció i interpolació
-// Created: 2025/05/06 dt. CLA
-// Updated: 2025/05/15 dj. GPT(JIQ)
+// Created: 2025/05/20 dl. CLA
+// Updated: 2025/05/20 dl. CLA - Inici de nova implementació
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/core/ld_typedefs.dart';
 
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/services/L.dart';
 import 'package:ld_wbench5/ui/widgets/ld_label/ld_label_ctrl.dart';
+import 'package:ld_wbench5/ui/widgets/ld_old_label/ld_old_label_ctrl.dart';
+
+export 'package:ld_wbench5/ui/widgets/ld_label/ld_label_ctrl.dart';
+export 'package:ld_wbench5/ui/widgets/ld_label/ld_label_model.dart';
+
 
 /// Widget d'etiqueta amb suport per a traducció i interpolació
 class LdLabel extends LdWidgetAbs {
-  // CONSTRUCTOR ==========================================
+  /// Constructor principal
   LdLabel({
     Key? key,
-    super.pTag,
-    String? pLabel,
-    TextStyle? style,
-    TextAlign? textAlign,
-    TextOverflow? overflow,
-    int? maxLines,
-    bool? softWrap,
-    Strings? pPosArgs,
-    LdMap<String>? pNamedArgs,
-    bool isVisible = true,
+    required String pLabel,
+    List<String>? pPosArgs,
+    MapStrings? pNamedArgs,
+    TextStyle? pStyle,
+    TextAlign? pTextAlign,
+    TextOverflow? pOverflow,
+    int? pMaxLines,
+    bool? pSoftWrap,
   }) : super(
           pKey: key,
           pConfig: {
-            cfIsVisible: isVisible,
-            cfLabel: pLabel ?? '',
-            cfLabelStyle: style,
-            cfLabelTextAlign: textAlign,
-            cfLabelOverflow: overflow,
-            cfLabelMaxLines: maxLines,
-            cfLabelSoftWrap: softWrap,
+            cfLabel: pLabel,
             cfLabelPosArgs: pPosArgs,
             cfLabelNamedArgs: pNamedArgs,
+            cfLabelStyle: pStyle,
+            cfLabelTextAlign: pTextAlign,
+            cfLabelOverflow: pOverflow,
+            cfLabelMaxLines: pMaxLines,
+            cfLabelSoftWrap: pSoftWrap,
           },
-        ) {
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: LdLabel creat amb text '$pLabel'");
-  }
+        );
 
-  /// Constructor a partir d'un mapa de configuració
-  LdLabel.fromMap(MapDyns configMap) : super(pConfig: configMap);
-
-  // CONTROLADOR ==========================================
+  /// Constructor alternatiu a partir d'un mapa de configuració
   @override
-  LdLabelCtrl createCtrl() => LdLabelCtrl(this);
-
-  /// Accés al model amb tipus segur
-  LdLabelCtrl? get wCtrl => ctrl as LdLabelCtrl?;
-
-  // MÈTODES D'ACTUALITZACIÓ ==============================
-  /// Actualitza només els arguments de traducció, sense reconstruir el parent
-  void setTranslationArgsIsolated({
-    List<String>? positionalArgs,
-    LdMap<String>? namedArgs,
-  }) {
-    (ctrl as LdLabelCtrl?)?.updateTranslationParametersOnly(
-      positionalArgs,
-      namedArgs,
-    );
+  MapDyns fromMap(MapDyns pMap) {
+    super.fromMap(pMap);
+    
+    // Actualitzat amb paràmetres amb nom
+    if (pMap.containsKey(cfLabel)) setField(pKey: cfLabel, pValue: pMap[cfLabel]);
+    if (pMap.containsKey(cfLabelPosArgs)) setField(pKey: cfLabelPosArgs, pValue: pMap[cfLabelPosArgs]);
+    if (pMap.containsKey(cfLabelNamedArgs)) setField(pKey: cfLabelNamedArgs, pValue: pMap[cfLabelNamedArgs]);
+    if (pMap.containsKey(cfLabelStyle)) setField(pKey: cfLabelStyle, pValue: pMap[cfLabelStyle]);
+    if (pMap.containsKey(cfLabelTextAlign)) setField(pKey: cfLabelTextAlign, pValue: pMap[cfLabelTextAlign]);
+    if (pMap.containsKey(cfLabelOverflow)) setField(pKey: cfLabelOverflow, pValue: pMap[cfLabelOverflow]);
+    if (pMap.containsKey(cfLabelMaxLines)) setField(pKey: cfLabelMaxLines, pValue: pMap[cfLabelMaxLines]);
+    if (pMap.containsKey(cfLabelSoftWrap)) setField(pKey: cfLabelSoftWrap, pValue: pMap[cfLabelSoftWrap]);
+    
+    return pMap; // Retornar el mapa
   }
-  
-  /// Assigna arguments de traducció
-  void setTranslationArgs({
-    Strings? positionalArgs,
-    LdMap<String>? namedArgs,
-  }) => wCtrl?.updateTranslationParams(
-        positionalArgs: positionalArgs,
-        namedArgs: namedArgs,
-      );
 
-  /// Actualitza el text dinàmicament
-  void setLabel(String pNewLabel) => wCtrl?.updateLabel(pNewLabel);
-
-  /// Actualitza l'estil del text
-  void setStyle(TextStyle? newStyle) => wCtrl?.updateLabelStyle(newStyle);
-
-  /// Obté l'estil del text actual
-  TextStyle? get currentTextStyle => wCtrl?.getCurrentLabelStyle();
+  // Constructor des de mapa (ara cridarà fromMap)
+  LdLabelModel.fromMap(MapDyns pMap) : super.fromMap(pMap) {
+    fromMap(pMap); // Ara cridem fromMap amb el mapa
+  }
+  /// Crear el controlador associat
+  @override
+  LdOldLabelCtrl createCtrl() => LdLabelCtrl(this);
 }

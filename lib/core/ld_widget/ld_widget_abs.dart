@@ -4,9 +4,8 @@
 // Updated: 2025/05/14 dc. JIQ
 
 import 'package:flutter/material.dart';
-import 'package:ld_wbench5/core/ld_typedefs.dart';
 
-import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
+import 'package:ld_wbench5/core/ld_typedefs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/services/maps_service.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
@@ -57,9 +56,9 @@ implements LdModelObserverIntf {
   }
 
   // ACCÉS AL MODEL (delegat al controlador) ==============
-  LdWidgetModelAbs? get model => ctrl?.model;
+  LdModelAbs? get model => ctrl?.model;
 
-  LdWidgetModelAbs get wModelRequired {
+  LdModelAbs get wModelRequired {
     assert(model != null, "$tag: Model no disponible encara");
     return model!;
   }

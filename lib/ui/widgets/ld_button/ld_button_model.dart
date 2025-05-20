@@ -24,11 +24,11 @@ class   LdButtonModel
 extends LdWidgetModelAbs<LdButton> {
   // GETTERS/SETTERS ======================================
 
-  IconData? get icon => config[cfIcon] as IconData?;
-  set icon(IconData? val) => config[cfIcon] = val;
+  IconData? get icon => fields[cfIcon] as IconData?;
+  set icon(IconData? val) => fields[cfIcon] = val;
 
-  ButtonStyle? get style => config[cfButtonStyle] as ButtonStyle?;
-  set style(ButtonStyle? val) => config[cfButtonStyle] = val;
+  ButtonStyle? get style => fields[cfButtonStyle] as ButtonStyle?;
+  set style(ButtonStyle? val) => fields[cfButtonStyle] = val;
 
   // MEMBRES ==============================================
   /// Etiqueta del botó (clau de traducció o text directe)

@@ -234,21 +234,26 @@ class LdCheckBoxCtrl extends LdWidgetCtrlAbs<LdCheckBox> {
             },
             focusNode: focusNode,
             // Aplicar estil de focus a la vora del checkbox
-            side: MaterialStateBorderSide.resolveWith(
-              (states) {
-                if (states.contains(MaterialState.focused)) {
-                  return BorderSide(color: colorScheme.primary, width: 2.0);
-                }
-                return null;
-              }
-            ),
-            // Usar el color de fons del TextField (eliminat el gris)
-            fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-              if (states.contains(MaterialState.selected)) {
+            // fillColor: MaterialStateProperty.resolveWith<Color>((states) {
+            //   if (states.contains(MaterialState.selected)) {
+            //     return colorScheme.primary;
+            //   }
+            //   return colorScheme.surfaceContainerLow; // En lloc de transparent
+            // }),
+            checkColor: colorScheme.onPrimary, // Color directe, no nullable
+            fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.selected)) {
                 return colorScheme.primary;
               }
-              return Colors.transparent; // Fons transparent per igualtar amb TextField
+              return colorScheme.surfaceContainerLow;
             }),
+            side: MaterialStateBorderSide.resolveWith((states) {
+              if (states.contains(MaterialState.selected)) {
+                return BorderSide(color: colorScheme.primary);
+              }
+              return BorderSide(color: colorScheme.outline);
+            }),
+
           ),
           const SizedBox(width: 8.0),
         ],

@@ -1,85 +1,56 @@
 // lib/ui/widgets/ld_label/ld_label_model.dart
-// Model del widget LdLabel
-// Created: 2025/05/06 dt. CLA
-// Updated: 2025/05/15 dj. GPT(JIQ)
-// Fixed: 2025/05/16 dv. - Correccions per mantenir clau de traducció
+// Model de dades per al widget LdLabel
+// Created: 2025/05/20 dl. CLA
 
 import 'package:flutter/material.dart';
-
+import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_typedefs.dart';
-import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
-import 'package:ld_wbench5/core/L10n/string_tx.dart';
 
-/// Model per al widget LdLabel
-class LdLabelModel extends LdWidgetModelAbs {
-  // CONSTRUCTOR ==========================================
-  LdLabelModel({required MapDyns config}) : super.fromMap(config);
-  // ignore: use_super_parameters
-  LdLabelModel.fromMap(MapDyns map) : super.fromMap(map);
-  
-  // MEMBRES ==============================================
-  TextStyle? get labelStyle => config[cfLabelStyle] as TextStyle?;
-  set labelStyle(TextStyle? pStyle) => config[cfLabelStyle] = pStyle;
-
-  TextAlign? get textAlign => config[cfLabelTextAlign] as TextAlign?;
-  TextOverflow? get overflow => config[cfLabelOverflow] as TextOverflow?;
-  int? get maxLines => config[cfLabelMaxLines] as int?;
-  bool? get softWrap => config[cfLabelSoftWrap] as bool?;
-
-  List<String> get positionalArgs => config[cfLabelPosArgs] as List<String>? ?? [];
-  set positionalArgs(List<String> args) {
-    config[cfLabelPosArgs] = args;
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: positionalArgs actualitzats a: $args");
+class LdLabelModel extends LdModelAbs {
+  LdLabelModel({
+    String? label,
+    List<String>? positionalArgs,
+    MapStrings? namedArgs,
+    TextStyle? style,
+    TextAlign? textAlign,
+    TextOverflow? overflow,
+    int? maxLines,
+    bool? softWrap,
+  }) : super({}) {
+    // Actualitzat amb paràmetres amb nom
+    if (label != null) setField(pKey: cfLabel, pValue: label);
+    if (positionalArgs != null) setField(pKey: cfLabelPosArgs, pValue: positionalArgs);
+    if (namedArgs != null) setField(pKey: cfLabelNamedArgs, pValue: namedArgs);
+    if (style != null) setField(pKey: cfLabelStyle, pValue: style);
+    if (textAlign != null) setField(pKey: cfLabelTextAlign, pValue: textAlign);
+    if (overflow != null) setField(pKey: cfLabelOverflow, pValue: overflow);
+    if (maxLines != null) setField(pKey: cfLabelMaxLines, pValue: maxLines);
+    if (softWrap != null) setField(pKey: cfLabelSoftWrap, pValue: softWrap);
   }
 
-  LdMap<String> get namedArgs => config[cfLabelNamedArgs] as LdMap<String>? ?? const {};
-  set namedArgs(LdMap<String> args) {
-    config[cfLabelNamedArgs] = args;
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: namedArgs actualitzats a: $args");
-  }
-
-  // TEXT BASE I INTERPOLACIÓ =========================
-  /// Obté el text base (clau de traducció o text literal)
-  String get baseText => config[cfLabel] as String? ?? '';
-  
-  /// Obté el text final amb interpolació aplicada
-  String get label {
-    final base = baseText;
-    final result = StringTx.resolveText(base, positionalArgs, namedArgs);
+  @override
+  void fromMap(MapDyns pMap) {
+    super.fromMap(pMap);
     
-    // Debug detallat
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag.label:");
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Base text: '$base'");
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Positional args: $positionalArgs");
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Named args: $namedArgs");
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Result: '$result'");
-    
-    return result;
-  }
-  
-  /// Actualitza el text base (clau o literal)
-  set label(String pLabel) {
-    config[cfLabel] = pLabel;
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Text base actualitzat a: '$pLabel'");
+    // Actualitzat amb paràmetres amb nom
+    if (pMap.containsKey(cfLabel)) setField(pKey: cfLabel, pValue: pMap[cfLabel]);
+    if (pMap.containsKey(cfLabelPosArgs)) setField(pKey: cfLabelPosArgs, pValue: pMap[cfLabelPosArgs]);
+    if (pMap.containsKey(cfLabelNamedArgs)) setField(pKey: cfLabelNamedArgs, pValue: pMap[cfLabelNamedArgs]);
+    if (pMap.containsKey(cfLabelStyle)) setField(pKey: cfLabelStyle, pValue: pMap[cfLabelStyle]);
+    if (pMap.containsKey(cfLabelTextAlign)) setField(pKey: cfLabelTextAlign, pValue: pMap[cfLabelTextAlign]);
+    if (pMap.containsKey(cfLabelOverflow)) setField(pKey: cfLabelOverflow, pValue: pMap[cfLabelOverflow]);
+    if (pMap.containsKey(cfLabelMaxLines)) setField(pKey: cfLabelMaxLines, pValue: pMap[cfLabelMaxLines]);
+    if (pMap.containsKey(cfLabelSoftWrap)) setField(pKey: cfLabelSoftWrap, pValue: pMap[cfLabelSoftWrap]);
   }
 
-  // MÈTODES AUXILIARS ===============================
-  /// Actualitza arguments sense perdre el text base
   void updateTranslationArgs({
     List<String>? positionalArgs,
-    LdMap<String>? namedArgs,
+    MapStrings? namedArgs,
   }) {
-    if (positionalArgs != null) {
-      this.positionalArgs = positionalArgs;
-    }
-    if (namedArgs != null) {
-      this.namedArgs = namedArgs;
-    }
-    
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Arguments d'interpolació actualitzats");
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Text base conservat: '$baseText'");
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Nous args posicionals: $positionalArgs");
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("  - Nous args nomenats: $namedArgs");
+    notifyListeners(() {
+      if (positionalArgs != null) setField(pKey: cfLabelPosArgs, pValue: positionalArgs);
+      if (namedArgs != null) setField(pKey: cfLabelNamedArgs, pValue: namedArgs);
+    });
   }
 }

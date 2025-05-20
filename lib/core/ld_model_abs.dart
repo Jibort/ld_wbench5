@@ -10,6 +10,7 @@ import 'package:ld_wbench5/core/map_fields.dart';
 import 'package:ld_wbench5/utils/debug.dart';
 
 
+// WRAPPERS ===============================================
 /// Wrapper intern per convertir funcions a interfície
 class _FunctionObserverWrapper implements LdModelObserverIntf {
   final FnModelObs function;
@@ -28,65 +29,17 @@ abstract class LdModelObserverIntf {
   void onModelChanged(LdModelAbs pModel, void Function() pfUpdate);
 }
 
-// MODEL BASE ============================================
-abstract class LdModelAbs with LdTaggableMixin {
+/// Model base simplificat per a l'aplicació
+abstract class LdModelAbs 
+with     LdTaggableMixin {
   // MEMBRES LOCALS =======================================
   final Set<LdModelObserverIntf> _observers = {};
-  final MapDyns config;
-  
-  // GETTERS/SETTERS ======================================
-  int get observerCount => _observers.length;
-  bool get hasObservers => _observers.isNotEmpty;
-
-  // FUNCIONALITAT OBSERVADORS ============================
-  void attachObserver(LdModelObserverIntf pObs) {
-    _observers.add(pObs);
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Observador assignat. Total: ${_observers.length}");
-  }
-
-  /// Mètode sobrecarregat per acceptar funcions directament
-  void attachObserverFunction(FnModelObs pObserverFn) {
-    final wrapper = _FunctionObserverWrapper(pObserverFn);
-    _observers.add(wrapper);
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Observador funció assignat. Total: ${_observers.length}");
-  }
-
-  void detachObserver([LdModelObserverIntf? pObs]) {
-    if (pObs != null) {
-      _observers.remove(pObs);
-      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Observador específic desvinculat. Restants: ${_observers.length}");
-    } else {
-      _observers.clear();
-      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Tots els observadors desvinculats");
-    }
-  }
-
-  /// Mètode per desattach funcions observer
-  void detachObserverFunction(FnModelObs pObserverFn) {
-    _observers.removeWhere((obs) => 
-      obs is _FunctionObserverWrapper && 
-      obs.function == pObserverFn
-    );
-    //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Observador funció desvinculat. Restants: ${_observers.length}");
-  }
-
-  void notifyListeners(void Function() action, [bool pOnlyWithObs = false]) {
-    if (_observers.isNotEmpty || !pOnlyWithObs) {
-      action();
-    }
-    if (_observers.isNotEmpty) {
-      //JIQ>CLA: Eliminar quan toquin modificacions -> Debug.info("$tag: Notificant ${_observers.length} observador(s) del canvi");
-      for (final observer in _observers) {
-        observer.onModelChanged(this, action);
-      }
-    } else {
-      Debug.warn("$tag: Model canviat sense observadors");
-    }
-  }
+  final MapDyns fields;
 
   // CONSTRUCTORS/DESTRUCTORS =============================
-  LdModelAbs(this.config) {
-    tag = config[cfTag] ?? generateTag();
+  LdModelAbs([ MapDyns? pFields ])
+  : fields = pFields?? MapDyns() {
+    tag = fields[cfTag] ?? generateTag();
   }
 
   @mustCallSuper
@@ -95,10 +48,53 @@ abstract class LdModelAbs with LdTaggableMixin {
     Debug.info("$tag: Model alliberat");
   }
 
+  // GETTERS/SETTERS ======================================
+  int get observerCount => _observers.length;
+  bool get hasObservers => _observers.isNotEmpty;
+
+  // FUNCIONALITAT OBSERVADORS ============================
+  void attachObserver(LdModelObserverIntf pObs) {
+    _observers.add(pObs);
+  }
+
+  /// Mètode sobrecarregat per acceptar funcions directament
+  void attachObserverFunction(FnModelObs pObserverFn) {
+    final wrapper = _FunctionObserverWrapper(pObserverFn);
+    _observers.add(wrapper);
+  }
+
+  void detachObserver([LdModelObserverIntf? pObs]) 
+  => (pObs != null)
+      ? _observers.remove(pObs)
+      : _observers.clear();
+
+  /// Mètode per desattach funcions observer
+  void detachObserverFunction(FnModelObs pObserverFn) 
+  => _observers.removeWhere((obs) => 
+    obs is _FunctionObserverWrapper && 
+    obs.function == pObserverFn
+  );
+
+  /// Informa als objectes que escolten canvis en el model sobre els canvis.
+  void notifyListeners(void Function() action, [bool pOnlyWithObs = false]) {
+    if (_observers.isNotEmpty || !pOnlyWithObs) {
+      action();
+    }
+    if (_observers.isNotEmpty) {
+      for (final observer in _observers) {
+        observer.onModelChanged(this, action);
+      }
+    } else {
+      Debug.warn("$tag: Model canviat sense observadors");
+    }
+  }
+
+  /// Retorna la cadena indetificativa del model.
   @override
   String toString() => 'LdModel(tag: $tag)';
 
   // DECLARACIONS ABSTRACTES ==============================
+  /// Retorna la versió del model en forma de mapa dinàmic.
   @mustCallSuper
   MapDyns toMap() {
     MapDyns map = LdMap();
@@ -106,29 +102,34 @@ abstract class LdModelAbs with LdTaggableMixin {
     return map;
   }
 
+  /// Carrega els camps estructurals bàsics de tot model.
   @mustCallSuper
-void fromMap(MapDyns pMap) {
+  MapDyns fromMap(MapDyns pMap) {
   // Verificar que pMap no sigui null
-  if (pMap.isEmpty) {
-    return;
-  }
+  if (pMap.isEmpty) return MapDyns();
   
   // Si cfTag existeix al mapa, actualitzem el tag
   // Si no, mantenim el tag existent o generem un nou
   String? tagFromMap = pMap[cfTag] as String?;
-  if (tagFromMap != null) {
-    tag = tagFromMap;
-  } else if (tag.isEmpty) {
-    tag = generateTag();
-  }
-}
+  tag = (tagFromMap != null)
+    ? tagFromMap
+    : (tag.isEmpty)
+      ? generateTag()
+      : tag;
 
+  return pMap;
+  }
+
+  /// Retorna un camp del model base.
   @mustCallSuper
   dynamic getField({required String pKey, bool pCouldBeNull = true, String? pErrorMsg}) =>
-      (pKey == cfTag)
-          ? tag
-          : Debug.fatal("$tag.getField('$pKey'): cap camp té la clau '$pKey'!");
+    (fields.containsKey(pKey))
+      ? fields[pKey]
+       : (!pCouldBeNull)
+         ? Debug.fatal("$tag.getField('$pKey'): cap camp té la clau '$pKey'!")
+        : null;
 
+  /// Estableix el valor d'un camp del model base.
   @mustCallSuper
   bool setField({required String pKey, dynamic pValue, bool pCouldBeNull = true, String? pErrorMsg}) {
     if (pKey == cfTag && pValue is String) {

@@ -14,7 +14,6 @@ import 'package:ld_wbench5/core/event_bus/ld_event.dart';
 import 'package:ld_wbench5/core/ld_model_abs.dart';
 import 'package:ld_wbench5/core/ld_taggable_mixin.dart';
 import 'package:ld_wbench5/core/ld_widget/ld_widget_abs.dart';
-import 'package:ld_wbench5/core/ld_widget/ld_widget_model_abs.dart';
 import 'package:ld_wbench5/core/lifecycle_interface.dart';
 import 'package:ld_wbench5/core/map_fields.dart';
 
@@ -24,22 +23,22 @@ extends    State<T>
 with       LdTaggableMixin
 implements LdLifecycleIntf, LdModelObserverIntf {
   /// Model del widget
-  LdWidgetModelAbs? _model;
+  LdModelAbs? _model;
   
   /// Getter públic per accedir al model
-  LdWidgetModelAbs? get model => _model;
+  LdModelAbs? get model => _model;
   
   /// Setter per assignar el model
   @protected
-  set model(LdWidgetModelAbs? newModel) {
-    if (_model != newModel) {
+  set model(LdModelAbs? pNewModel) {
+    if (_model != pNewModel) {
       // Desregistrar-se de l'antic model si existeix
       if (_model != null) {
         _model!.detachObserver(this);
       }
       
       // Assignar el nou model
-      _model = newModel;
+      _model = pNewModel;
       
       // Registrar-se com a observador del nou model
       if (_model != null) {

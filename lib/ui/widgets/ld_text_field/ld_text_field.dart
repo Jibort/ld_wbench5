@@ -72,9 +72,8 @@ extends LdWidgetAbs {
 
   // PROPIETATS DEL MODEL
   String get text => (model as LdTextFieldModel?)?.text ?? "";
-  set text(String value) {
-    model?.updateField(mfText, value);
-  }
+  set text(String pValue) 
+  => model?.setField(pKey: mfText, pValue: pValue);
 
   // PROPIETATS DE CONFIGURACIÓ
   String? get label {
